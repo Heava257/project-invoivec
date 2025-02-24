@@ -35,14 +35,15 @@ import List_StockOut from "./page/stock/List_StockOut";
 import Instock from "./page/stock/InStock";
 import StockOutPage from "./page/stock/StockOutPage";
 import InvoicesPage from "./page/invoices/InvoicesPage";
+import AboutHomepage from "./page/about/Aboutpage";
 
 
 function App() {
-//   const MainLayoutWrapper = () => (
-//   <MainLayoutAuth>
-//     <Outlet />
-//   </MainLayoutAuth>
-// );
+  const MainLayoutWrapper = () => (
+  <MainLayoutAuth>
+    <Outlet />
+  </MainLayoutAuth>
+);
   return (
     <BrowserRouter>
       <Routes>
@@ -79,6 +80,7 @@ function App() {
         </Route>
 
         <Route element={<MainLayoutAuth />}>
+          <Route path="/about" element={<AboutHomepage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LogingPage />} />
           <Route path="/register" element={<RegisterPage />} />
