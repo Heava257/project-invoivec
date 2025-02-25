@@ -23,6 +23,7 @@ import { Breadcrumb, Button, Dropdown, Input, Layout, Menu, Tag, theme } from "a
 import { Outlet, useNavigate } from "react-router-dom";
 import "./MainLayout.css";
 import Logo from "../../assets/INT_LOGO1.png";
+import logo from "../../assets/petronas.png";
 import ImgUser from "../../assets/user-mage.jpg";
 import { IoIosNotifications } from "react-icons/io";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
@@ -43,192 +44,217 @@ const items_menu = [
     key: "version",
     label: <Tag color="green">V 1.0.1</Tag>, // Version Display
     disabled: true, // Prevent clicking
+    className: "version-item", // Custom class for version item
   },
   {
-    key: "",
+    key: "dashboard",
     label: "Dashboard",
     icon: <PieChartOutlined />,
+    className: "dashboard-item", // Custom class for dashboard item
   },
   {
     key: "pos",
     label: "Invoices",
     icon: <DesktopOutlined />,
+    className: "invoices-item", // Custom class for invoices item
   },
- 
   {
     key: "order",
     label: "Invoices Detail",
     icon: <FileOutlined />,
+    className: "invoices-detail-item", // Custom class for invoices detail item
   },
   {
-  
     label: "Product",
     icon: <ShopOutlined />,
+    className: "product-menu", // Custom class for product menu
     children: [
       {
         key: "product",
         label: "List Product",
         icon: <FileProtectOutlined />,
+        className: "list-product-item", // Custom class for list product item
       },
       {
         key: "category",
         label: "Category",
         icon: <SolutionOutlined />,
+        className: "category-item", // Custom class for category item
       },
     ],
   },
   {
-   
     label: "Purchase",
     icon: <ShoppingCartOutlined />,
+    className: "purchase-menu", // Custom class for purchase menu
     children: [
       {
         key: "supplier",
         label: "Supplier",
         icon: <UsergroupAddOutlined />,
+        className: "supplier-item", // Custom class for supplier item
       },
       {
         key: "purchase",
         label: "List Purchase",
         icon: <FileOutlined />,
+        className: "list-purchase-item", // Custom class for list purchase item
       },
       {
         key: "purchase_product",
         label: "Purchase Product",
         icon: <CreditCardOutlined />,
+        className: "purchase-product-item", // Custom class for purchase product item
       },
     ],
   },
   {
-   
     label: "Expense",
     icon: <DollarOutlined />,
+    className: "expense-menu", // Custom class for expense menu
     children: [
       {
         key: "expanse_type",
         label: "Expense Type",
         icon: <FileOutlined />,
+        className: "expense-type-item", // Custom class for expense type item
       },
       {
         key: "expanse",
         label: "Expense",
         icon: <DollarOutlined />,
+        className: "expense-item", // Custom class for expense item
       },
     ],
   },
   {
-   
     label: "Stock",
     icon: <DollarOutlined />,
+    className: "stock-menu", // Custom class for stock menu
     children: [
       {
         key: "stock_in",
         label: "Stock In",
         icon: <DollarOutlined />,
+        className: "stock-in-item", // Custom class for stock in item
       },
       {
         key: "stock_out",
         label: "Stock Out",
         icon: <DollarOutlined />,
+        className: "stock-out-item", // Custom class for stock out item
       },
       {
         key: "List_stock",
         label: "Stock Out List",
         icon: <DollarOutlined />,
+        className: "stock-out-list-item", // Custom class for stock out list item
       },
       {
         key: "in_stock",
         label: "In Stock",
         icon: <FileOutlined />,
+        className: "in-stock-item", // Custom class for in stock item
       },
-     
     ],
   },
   {
-  
     label: "Employee",
     icon: <UserOutlined />,
+    className: "employee-menu", // Custom class for employee menu
     children: [
       {
         key: "employee",
         label: "Employee",
         icon: <UserOutlined />,
+        className: "employee-item", // Custom class for employee item
       },
       {
         key: "payroll",
         label: "Payroll",
         icon: <DollarOutlined />,
+        className: "payroll-item", // Custom class for payroll item
       },
     ],
   },
   {
-   
     label: "User",
     icon: <SolutionOutlined />,
+    className: "user-menu", // Custom class for user menu
     children: [
       {
         key: "user",
         label: "User",
         icon: <UserOutlined />,
+        className: "user-item", // Custom class for user item
       },
       {
         key: "role",
         label: "Role",
         icon: <SafetyCertificateOutlined />,
+        className: "role-item", // Custom class for role item
       },
       {
         key: "role_permission",
         label: "Role Permission",
         icon: <FileProtectOutlined />,
+        className: "role-permission-item", // Custom class for role permission item
       },
     ],
   },
   {
-  
     label: "Report",
     icon: <FileOutlined />,
+    className: "report-menu", // Custom class for report menu
     children: [
       {
         key: "report_Sale_Summary",
         label: "Sale Summary",
-        icon: <UserOutlined />, // Example: User icon for Sale Summary
+        icon: <UserOutlined />,
+        className: "sale-summary-item", // Custom class for sale summary item
       },
       {
         key: "report_Expense_Summary",
         label: "Expense Summary",
-        icon: <DollarOutlined />, // Dollar icon for Expense Summary
+        icon: <DollarOutlined />,
+        className: "expense-summary-item", // Custom class for expense summary item
       },
       {
         key: "purchase_Summary",
         label: "Purchase Summary",
-        icon: <ShoppingCartOutlined />, // Shopping cart for Purchase Summary
+        icon: <ShoppingCartOutlined />,
+        className: "purchase-summary-item", // Custom class for purchase summary item
       },
       {
         key: "report_Customer",
         label: "New Customer Summary",
-        icon: <UserOutlined />, // User icon for New Customer Summary
+        icon: <UserOutlined />,
+        className: "new-customer-summary-item", // Custom class for new customer summary item
       },
       {
         key: "Top_Sale",
         label: "Top Sale",
-        icon: <TrophyOutlined />, // Trophy icon for Top Sale
+        icon: <TrophyOutlined />,
+        className: "top-sale-item", // Custom class for top sale item
       },
     ],
   },
   {
-  
     label: "Setting",
     icon: <SettingOutlined />,
+    className: "setting-menu", // Custom class for setting menu
     children: [
       {
         key: "Currency",
         label: "Currency",
         icon: <DollarOutlined />,
+        className: "currency-item", // Custom class for currency item
       },
       {
         key: "language",
         label: "Language",
         icon: <GlobalOutlined />,
+        className: "language-item", // Custom class for language item
       },
     ],
   },
@@ -366,21 +392,31 @@ const MainLayout = () => {
   mode="inline"
   items={items}
   onClick={onClickMenu}
-  style={{
-    background: "linear-gradient(135deg, #667eea, #764ba2)", // Gradient color
-    color: "#ffffff", // White text color
-    fontWeight: "bold",
-    fontSize: "16px",
-  }}
+  // style={{
+  //   // background: "linear-gradient(135deg, #667eea, #764ba2)", // Gradient color
+  //   // color: "#ffffff", // White text color
+  //   fontWeight: "bold",
+  //   fontSize: "16px",
+    
+  // }}
 />
 
       </Sider>
       <Layout>
         <div className="admin-header">
           <div className="admin-header-g1">
-            <div>
-              <img className="admin-logo" src={Logo} alt="Logo" />
-            </div>
+            <div className="flex items-center gap-1"> {/* Reduced space further */}
+                     <img
+                       src={logo}
+                       alt="Company Logo"
+                       className="w-50 h-12 object-contain filter brightness-0 invert"
+                     />
+           
+           
+           
+           
+                     <h1 className="text-2xl font-bold text-white font-sans -ml-1">PETRONAS CAMBODIA CO.,LTD</h1>
+                   </div>
             <div>
               {/* <div className="txt-brand-name">POS-NU</div> */}
               {/* <div className="txt-brand-name">Count : {count}</div> */}

@@ -303,192 +303,24 @@
 
 
 
-import React from "react";
-import logo from "../../assets/petronas.jpg"
-const PrintInvoice = React.forwardRef((props, ref) => {
-  const { objSummary = {
-    sub_total: 0,
-    total_qty: 0,
-    save_discount: 0,
-    tax: 10,
-    total: 0,
-    total_paid: 0,
-    // customer,
-    customer_id: null,
-    payment_method: null,
-    remark: null,
-    order_no: null,
-    order_date: null,
-  }, cart_list = [] } = props;
-  console.log(objSummary)
-  // Helper function to safely format numbers
-  const formatNumber = (value) => {
-    const number = parseFloat(value) || 0;
-    return number.toFixed(2);
-  };
-
-  // Format date helper
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  // Calculate tax amount
-  const calculateTax = () => {
-    const subtotal = parseFloat(objSummary.sub_total) || 0;
-    const taxRate = parseFloat(objSummary.tax) || 0;
-    return (subtotal * taxRate / 100);
-  };
-
-  return (
-    <div ref={ref} className="p-8 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between mb-8">
-        <div className="flex items-center space-x-4">
-          <img
-            src={logo}
-            alt="Company Logo"
-            className="w-28 h-14 object-contain"
-          />
-          <h1 className="text-2xl font-bold text-gray-800">Petronas Cambodia</h1>
-        </div>
-
-        <div className="text-right">
-          <h2 className="text-2xl font-bold mb-2">វិក្កយបត្រ</h2>
-          <h2 className="text-xl">INVOICE</h2>
-        </div>
-      </div>
-
-      {/* Invoice Details */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div>
-          <p className="mb-1">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
-          <p>អាសយដ្ឋាន: ក្រុងភ្នំពេញ</p>
-        </div>
-        <div className="text-right">
-          <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
-          <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
-          <p className="mb-1">Customer Name: {objSummary.customer_name || 'N/A'}</p>
-
-
-          <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
-          {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="w-full mb-8 overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2 w-1/12 text-left">No</th>
-              <th className="border p-2 w-5/12 text-left">Description</th>
-              <th className="border p-2 w-2/12 text-center">Quantity</th>
-              <th className="border p-2 w-2/12 text-right">Unit Price</th>
-              <th className="border p-2 w-2/12 text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart_list.map((item, index) => (
-              <tr key={index}>
-                <td className="border p-2">{index + 1}</td>
-                <td className="border p-2">{item.name}</td>
-                <td className="border p-2 text-center">{item.cart_qty}</td>
-                <td className="border p-2 text-right">$ {formatNumber(item.unit_price)}</td>
-                <td className="border p-2 text-right">$ {formatNumber(item.cart_qty * item.unit_price)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Summary */}
-      <div className="w-64 ml-auto space-y-2">
-        <div className="flex justify-between">
-          <span>Subtotal:</span>
-          <span>$ {formatNumber(objSummary.sub_total)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Total Qty:</span>
-          <span>{objSummary.total_qty || 0} PCS</span>
-        </div>
-        {parseFloat(objSummary.save_discount) > 0 && (
-          <div className="flex justify-between">
-            <span>Discount:</span>
-            <span>$ {formatNumber(objSummary.save_discount)}</span>
-          </div>
-        )}
-        {parseFloat(objSummary.tax) > 0 && (
-          <div className="flex justify-between">
-            <span>Tax ({formatNumber(objSummary.tax)}%):</span>
-            <span>$ {formatNumber(calculateTax())}</span>
-          </div>
-        )}
-        <div className="flex justify-between font-bold pt-2 border-t">
-          <span>Total:</span>
-          <span>$ {formatNumber(objSummary.total)}</span>
-        </div>
-        {parseFloat(objSummary.total_paid) > 0 && (
-          <div className="flex justify-between text-green-600">
-            <span>Paid Amount:</span>
-            <span>$ {formatNumber(objSummary.total_paid)}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="grid grid-cols-2 gap-4 mt-8">
-        <div>
-          <p className="font-bold mb-2">អតិថិជន</p>
-          <p>Customer:</p>
-          <p className="mt-8">ហត្ថលេខា</p>
-          <p>Date: ....../....../.....</p>
-        </div>
-        <div className="text-right">
-          <p className="font-bold mb-2">គណនេយ្យករ</p>
-          <p>Accountant:</p>
-          <p className="mt-8">ហត្ថលេខា</p>
-          <p>Date: {formatDate(objSummary.order_date)}</p>
-        </div>
-      </div>
-
-      {/* Contact */}
-      <div className="text-center mt-8">
-        <p>ទំនាក់ទំនងផ្នែកបច្ចេកទេស: +855 67 733 335 / +855 76 5555 713</p>
-      </div>
-    </div>
-  );
-});
-
-export default PrintInvoice;
-
-
 // import React from "react";
-
+// import logo from "../../assets/petronas.jpg"
 // const PrintInvoice = React.forwardRef((props, ref) => {
-//   const {
-//     objSummary = {
-//       sub_total: 0,
-//       total_qty: 0,
-//       save_discount: 0,
-//       tax: 10,
-//       total: 0,
-//       total_paid: 0,
-//       customer_id: null,
-//       payment_method: null,
-//       remark: null,
-//       order_no: null,
-//       order_date: null,
-//     },
-//     cart_list = [],
-//     config, // Ensure `config` is passed as a prop
-//   } = props;
-
+//   const { objSummary = {
+//     sub_total: 0,
+//     total_qty: 0,
+//     save_discount: 0,
+//     tax: 10,
+//     total: 0,
+//     total_paid: 0,
+//     // customer,
+//     customer_id: null,
+//     payment_method: null,
+//     remark: null,
+//     order_no: null,
+//     order_date: null,
+//   }, cart_list = [] } = props;
+//   console.log(objSummary)
 //   // Helper function to safely format numbers
 //   const formatNumber = (value) => {
 //     const number = parseFloat(value) || 0;
@@ -510,27 +342,22 @@ export default PrintInvoice;
 //   const calculateTax = () => {
 //     const subtotal = parseFloat(objSummary.sub_total) || 0;
 //     const taxRate = parseFloat(objSummary.tax) || 0;
-//     return (subtotal * taxRate) / 100;
+//     return (subtotal * taxRate / 100);
 //   };
 
-//   // Find customer name by customer_id
-//   const findCustomerName = (customer_id) => {
-//     if (!customer_id || !config?.customer) return "N/A";
-//     const customer = config.customer.find((c) => c.value === customer_id);
-//     return customer ? customer.label : "N/A"; // Assuming `label` contains the customer name
-//   };
-// console.log(findCustomerName)
 //   return (
 //     <div ref={ref} className="p-8 max-w-4xl mx-auto">
 //       {/* Header */}
 //       <div className="flex justify-between mb-8">
-//         <div>
+//         <div className="flex items-center space-x-4">
 //           <img
-//             src="/api/placeholder/100/50"
+//             src={logo}
 //             alt="Company Logo"
-//             className="w-24 h-12 object-contain"
+//             className="w-28 h-14 object-contain"
 //           />
+//           <h1 className="text-2xl font-bold text-gray-800">Petronas Cambodia</h1>
 //         </div>
+
 //         <div className="text-right">
 //           <h2 className="text-2xl font-bold mb-2">វិក្កយបត្រ</h2>
 //           <h2 className="text-xl">INVOICE</h2>
@@ -546,8 +373,10 @@ export default PrintInvoice;
 //         <div className="text-right">
 //           <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
 //           <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
-//           <p className="mb-1">Customer Name: {findCustomerName(objSummary.customer_id)}</p>
-//           <p className="mb-1">Payment Method: {objSummary.payment_method || "N/A"}</p>
+//           <p className="mb-1">Customer Name: {objSummary.customer_name || 'N/A'}</p>
+
+
+//           <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
 //           {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
 //         </div>
 //       </div>
@@ -637,3 +466,192 @@ export default PrintInvoice;
 // });
 
 // export default PrintInvoice;
+
+
+import React from "react";
+import logo from "../../assets/petronas.png";
+import "./fonts.css"; // Import the CSS file
+
+const PrintInvoice = React.forwardRef((props, ref) => {
+  const { objSummary = {
+    sub_total: 0,
+    total_qty: 0,
+    save_discount: 0,
+    tax: 10,
+    total: 0,
+    total_paid: 0,
+    customer_id: null,
+    payment_method: null,
+    remark: null,
+    order_no: null,
+    order_date: null,
+  }, cart_list = [] } = props;
+
+  const formatNumber = (value) => {
+    const number = parseFloat(value) || 0;
+    return number.toFixed(2);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const calculateTax = () => {
+    const subtotal = parseFloat(objSummary.sub_total) || 0;
+    const taxRate = parseFloat(objSummary.tax) || 0;
+    return (subtotal * taxRate / 100);
+  };
+
+  return (
+    <div ref={ref} className="p-8 max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="flex justify-between mb-8 bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-lg shadow-lg">
+        <div className="flex items-center gap-1"> {/* Reduced space further */}
+          <img
+            src={logo}
+            alt="Company Logo"
+            className="w-50 h-12 object-contain filter brightness-0 invert"
+          />
+
+
+
+
+          <h1 className="text-2xl font-bold text-white font-sans -ml-1">PETRONAS CAMBODIA CO.,LTD</h1>
+        </div>
+
+        <div className="text-right">
+          <h2 className="text-2xl font-bold text-white mb-2">វិក្កយបត្រ</h2>
+          <h2 className="text-xl text-white">INVOICE</h2>
+        </div>
+      </div>
+
+      {/* Invoice Details */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div>
+          <p className="mb-1">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
+          <p>អាសយដ្ឋាន: ក្រុងភ្នំពេញ</p>
+        </div>
+        <div className="text-right">
+          <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
+          <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
+          <p className="mb-1">Customer Name: {objSummary.customer_name || 'N/A'}</p>
+          <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
+          {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="w-full mb-8 overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border p-2 w-1/12 text-left">No / លេខ</th>
+              <th className="border p-2 w-5/12 text-left">Description / ការពិពណ៌នា</th>
+              <th className="border p-2 w-2/12 text-center">Quantity / បរិមាណ</th>
+              <th className="border p-2 w-2/12 text-right">Unit Price / តម្លៃ​រាយ</th>
+              <th className="border p-2 w-2/12 text-right">Amount / តម្លៃ​សរុប</th>
+            </tr>
+          </thead>
+
+          {/* <tbody>
+            {cart_list.map((item, index) => (
+              <tr key={index}>
+                <td className="border p-2">{index + 1}</td>
+                <td className="border p-2">{item.name}</td>
+                <td className="border p-2 text-center">{item.cart_qty}</td>
+                <td className="border p-2 text-right">$ {formatNumber(item.unit_price)}</td>
+                <td className="border p-2 text-right">$ {formatNumber(item.cart_qty * item.unit_price)}</td>
+              </tr>
+            ))}
+          </tbody> */}
+          <tbody>
+            {cart_list.map((item, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="border p-2 text-center">{index + 1}</td>
+                <td className="border p-2">{item.name} <br /></td>
+                <td className="border p-2 text-center">{item.cart_qty} <span className="text-gray-500 text-sm">{item.unit }</span></td>
+                <td className="border p-2 text-right">$ {formatNumber(item.unit_price)}</td>
+                <td className="border p-2 text-right font-bold">$ {formatNumber(item.cart_qty * item.unit_price)}</td>
+              </tr>
+            ))}
+
+            {/* Total Row */}
+            <tr className="bg-gray-200 font-bold">
+              <td className="border p-2 text-center" colSpan={4}>Total / សរុប</td>
+              <td className="border p-2 text-right">$ {formatNumber(cart_list.reduce((sum, item) => sum + item.cart_qty * item.unit_price, 0))}</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+      {/* Summary */}
+      <div className="w-64 ml-auto space-y-2">
+        <div className="flex justify-between">
+          <span>Subtotal:</span>
+          <span>$ {formatNumber(objSummary.sub_total)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Total Qty:</span>
+          <span>{objSummary.total_qty || 0} PCS</span>
+        </div>
+        {parseFloat(objSummary.save_discount) > 0 && (
+          <div className="flex justify-between">
+            <span>Discount:</span>
+            <span>$ {formatNumber(objSummary.save_discount)}</span>
+          </div>
+        )}
+        {parseFloat(objSummary.tax) > 0 && (
+          <div className="flex justify-between">
+            <span>Tax ({formatNumber(objSummary.tax)}%):</span>
+            <span>$ {formatNumber(calculateTax())}</span>
+          </div>
+        )}
+        <div className="flex justify-between font-bold pt-2 border-t">
+          <span>Total:</span>
+          <span>$ {formatNumber(objSummary.total)}</span>
+        </div>
+        {parseFloat(objSummary.total_paid) > 0 && (
+          <div className="flex justify-between text-green-600">
+            <span>Paid Amount:</span>
+            <span>$ {formatNumber(objSummary.total_paid)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="grid grid-cols-2 gap-4 mt-8">
+        <div>
+          <p className="font-bold mb-2">អតិថិជន</p>
+          <p>Customer:</p>
+
+
+          <p className="mt-12 mb-4">ហត្ថលេខា</p>
+          <p>Date: ....../....../.....</p>
+        </div>
+        <div className="text-right mt-8 mb-8">  {/* Add space above and below */}
+          <p className="font-bold mb-2">គណនេយ្យករ</p>
+          <p>Accountant:</p>
+
+          {/* Add space for signature */}
+          <p className="mt-12 mb-4">ហត្ថលេខា</p>
+          <p>Date: {formatDate(objSummary.order_date)}</p>
+        </div>
+
+      </div>
+
+      {/* Contact */}
+      <div className="text-center mt-8">
+        <p>ទំនាក់ទំនងផ្នែកបច្ចេកទេស: +855 67 733 335 / +855 76 5555 713</p>
+      </div>
+    </div>
+  );
+});
+
+export default PrintInvoice;
