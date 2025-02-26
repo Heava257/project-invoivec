@@ -10,6 +10,7 @@
   position: relative; /* For pseudo-elements */
   overflow: hidden; /* Ensures pseudo-elements don't overflow */
   background: linear-gradient(135deg, #3b82f6, #2563eb); /* Blue gradient background */
+  padding: 50px;
 }
 
 .admin-header::before {

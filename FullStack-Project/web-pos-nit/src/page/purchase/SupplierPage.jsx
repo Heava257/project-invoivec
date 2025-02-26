@@ -213,64 +213,101 @@ function SupplierPage() {
         </Form>
       </Modal>
       <Table
-        dataSource={state.list}
-        columns={[
-          {
-            key: "name",
-            title: "name",
-            dataIndex: "name",
-          },
-          {
-            key: "code",
-            title: "code",
-            dataIndex: "code",
-          },
-          {
-            key: "tel",
-            title: "tel",
-            dataIndex: "tel",
-          },
-          {
-            key: "email",
-            title: "email",
-            dataIndex: "email",
-          },
-          {
-            key: "address",
-            title: "address",
-            dataIndex: "address",
-          },
-          {
-            key: "website",
-            title: "website",
-            dataIndex: "website",
-          },
-          {
-            key: "create_at",
-            title: "create_at",
-            dataIndex: "create_at",
-            render: (value) => dayjs(value).format("DD/MM/YYYY"),
-          },
-          {
-            key: "action",
-            title: "action",
-            render: (value, data) => (
-              <Space>
-                <Button type="primary" onClick={() => onClickBtnEdit(data)}>
-                  EDIT
-                </Button>
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => onClickBtnDelete(data)}
-                >
-                  DELETE
-                </Button>
-              </Space>
-            ),
-          },
-        ]}
-      />
+  dataSource={state.list}
+  columns={[
+    {
+      key: "name",
+      title: (
+        <div >
+          <div className="khmer-text">ឈ្មោះ</div>
+          <div className="english-text">Name</div>
+        </div>
+      ),
+      dataIndex: "name",
+    },
+    {
+      key: "code",
+      title: (
+        <div >
+          <div className="khmer-text">កូដ</div>
+          <div className="english-text">Code</div>
+        </div>
+      ),
+      dataIndex: "code",
+    },
+    {
+      key: "tel",
+      title: (
+        <div >
+          <div className="khmer-text">លេខទូរស័ព្ទ</div>
+          <div className="english-text">Tel</div>
+        </div>
+      ),
+      dataIndex: "tel",
+    },
+    {
+      key: "email",
+      title: (
+        <div >
+          <div className="khmer-text">អ៊ីម៉ែល</div>
+          <div className="english-text">Email</div>
+        </div>
+      ),
+      dataIndex: "email",
+    },
+    {
+      key: "address",
+      title: (
+        <div >
+          <div className="khmer-text">អាសយដ្ឋាន</div>
+          <div className="english-text">Address</div>
+        </div>
+      ),
+      dataIndex: "address",
+    },
+    {
+      key: "website",
+      title: (
+        <div >
+          <div className="khmer-text">គេហទំព័រ</div>
+          <div className="english-text">Website</div>
+        </div>
+      ),
+      dataIndex: "website",
+    },
+    {
+      key: "create_at",
+      title: (
+        <div >
+          <div className="khmer-text">កាលបរិច្ឆេទបង្កើត</div>
+          <div className="english-text">Created At</div>
+        </div>
+      ),
+      dataIndex: "create_at",
+      render: (value) => dayjs(value).format("DD/MM/YYYY"),
+    },
+    {
+      key: "action",
+      title: (
+        <div >
+          <div className="khmer-text">សកម្មភាព</div>
+          <div className="english-text">Action</div>
+        </div>
+      ),
+      render: (value, data) => (
+        <Space>
+          <Button type="primary" onClick={() => onClickBtnEdit(data)}>
+            EDIT
+          </Button>
+          <Button type="primary" danger onClick={() => onClickBtnDelete(data)}>
+            DELETE
+          </Button>
+        </Space>
+      ),
+    },
+  ]}
+/>
+
     </MainPage>
   );
 }

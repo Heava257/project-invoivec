@@ -6,23 +6,30 @@ const { json } = require("express");
 
 exports.getList = async (req, res) => {
   try {
-    let sql =
-      " SELECT  " +
-      " u.id, " +
-      " u.name, " +
-      " u.username, " +
-      " u.create_by, " +
-      " u.create_at, " +
-      " u.address, " +
-      " u.tel, " +
-      " u.is_active, " +
-      " r.name AS role_name " +
-      " FROM user u " +
-      " INNER JOIN role r ON u.role_id = r.id ";
+    let sql = `
+  SELECT  
+    u.id, 
+    u.name, 
+    u.barcode, 
+    u.username, 
+    u.branch_name, 
+    u.create_by, 
+    u.create_at, 
+    u.address, 
+    u.tel, 
+    u.is_active, 
+    r.name AS role_name 
+  FROM user u 
+  INNER JOIN role r ON u.role_id = r.id 
+  ORDER BY u.create_at DESC
+`;
+
+
     const [list] = await db.query(sql);
     const [role] = await db.query(
-      "SELECT id as value, name as label FROM role"
+      "SELECT id AS value, name AS label FROM role"
     );
+
     res.json({
       list,
       role,
@@ -31,6 +38,7 @@ exports.getList = async (req, res) => {
     logError("auth.getList", error, res);
   }
 };
+
 exports.update = async (req, res) => {
   try {
     // Check if a password is provided for update
@@ -44,13 +52,16 @@ exports.update = async (req, res) => {
     // Create the SQL query based on the presence of the password
     let sql = "UPDATE user SET name = :name, username = :username, role_id = :role_id, ";
     sql += password ? "password = :password, " : "";  // Only add password field if password exists
+    sql += "tel = :tel, branch_name = :branch_name, "; // Added comma after branch_name
     sql += "is_active = :is_active, address = :address, create_by = :create_by, create_at = :create_at ";
     sql += "WHERE id = :id";
     
     // Prepare the query parameters
     const queryParams = { 
       ...req.body, 
-      password: password || req.body.password // If no new password, retain the original password
+      password: password || req.body.password, // If no new password, retain the original password
+      create_by: req.auth?.name,
+      create_at: new Date() // Use current timestamp or req.auth?.create_at
     };
     
     // Execute the query
@@ -68,31 +79,70 @@ exports.update = async (req, res) => {
 };
 
 
+// exports.register = async (req, res) => {
+//   try {
+//     // Extract values from req.body
+//     const { role_id, name, username, password, address, tel, branch_name, barcode, is_active } = req.body;
 
+//     // Hash password
+//     const hashedPassword = bcrypt.hashSync(password, 10);
+
+//     // SQL Query
+//     let sql = `
+//       INSERT INTO user (role_id, name, username, password, is_active, address, tel, branch_name, barcode, create_by, create_at) 
+//       VALUES (:role_id, :name, :username, :password, :is_active, :address, :tel, :branch_name, :barcode, :create_by, :create_at);
+//     `;
+
+//     // Execute Query
+//     let data = await db.query(sql, {
+//       role_id,
+//       name,
+//       username,
+//       password: hashedPassword,
+//       address,
+//       tel,
+//       branch_name,
+//       barcode,
+//       is_active,
+//       create_by: req.auth?.name,
+//       create_at: new Date() // Set the creation time
+//     });
+
+//     // Success Response
+//     res.json({
+//       message: "Create new account success!",
+//       data: data,
+//     });
+//   } catch (error) {
+//     logError("auth.register", error, res);
+//   }
+// };
 exports.register = async (req, res) => {
   try {
-    // hash password
-    let password = req.body.password;
-    password = bcrypt.hashSync(password, 10); // 123456, "314098spofaspdofjpo2rlsjlfasdf"
-    let sql =
-      "INSERT INTO " +
-      " user ( role_id, name, username, password, is_active,address,tel,province_name,province_code,branch_name,barcode, create_by ,create_at) VALUES " +
-      " (:role_id,:name,:username,:password,:is_active,:address,:tel,:province_name,:province_code,:branch_name,:barcode,:create_by,:create_at); ";
+    let password = bcrypt.hashSync(req.body.password, 10);
+
+    // Generate a new barcode
+    const { role_id, name, username, address, tel, branch_name, barcode, status } = req.body;
+
+    let sql = `
+      INSERT INTO user (role_id, name, username, password, is_active, address, tel, branch_name, barcode, create_by, create_at)
+      VALUES (:role_id, :name, :username, :password, :is_active, :address, :tel, :branch_name, :barcode, :create_by, :create_at);
+    `;
+
     let data = await db.query(sql, {
-      role_id: req.body.role_id,
-      name: req.body.name,
-      username: req.body.username,
-      password: password,
-      address: address,
-      tel: tel,
-      province_name: province_name,
-      province_code: province_code,
-      branch_name: branch_name,
-      barcode: barcode,
-      is_active: req.body.is_active,
+      role_id,
+      name,
+      username,
+      password,
+      address,
+      tel,
+      branch_name,
+      barcode, // Use the generated barcode
+      status,
       create_by: req.auth?.name,
-      create_at: req.auth.create_at // current user that action this module
+      create_at: req.auth?.create_at,
     });
+
     res.json({
       message: "Create new account success!",
       data: data,
@@ -101,7 +151,41 @@ exports.register = async (req, res) => {
     logError("auth.register", error, res);
   }
 };
-exports.remove = async (req,res) =>{
+
+exports.newBarcode = async (req, res) => {
+  try {
+    var sql = `
+      SELECT CONCAT('U', LPAD(COALESCE(MAX(id), 0) + 1, 3, '0')) AS barcode 
+      FROM user
+    `;
+    var [data] = await db.query(sql);
+
+    // If no users exist, default to "U001"
+    let barcode = data[0]?.barcode || "U001";
+
+    res.json({ barcode });
+  } catch (error) {
+    logError("barcode.create", error, res);
+  }
+};
+
+
+isExistBarcode = async (barcode) => {
+  try {
+    var sql = "SELECT COUNT(id) as Total FROM user WHERE barcode=:barcode";
+    var [data] = await db.query(sql, {
+      barcode: barcode,
+    });
+    if (data.length > 0 && data[0].Total > 0) {
+      return true; // ស្ទួន
+    }
+    return false; // អត់ស្ទួនទេ
+  } catch (error) {
+    logError("barcode.create", error, res);
+  }
+};
+
+exports.remove = async (req, res) => {
   try {
     var [data] = await db.query("DELETE FROM user WHERE id = :id", {
       id: req.body.id,
@@ -210,32 +294,32 @@ exports.validate_token = () => {
   };
 };
 
-const getPermissionByUser =async (user_id) => {
+const getPermissionByUser = async (user_id) => {
   let sql =
-  "   SELECT  "+
-  " DISTINCT "+
-  " p.id, "+
-  " p.name, "+
-  " p.group, "+
-  " p.is_menu_web, "+
-  " p.web_route_key "+
-  " FROM permissions  p "+
-  " INNER JOIN permission_roles pr ON p.id = pr.permission_id "+
-  " INNER JOIN `role` r ON pr.role_id = r.id "+
-  " INNER JOIN user_roles ur ON r.id = ur.role_id "+
-  " WHERE ur.user_id = :user_id; "
-// "   SELECT DISTINCT "+
-// "   p.id, "+
-// "   p.name, "+
-// "   p.group, "+
-// "   p.is_menu_web, "+
-// "   p.web_route_key "+
-// " FROM permissions p "+
-// " INNER JOIN permission_roles pr ON p.id = pr.permission_id "+
-// " WHERE pr.role_id = :role_id; "
- 
-const [permission] = await db.query(sql,{user_id})
-return permission;
+    "   SELECT  " +
+    " DISTINCT " +
+    " p.id, " +
+    " p.name, " +
+    " p.group, " +
+    " p.is_menu_web, " +
+    " p.web_route_key " +
+    " FROM permissions  p " +
+    " INNER JOIN permission_roles pr ON p.id = pr.permission_id " +
+    " INNER JOIN `role` r ON pr.role_id = r.id " +
+    " INNER JOIN user_roles ur ON r.id = ur.role_id " +
+    " WHERE ur.user_id = :user_id; "
+  // "   SELECT DISTINCT "+
+  // "   p.id, "+
+  // "   p.name, "+
+  // "   p.group, "+
+  // "   p.is_menu_web, "+
+  // "   p.web_route_key "+
+  // " FROM permissions p "+
+  // " INNER JOIN permission_roles pr ON p.id = pr.permission_id "+
+  // " WHERE pr.role_id = :role_id; "
+
+  const [permission] = await db.query(sql, { user_id })
+  return permission;
 
 
 }

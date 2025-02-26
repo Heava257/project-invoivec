@@ -485,6 +485,7 @@ function PosPage() {
     total: 0,
     total_paid: 0,
     customer_id: null,
+    user_id: null,
     payment_method: null,
     remark: null,
     order_no: null,
@@ -696,8 +697,10 @@ function PosPage() {
       order_details.push(objItem);
     });
     var param = {
+      
       order: {
         customer_id: objSummary.customer_id,
+        user_id: objSummary.user_id,
         total_amount: objSummary.total,
         paid_amount: objSummary.total_paid,
         payment_method: objSummary.payment_method,
@@ -789,57 +792,98 @@ function PosPage() {
 
   const columns = [
     {
-      title: 'Barcode',
-      dataIndex: 'barcode',
-      key: 'barcode',
-
-      render: (value) => (
-        <Tag color="cyan">
-          {value}
-        </Tag>
-      )
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">លេខបាកូដ</div>
+          <div className="english-text">Barcode</div>
+        </div>
+      ),
+      dataIndex: "barcode",
+      key: "barcode",
+      render: (value) => <Tag className="barcode-tag" color="cyan">{value}</Tag>,
     },
     {
-      title: 'Product Name',
-      dataIndex: 'name',
-      key: 'name',
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ឈ្មោះផលិតផល</div>
+          <div className="english-text">Product Name</div>
+        </div>
+      ),
+      dataIndex: "name",
+      key: "name",
+      render: (text) => <span className="product-name">{text}</span>,
     },
     {
-      title: 'Category Name',
-      dataIndex: 'category_name',
-      key: 'category_name',
-    },
-
-    {
-      title: 'Unit',
-      dataIndex: 'unit',
-      key: 'name',
-    },
-    {
-      title: 'Unit Price',
-      dataIndex: 'unit_price',
-      key: 'unit_price',
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ប្រភេទ</div>
+          <div className="english-text">Category Name</div>
+        </div>
+      ),
+      dataIndex: "category_name",
+      key: "category_name",
+      render: (text) => <span className="category-name">{text}</span>,
     },
     {
-      title: 'QTY',
-      dataIndex: 'qty',
-      key: 'unit_price',
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ឯកតា</div>
+          <div className="english-text">Unit</div>
+        </div>
+      ),
+      dataIndex: "unit",
+      key: "unit",
+      render: (text) => <span className="unit-text">{text}</span>,
     },
     {
-      title: 'Discount',
-      dataIndex: 'discount',
-      key: 'discount',
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">តម្លៃរាយ</div>
+          <div className="english-text">Unit Price</div>
+        </div>
+      ),
+      dataIndex: "unit_price",
+      key: "unit_price",
+      render: (text) => <span className="unit-price">{text}</span>,
     },
-
-
     {
-      title: 'Action',
-      key: 'action',
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">បរិមាណ</div>
+          <div className="english-text">QTY</div>
+        </div>
+      ),
+      dataIndex: "qty",
+      key: "qty",
+      render: (text) => <span className="qty-text">{text}</span>,
+    },
+    {
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">បញ្ចុះតម្លៃ</div>
+          <div className="english-text">Discount</div>
+        </div>
+      ),
+      dataIndex: "discount",
+      key: "discount",
+      render: (text) => <span className="discount-text">{text}</span>,
+    },
+    {
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">សកម្មភាព</div>
+          <div className="english-text">Action</div>
+        </div>
+      ),
+      key: "action",
       render: (text, record) => (
-        <Button onClick={() => handleAdd(record)} type="primary" >Add to Cart</Button>
+        <Button className="add-to-cart-btn" onClick={() => handleAdd(record)} type="primary">
+          Add to Cart
+        </Button>
       ),
     },
   ];
+  
 
   return (
     <MainPage loading={state.loading}>
@@ -957,6 +1001,7 @@ function PosPage() {
                   }}
                 />
               </Col>
+              
               <Col span={12}>
                 <Select
                   allowClear
@@ -989,11 +1034,26 @@ function PosPage() {
                 />
               </Col>
 
-              <Col span={24}>
+              <Col span={12}>
                 <Input.TextArea
                   placeholder="Remark"
                   onChange={(e) => {
                     setObjSummary((p) => ({ ...p, remark: e.target.value }));
+                  }}
+                />
+              </Col>
+              <Col span={12}>
+                <Select
+                  allowClear
+                  style={{ width: "100%" }}
+                  placeholder="Select User"
+                  options={config?.user}
+                  onSelect={(value, option) => { // `option` contains the full selected object
+                    setObjSummary((p) => ({
+                      ...p,
+                      user_id: value, // `value` is the selected ID
+                      user_name: option.label, // `option.label` is the customer name
+                    }));
                   }}
                 />
               </Col>

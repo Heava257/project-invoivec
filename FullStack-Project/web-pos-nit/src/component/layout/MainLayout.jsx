@@ -47,13 +47,13 @@ const items_menu = [
     className: "version-item", // Custom class for version item
   },
   {
-    key: "dashboard",
+    key: "",
     label: "Dashboard",
     icon: <PieChartOutlined />,
     className: "dashboard-item", // Custom class for dashboard item
   },
   {
-    key: "pos",
+    key: "invoices",
     label: "Invoices",
     icon: <DesktopOutlined />,
     className: "invoices-item", // Custom class for invoices item
@@ -65,16 +65,36 @@ const items_menu = [
     className: "invoices-detail-item", // Custom class for invoices detail item
   },
   {
+    key: "total_due",
+    label: "Total Due",
+    icon: <FileOutlined />,
+    className: "invoices-detail-item", // Custom class for invoices detail item
+  },
+  {
     label: "Product",
     icon: <ShopOutlined />,
     className: "product-menu", // Custom class for product menu
     children: [
       {
         key: "product",
-        label: "List Product",
+        label: "Warehouse",
         icon: <FileProtectOutlined />,
         className: "list-product-item", // Custom class for list product item
       },
+      
+      {
+        key: "stockUser",
+        label: "User Stock",
+        icon: <FileProtectOutlined />,
+        className: "list-product-item", // Custom class for list product item
+      },
+      // {
+      //   key: "adminStockTransfer",
+      //   label: "AdminStockTransfer",
+      //   icon: <FileProtectOutlined />,
+      //   className: "list-product-item", // Custom class for list product item
+      // },
+     
       {
         key: "category",
         label: "Category",
@@ -94,18 +114,18 @@ const items_menu = [
         icon: <UsergroupAddOutlined />,
         className: "supplier-item", // Custom class for supplier item
       },
-      {
-        key: "purchase",
-        label: "List Purchase",
-        icon: <FileOutlined />,
-        className: "list-purchase-item", // Custom class for list purchase item
-      },
-      {
-        key: "purchase_product",
-        label: "Purchase Product",
-        icon: <CreditCardOutlined />,
-        className: "purchase-product-item", // Custom class for purchase product item
-      },
+      // {
+      //   key: "purchase",
+      //   label: "List Purchase",
+      //   icon: <FileOutlined />,
+      //   className: "list-purchase-item", // Custom class for list purchase item
+      // },
+      // {
+      //   key: "purchase_product",
+      //   label: "Purchase Product",
+      //   icon: <CreditCardOutlined />,
+      //   className: "purchase-product-item", // Custom class for purchase product item
+      // },
     ],
   },
   {
@@ -127,37 +147,37 @@ const items_menu = [
       },
     ],
   },
-  {
-    label: "Stock",
-    icon: <DollarOutlined />,
-    className: "stock-menu", // Custom class for stock menu
-    children: [
-      {
-        key: "stock_in",
-        label: "Stock In",
-        icon: <DollarOutlined />,
-        className: "stock-in-item", // Custom class for stock in item
-      },
-      {
-        key: "stock_out",
-        label: "Stock Out",
-        icon: <DollarOutlined />,
-        className: "stock-out-item", // Custom class for stock out item
-      },
-      {
-        key: "List_stock",
-        label: "Stock Out List",
-        icon: <DollarOutlined />,
-        className: "stock-out-list-item", // Custom class for stock out list item
-      },
-      {
-        key: "in_stock",
-        label: "In Stock",
-        icon: <FileOutlined />,
-        className: "in-stock-item", // Custom class for in stock item
-      },
-    ],
-  },
+  // {
+  //   label: "Stock",
+  //   icon: <DollarOutlined />,
+  //   className: "stock-menu", // Custom class for stock menu
+  //   children: [
+  //     {
+  //       key: "stock_in",
+  //       label: "Stock In",
+  //       icon: <DollarOutlined />,
+  //       className: "stock-in-item", // Custom class for stock in item
+  //     },
+  //     {
+  //       key: "stock_out",
+  //       label: "Stock Out",
+  //       icon: <DollarOutlined />,
+  //       className: "stock-out-item", // Custom class for stock out item
+  //     },
+  //     {
+  //       key: "List_stock",
+  //       label: "Stock Out List",
+  //       icon: <DollarOutlined />,
+  //       className: "stock-out-list-item", // Custom class for stock out list item
+  //     },
+  //     {
+  //       key: "in_stock",
+  //       label: "In Stock",
+  //       icon: <FileOutlined />,
+  //       className: "in-stock-item", // Custom class for in stock item
+  //     },
+  //   ],
+  // },
   {
     label: "Employee",
     icon: <UserOutlined />,
@@ -169,12 +189,12 @@ const items_menu = [
         icon: <UserOutlined />,
         className: "employee-item", // Custom class for employee item
       },
-      {
-        key: "payroll",
-        label: "Payroll",
-        icon: <DollarOutlined />,
-        className: "payroll-item", // Custom class for payroll item
-      },
+      // {
+      //   key: "payroll",
+      //   label: "Payroll",
+      //   icon: <DollarOutlined />,
+      //   className: "payroll-item", // Custom class for payroll item
+      // },
     ],
   },
   {
@@ -194,12 +214,12 @@ const items_menu = [
         icon: <SafetyCertificateOutlined />,
         className: "role-item", // Custom class for role item
       },
-      {
-        key: "role_permission",
-        label: "Role Permission",
-        icon: <FileProtectOutlined />,
-        className: "role-permission-item", // Custom class for role permission item
-      },
+      // {
+      //   key: "role_permission",
+      //   label: "Role Permission",
+      //   icon: <FileProtectOutlined />,
+      //   className: "role-permission-item", // Custom class for role permission item
+      // },
     ],
   },
   {
@@ -239,25 +259,25 @@ const items_menu = [
       },
     ],
   },
-  {
-    label: "Setting",
-    icon: <SettingOutlined />,
-    className: "setting-menu", // Custom class for setting menu
-    children: [
-      {
-        key: "Currency",
-        label: "Currency",
-        icon: <DollarOutlined />,
-        className: "currency-item", // Custom class for currency item
-      },
-      {
-        key: "language",
-        label: "Language",
-        icon: <GlobalOutlined />,
-        className: "language-item", // Custom class for language item
-      },
-    ],
-  },
+  // {
+  //   label: "Setting",
+  //   icon: <SettingOutlined />,
+  //   className: "setting-menu", // Custom class for setting menu
+  //   children: [
+  //     {
+  //       key: "Currency",
+  //       label: "Currency",
+  //       icon: <DollarOutlined />,
+  //       className: "currency-item", // Custom class for currency item
+  //     },
+  //     {
+  //       key: "language",
+  //       label: "Language",
+  //       icon: <GlobalOutlined />,
+  //       className: "language-item", // Custom class for language item
+  //     },
+  //   ],
+  // },
 ];
 const MainLayout = () => {
   const permision = getPermission();
@@ -405,18 +425,32 @@ const MainLayout = () => {
       <Layout>
         <div className="admin-header">
           <div className="admin-header-g1">
-            <div className="flex items-center gap-1"> {/* Reduced space further */}
-                     <img
-                       src={logo}
-                       alt="Company Logo"
-                       className="w-50 h-12 object-contain filter brightness-0 invert"
-                     />
-           
-           
-           
-           
-                     <h1 className="text-2xl font-bold text-white font-sans -ml-1">PETRONAS CAMBODIA CO.,LTD</h1>
-                   </div>
+            
+          <div className="flex flex-col items-start space-y-1">
+  {/* Logo and Company Name */}
+  <div className="flex items-center gap-2">
+    <img
+      src={logo}
+      alt="Company Logo"
+      className="w-50 h-12 object-contain filter brightness-0 invert"
+    />
+    <h1 className="text-2xl font-bold text-white font-sans">
+      PETRONAS CAMBODIA CO., LTD
+    </h1>
+  </div>
+
+  {/* Branch and Address */}
+  <div className="text-white text-sm">
+    <div className="khmer-text font-semibold text-white">
+      សាខា: {profile?.branch_name}
+    </div>
+    <div className="khmer-text text-white">
+      អាសយដ្ឋាន: {profile?.address}
+    </div>
+  </div>
+</div>
+
+
             <div>
               {/* <div className="txt-brand-name">POS-NU</div> */}
               {/* <div className="txt-brand-name">Count : {count}</div> */}

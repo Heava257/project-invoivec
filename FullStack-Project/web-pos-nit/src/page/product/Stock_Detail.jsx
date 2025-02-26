@@ -19,7 +19,7 @@ import Style from "../../page/orderPage/OrderPage.module.css"
 import { Config } from "../../util/config";
 import dayjs from "dayjs";
 // import { formartDateClient } from "../../../../api-pos-nit/src/util/helper";
-function OrderPage() {
+function Stock_Detail() {
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
 
@@ -213,9 +213,9 @@ function OrderPage() {
             Filter
           </Button>
         </Space>
-        {/* <Button type="primary" onClick={onClickAddBtn}>
+        <Button type="primary" onClick={onClickAddBtn}>
           NEW
-        </Button> */}
+        </Button>
       </div>
       <Modal
         open={state.visibleModal}
@@ -326,7 +326,6 @@ function OrderPage() {
       <Tag className={Style.Tag_Style}>
   <Table
     dataSource={list}
-    
     columns={[
       {
         key: "order_no",
@@ -383,7 +382,6 @@ function OrderPage() {
           <div style={{ color: "green", fontWeight: "bold" }}>{value}</div>
         ),
       },
-    
       {
         key: "Due",
         title: (
@@ -480,4 +478,4 @@ function OrderPage() {
   );
 }
 
-export default OrderPage;
+export default Stock_Detail;

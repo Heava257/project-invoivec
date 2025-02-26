@@ -6,6 +6,7 @@ const {
   validate_token,
   remove,
   update,
+  newBarcode,
 } = require("../controller/auth.controller");
 
 module.exports = (app) => {
@@ -15,4 +16,6 @@ module.exports = (app) => {
   app.put("/api/auth/register", validate_token(), update);
   app.post("/api/auth/login", login);
   app.post("/api/auth/profile", validate_token(), profile);
+  app.post("/api/auth/new_barcode", validate_token(), newBarcode);
+
 };

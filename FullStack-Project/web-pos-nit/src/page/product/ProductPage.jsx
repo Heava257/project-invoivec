@@ -701,6 +701,7 @@ function ProductPage() {
        category_id: items.category_id,
        barcode: items.barcode,
        brand: items.brand,
+       company_name:items.company_name,
        qty: items.qty,
        unit: items.unit,
        unit_price: items.unit_price,
@@ -791,6 +792,7 @@ function ProductPage() {
       name: data.name,
       category_id: data.category_id,
       brand: data.brand,
+      company_name: data.company_name,
       qty: data.qty,
       unit: data.unit,
       unit_price: data.unit_price,
@@ -857,7 +859,7 @@ function ProductPage() {
           />
           <Select
             allowClear
-            style={{ width: 130 }}
+            style={{ width: 160 }}
             placeholder="Brand"
             options={config.brand}
             onChange={(id) => {
@@ -1000,6 +1002,21 @@ function ProductPage() {
               <Form.Item name={"discount"} label="Discount (%)">
                 <InputNumber placeholder="Discount" style={{ width: "100%" }} />
               </Form.Item>
+              <Form.Item
+                name={"company_name"}
+                label="Company"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please Select Company Name",
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="Select Company"
+                  options={config?.company_name}
+                />
+                  </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
@@ -1054,162 +1071,216 @@ function ProductPage() {
         </Form>
       </Modal>
       <Table
-        dataSource={state.list}
-        pagination={{
-          pageSize: 2,
-          total: state.total,
-          onChange: (page) => {
-            refPage.current = page;
-            getList();
-          },
-        }}
-        columns={[
-          // {
-          //   key: "name",
-          //   title: "Name",
-          //   dataIndex: "name",
-          //   render: (text) => (
-          //     <div className="truncate-text" title={text} style={{ whiteSpace: "pre-line" }}>
-          //       {text}
-          //     </div>
-          //   ),
-          // },
+  className="custom-table"
+  dataSource={state.list}
+  pagination={{
+    pageSize: 2,
+    total: state.total,
+    onChange: (page) => {
+      refPage.current = page;
+      getList();
+    },
+  }}
+  columns={[
+    {
+      key: "name",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ឈ្មោះ</div>
+          <div className="english-text">Name</div>
+        </div>
+      ),
+      dataIndex: "name",
+      render: (text) => (
+        <div className="truncate-text" title={text || ""}>
+          {text || "N/A"}
+        </div>
+      ),
+    },
+    {
+      key: "barcode",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">លេខបាកូដ</div>
+          <div className="english-text">Barcode</div>
+        </div>
+      ),
+      dataIndex: "barcode",
+      render: (value) => <Tag color="blue">{value}</Tag>,
+    },
+    {
+      key: "description",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">សេចក្ដីពិពណ៌នា</div>
+          <div className="english-text">Description</div>
+        </div>
+      ),
+      dataIndex: "description",
+      render: (text) => (
+        <div className="truncate-text" title={text || ""}>
+          {text || "N/A"}
+        </div>
+      ),
+    },
+    {
+      key: "category_name",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ប្រភេទ</div>
+          <div className="english-text">Category</div>
+        </div>
+      ),
+      dataIndex: "category_name",
+    },
+    {
+      key: "brand",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ម៉ាក</div>
+          <div className="english-text">Brand</div>
+        </div>
+      ),
+      dataIndex: "brand",
+    },
+    {
+      key: "company_name",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ឈ្មោះក្រុមហ៊ុន</div>
+          <div className="english-text">Company Name</div>
+        </div>
+      ),
+      dataIndex: "company_name",
+    },
+    {
+      key: "qty",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">បរិមាណ</div>
+          <div className="english-text">Quantity</div>
+        </div>
+      ),
+      dataIndex: "qty",
+      render: (value) => (
+        <Tag color={value > 5000 ? "green" : "red"}>{value}</Tag>
+      ),
+    },
+    {
+      key: "unit",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ឯកតា</div>
+          <div className="english-text">Unit</div>
+        </div>
+      ),
+      dataIndex: "unit",
+      render: (value) => <Tag color="green">{value}</Tag>,
+    },
+    {
+      key: "unit_price",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">តម្លៃរាយ</div>
+          <div className="english-text">Unit Price</div>
+        </div>
+      ),
+      dataIndex: "unit_price",
+      render: (value) => (
+        <Tag color={value > 20 ? "green" : "volcano"}>
+          {formatCurrency(value)}
+        </Tag>
+      ),
+    },
+    {
+      key: "price",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">តម្លៃសរុប</div>
+          <div className="english-text">Total Price</div>
+        </div>
+      ),
+      dataIndex: "total_price",
+      render: (text) => formatCurrency(text),
+    },
+    {
+      key: "discount",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">បញ្ចុះតម្លៃ</div>
+          <div className="english-text">Discount</div>
+        </div>
+      ),
+      dataIndex: "discount",
+    },
+    {
+      key: "status",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">ស្ថានភាព</div>
+          <div className="english-text">Status</div>
+        </div>
+      ),
+      dataIndex: "status",
+      render: (status) =>
+        status == 1 ? (
+          <Tag color="green">Active</Tag>
+        ) : (
+          <Tag color="red">Inactive</Tag>
+        ),
+    },
+    {
+      key: "create_at",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">កាលបរិច្ឆេទបង្កើត</div>
+          <div className="english-text">Created At</div>
+        </div>
+      ),
+      dataIndex: "create_at",
+      render: (value) => formatDateClient(value, "DD/MM/YYYY H:m A"),
+    },
+    {
+      key: "create_by",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">បង្កើតដោយ</div>
+          <div className="english-text">Created By</div>
+        </div>
+      ),
+      dataIndex: "create_by",
+    },
+    {
+      key: "Action",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">សកម្មភាព</div>
+          <div className="english-text">Action</div>
+        </div>
+      ),
+      align: "center",
+      render: (item, data, index) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<MdEdit />}
+            onClick={() => onClickEdit(data, index)}
+          />
+          <Button
+            type="primary"
+            danger
+            icon={<MdDelete />}
+            onClick={() => onClickDelete(data, index)}
+          />
+        </Space>
+      ),
+    },
+  ]}
+/>
 
-          {
-            key: "name",
-            title: "Name",
-            dataIndex: "name",
-            render: (text) => (
-              <div
-                className="truncate-text"
-                title={text || ""}
-                style={{
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: "200px", // Adjust width as needed
-                  wordBreak: "break-word"
-                }}
-              >
-                {text || "N/A"} {/* Fallback for undefined or null values */}
-              </div>
-            ),
-          },
 
-          {
-            key: "barcode",
-            title: "Barcode",
-            dataIndex: "barcode",
-            render: (value) => <Tag color="blue">{value}</Tag>,
-          },
-          {
-            key: "description", // Corrected typo
-            title: "Description", // Corrected typo
-            dataIndex: "description",
-            render: (text) => (
-              <div
-                className="truncate-text"
-                title={text || ""} // Show full text on hover
-                style={{
-                  whiteSpace: "nowrap", // Prevent text from wrapping
-                  overflow: "hidden", // Hide overflow
-                  textOverflow: "ellipsis", // Show ellipsis for overflow
-                  maxWidth: "200px", // Adjust width as needed
-                }}
-              >
-                {text || "N/A"} {/* Fallback for undefined or null values */}
-              </div>
-            ),
-          },
-          {
-            key: "category_name",
-            title: "Category",
-            dataIndex: "category_name",
-          },
-          {
-            key: "brand",
-            title: "Brand",
-            dataIndex: "brand",
-          },
-          {
-            key: "qty",
-            title: "Qty",
-            dataIndex: "qty",
-            render: (value) => (
-              <Tag color={value > 5000 ? "green" : "red"}>{value}</Tag>
-            ),
-          },
-          {
-            key: "unit",
-            title: "Unit",
-            dataIndex: "unit",
-            render: (value) => <Tag color="green">{value}</Tag>,
-          },
-          {
-            key: "unit_price",
-            title: "Unit Price",
-            dataIndex: "unit_price",
-            render: (value) => (
-              <Tag color={value > 20 ? "green" : "volcano"}>
-                {formatCurrency(value)}
-              </Tag>
-            ),
-          },
-          {
-            key: "price",
-            title: "Price",
-            dataIndex: "total_price",
-            render: (text) => formatCurrency(text),
-          },
-          {
-            key: "discount",
-            title: "Discount",
-            dataIndex: "discount",
-          },
-          {
-            key: "status",
-            title: "Status",
-            dataIndex: "status",
-            render: (status) =>
-              status == 1 ? (
-                <Tag color="green">Active</Tag>
-              ) : (
-                <Tag color="red">Inactive</Tag>
-              ),
-          },
 
-          {
-            key: "create_at",
-            title: "create_at",
-            dataIndex: "create_at",
-          },
-          {
-            key: "create_by",
-            title: "create_by",
-            dataIndex: "create_by",
-          },
-          {
-            key: "Action",
-            title: "Action",
-            align: "center",
-            render: (item, data, index) => (
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<MdEdit />}
-                  onClick={() => onClickEdit(data, index)}
-                />
-                <Button
-                  type="primary"
-                  danger
-                  icon={<MdDelete />}
-                  onClick={() => onClickDelete(data, index)}
-                />
-              </Space>
-            ),
-          },
-        ]}
-      />
+
     </MainPage>
   );
 }

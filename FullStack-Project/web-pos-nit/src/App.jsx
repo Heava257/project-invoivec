@@ -36,6 +36,9 @@ import Instock from "./page/stock/InStock";
 import StockOutPage from "./page/stock/StockOutPage";
 import InvoicesPage from "./page/invoices/InvoicesPage";
 import AboutHomepage from "./page/about/Aboutpage";
+import AdminStockTransfer from "./page/admin/admin_stock_transfer";
+import Stock_UserPage from "./page/product/Stock_User";
+import Total_DuePage from "./page/total_due/Total_DuePage";
 
 
 function App() {
@@ -51,14 +54,17 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/employee" element={<EmployeePage />} />
           <Route path="/customer" element={<CustomerPage />} />
-          <Route path="/invoices" element={<InvoicesPage />} />
-          <Route path="/pos" element={<PosPage />} />
+          {/* <Route path="/invoices" element={<InvoicesPage />} /> */}
+          <Route path="/invoices" element={<PosPage />} />
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/order" element={<OrderPage />} />
-          <Route path="/product" element={<ProductPage />} />
           <Route path="/user" element={<UserPage />} />
+          <Route path="/product" element={<ProductPage />} />
+          <Route path="/stockUser" element={<Stock_UserPage />} />
           <Route path="/role" element={<RolePage />} />
           <Route path="/supplier" element={<SupplierPage />} />
+          <Route path="/total_due" element={<Total_DuePage />} />
+          
 
           <Route path="/expanse_type" element={<ExpanseTypePage />} />
           <Route path="/expanse" element={<ExpansePage />} />
@@ -68,7 +74,7 @@ function App() {
           <Route path="/purchase_Summary" element={<ReportPurchase_Summary/>} />
           <Route path="/Currency" element={<CurrencyList/>} />
           <Route path="/Top_Sale" element={<Top_Sales/>} />
-          <Route path="/in_stock" element={<Instock/>} />
+          <Route path="/adminStockTransfer" element={<AdminStockTransfer/>} />
           <Route path="/List_stock" element={<List_StockOut/>} />
           <Route path="/stock_in" element={<StockInPage/>} />
           <Route path="/stock_out" element={<StockOutPage/>} />

@@ -167,57 +167,83 @@ function CategoryPage() {
           </Space>
         </Form>
       </Modal>
-      <Table
-        dataSource={list}
-        columns={[
-          {
-            key: "No",
-            title: "No",
-            render: (item, data, index) => index + 1,
-          },
-          {
-            key: "name",
-            title: "name",
-            dataIndex: "name",
-          },
-          {
-            key: "description",
-            title: "description",
-            dataIndex: "description",
-          },
-          {
-            key: "status",
-            title: "status",
-            dataIndex: "status",
-            render: (status) =>
-              status == 1 ? (
-                <Tag color="green">Active</Tag>
-              ) : (
-                <Tag color="red">InActive</Tag>
-              ),
-          },
-          {
-            key: "Action",
-            title: "Action",
-            align: "center",
-            render: (item, data, index) => (
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<MdEdit />}
-                  onClick={() => onClickEdit(data, index)}
-                />
-                <Button
-                  type="primary"
-                  danger
-                  icon={<MdDelete />}
-                  onClick={() => onClickDelete(data, index)}
-                />
-              </Space>
-            ),
-          },
-        ]}
-      />
+  <Table
+  dataSource={list}
+  columns={[
+    {
+      key: "No",
+      title: (
+        <div>
+          <div className="khmer-text">លេខ</div>
+          <div className="english-text">No</div>
+        </div>
+      ),
+      render: (item, data, index) => index + 1,
+    },
+    {
+      key: "name",
+      title: (
+        <div>
+          <div className="khmer-text">ឈ្មោះ</div>
+          <div className="english-text">Name</div>
+        </div>
+      ),
+      dataIndex: "name",
+    },
+    {
+      key: "description",
+      title: (
+        <div>
+          <div className="khmer-text">សេចក្ដីពិពណ៌នា</div>
+          <div className="english-text">Description</div>
+        </div>
+      ),
+      dataIndex: "description",
+    },
+    {
+      key: "status",
+      title: (
+        <div>
+          <div className="khmer-text">ស្ថានភាព</div>
+          <div className="english-text">Status</div>
+        </div>
+      ),
+      dataIndex: "status",
+      render: (status) =>
+        status == 1 ? (
+          <Tag color="green">Active</Tag>
+        ) : (
+          <Tag color="red">Inactive</Tag>
+        ),
+    },
+    {
+      key: "Action",
+      title: (
+        <div>
+          <div className="khmer-text">សកម្មភាព</div>
+          <div className="english-text">Action</div>
+        </div>
+      ),
+      align: "center",
+      render: (item, data, index) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<MdEdit />}
+            onClick={() => onClickEdit(data, index)}
+          />
+          <Button
+            type="primary"
+            danger
+            icon={<MdDelete />}
+            onClick={() => onClickDelete(data, index)}
+          />
+        </Space>
+      ),
+    },
+  ]}
+/>
+
     </MainPage>
   );
 }

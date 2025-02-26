@@ -167,53 +167,123 @@ const {
 //     logError("product.getList", error, res);
 //   }
 // };
+// exports.getList = async (req, res) => {
+//   try {
+//     var { txt_search, category_id, brand, page, is_list_all } = req.query;
+//     const pageSize = 2; // fix
+//     page = Number(page); // 1,2,3,4 from client
+//     const offset = (page - 1) * pageSize; // find
+
+//     var sqlSelect = "SELECT p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, p.description, p.qty, p.unit_price, p.discount, p.status, p.image, p.create_by, p.create_at, p.unit, c.name AS category_name, ";
+//     sqlSelect += "(p.qty * p.unit_price) AS original_price, ";
+//     sqlSelect += "(p.qty * p.unit_price) * (1 - p.discount / 100) AS total_price ";
+
+//     var sqlJoin = " FROM product p INNER JOIN category c ON p.category_id = c.id  ";
+//     var sqlWhere = " WHERE true ";
+
+//     if (txt_search) {
+//       sqlWhere += " AND (p.name LIKE :txt_search OR p.barcode = :barcode) ";
+//     }
+//     if (category_id) {
+//       sqlWhere += " AND p.category_id = :category_id";
+//     }
+//     if (brand) {
+//       sqlWhere += " AND p.brand = :brand";
+//     }
+//     // if (company_name) {
+//     //   sqlWhere += " AND p.company_name = :company_name";
+//     // }
+
+//     var sqlLimit = " LIMIT " + pageSize + " OFFSET " + offset;
+//     if (is_list_all) {
+//       sqlLimit = "";
+//     }
+
+//     var sqlList = sqlSelect + sqlJoin + sqlWhere + sqlLimit;
+//     var sqlparam = {
+//       txt_search: "%" + txt_search + "%",
+//       barcode: txt_search,
+//       category_id,
+//       brand,
+//     };
+
+//     const [list] = await db.query(sqlList, sqlparam);
+
+//     var dataCount = 0;
+//     if (page == 1) {
+//       let sqlTotal = " SELECT COUNT(p.id) as total " + sqlJoin + sqlWhere;
+//       var [dataCount] = await db.query(sqlTotal, sqlparam);
+//       dataCount = dataCount[0].total;
+//     }
+
+//     console.log(list); // Log the response to check if `name` is present
+
+//     res.json({
+//       list: list,
+//       total: dataCount,
+//     });
+//   } catch (error) {
+//     logError("product.getList", error, res);
+//   }
+// };
+
+
 exports.getList = async (req, res) => {
   try {
-    var { txt_search, category_id, brand, page, is_list_all } = req.query;
-    const pageSize = 2; // fix
-    page = Number(page); // 1,2,3,4 from client
-    const offset = (page - 1) * pageSize; // find
+    var { txt_search, category_id, brand, page, is_list_all, user_id } = req.query;
+    const pageSize = 2; // Fixed page size
+    page = Number(page); // Convert page to number
+    const offset = (page - 1) * pageSize; // Calculate offset for pagination
 
-    var sqlSelect = "SELECT p.id, p.name, p.category_id, p.barcode, p.brand, p.description, p.qty, p.unit_price, p.discount, p.status, p.image, p.create_by, p.create_at, p.unit, c.name AS category_name, ";
-    sqlSelect += "(p.qty * p.unit_price) AS original_price, ";
-    sqlSelect += "(p.qty * p.unit_price) * (1 - p.discount / 100) AS total_price ";
+    var sqlSelect = `
+      SELECT 
+        p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
+        p.description, p.qty, p.unit_price, p.discount, p.status, p.image, 
+        p.create_by, p.create_at, p.unit, 
+        c.name AS category_name,
+        (p.qty * p.unit_price) AS original_price,
+        (p.qty * p.unit_price) * (1 - p.discount / 100) AS total_price
+    `;
 
-    var sqlJoin = " FROM product p INNER JOIN category c ON p.category_id = c.id  ";
-    var sqlWhere = " WHERE true ";
+    var sqlJoin = ` FROM product p INNER JOIN category c ON p.category_id = c.id `;
+    var sqlWhere = ` WHERE true `;
 
+    // Apply filters based on query parameters
     if (txt_search) {
-      sqlWhere += " AND (p.name LIKE :txt_search OR p.barcode = :barcode) ";
+      sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode) `;
     }
     if (category_id) {
-      sqlWhere += " AND p.category_id = :category_id";
+      sqlWhere += ` AND p.category_id = :category_id`;
     }
     if (brand) {
-      sqlWhere += " AND p.brand = :brand";
+      sqlWhere += ` AND p.brand = :brand`;
+    }
+    if (user_id) {
+      sqlWhere += ` AND p.user_id = :user_id`; // Filter by user ID
     }
 
-    var sqlLimit = " LIMIT " + pageSize + " OFFSET " + offset;
+    var sqlLimit = ` LIMIT ${pageSize} OFFSET ${offset}`;
     if (is_list_all) {
-      sqlLimit = "";
+      sqlLimit = ``;
     }
 
     var sqlList = sqlSelect + sqlJoin + sqlWhere + sqlLimit;
     var sqlparam = {
-      txt_search: "%" + txt_search + "%",
+      txt_search: `%${txt_search}%`,
       barcode: txt_search,
       category_id,
       brand,
+      user_id, // Add user_id to SQL parameters
     };
 
     const [list] = await db.query(sqlList, sqlparam);
 
     var dataCount = 0;
-    if (page == 1) {
-      let sqlTotal = " SELECT COUNT(p.id) as total " + sqlJoin + sqlWhere;
+    if (page === 1) {
+      let sqlTotal = ` SELECT COUNT(p.id) as total ` + sqlJoin + sqlWhere;
       var [dataCount] = await db.query(sqlTotal, sqlparam);
       dataCount = dataCount[0].total;
     }
-
-    console.log(list); // Log the response to check if `name` is present
 
     res.json({
       list: list,
@@ -223,6 +293,7 @@ exports.getList = async (req, res) => {
     logError("product.getList", error, res);
   }
 };
+
 
 // exports.create = async (req, res) => {
 //   try {
@@ -247,20 +318,21 @@ exports.getList = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     // Extract values from request body
-    const { name, category_id, barcode, brand, description, qty, unit, unit_price, discount, status } = req.body;
+    const { name, category_id, barcode, brand,company_name, description, qty, unit, unit_price, discount, status } = req.body;
 
     // Calculate total price before inserting into the database
     // const price = unit_price * qty; // price = unit_price * quantity
 
     var sql =
-      " INSERT INTO product (name, category_id, barcode, brand, description, qty, unit, unit_price, discount, status, create_by) " +
-      " VALUES (:name, :category_id, :barcode, :brand, :description, :qty, :unit, :unit_price, :discount, :status, :create_by) ";
+      " INSERT INTO product (name, category_id, barcode, brand,company_name, description, qty, unit, unit_price, discount, status, create_by) " +
+      " VALUES (:name, :category_id, :barcode, :brand,:company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by) ";
 
     var [data] = await db.query(sql, {
       name,
       category_id,
       barcode,
       brand,
+      company_name,
       description,
       qty,
       unit,
@@ -288,6 +360,7 @@ exports.update = async (req, res) => {
       " name = :name, " +
       " category_id = :category_id, " +
       " brand = :brand, " +
+      " company_name = :company_name, " +
       " description = :description, " +
       " qty = :qty, " +
       " unit = :unit, " +

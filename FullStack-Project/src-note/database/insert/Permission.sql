@@ -408,3 +408,42 @@ SELECT
 FROM `order` o
 JOIN `customer` c ON o.customer_id = c.id
 WHERE o.total_due > 0;
+
+
+
+CREATE TABLE user_stock (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    qty INT DEFAULT 0,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (product_id) REFERENCES product(id)
+);
+
+ALTER TABLE user_stock
+ADD COLUMN category_id INT NOT NULL,
+ADD COLUMN barcode VARCHAR(255),
+ADD COLUMN brand VARCHAR(255),
+ADD COLUMN description TEXT,
+ADD COLUMN price DECIMAL(10, 2) DEFAULT 0.00,
+ADD COLUMN discount DECIMAL(5, 2) DEFAULT 0.00,
+ADD COLUMN status ENUM('active', 'inactive') DEFAULT 'active',
+ADD COLUMN image VARCHAR(255),
+ADD COLUMN create_by VARCHAR(255),
+ADD COLUMN create_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN unit VARCHAR(50),
+ADD COLUMN unit_price4 DECIMAL(10, 2) DEFAULT 0.00,
+ADD CONSTRAINT fk_user_stock_category
+    FOREIGN KEY (category_id) REFERENCES category(id)
+    ON DELETE CASCADE,
+ADD CONSTRAINT fk_user_stock_user
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE,
+ADD CONSTRAINT fk_user_stock_product
+    FOREIGN KEY (product_id) REFERENCES product(id)
+    ON DELETE CASCADE;
+
+
+
+
