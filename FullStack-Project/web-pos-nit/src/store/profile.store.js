@@ -39,3 +39,28 @@ export const getPermission = () => {
     return null;
   }
 };
+
+
+export const setUserId = (id) => {
+  localStorage.setItem("user_id", id);
+};
+
+export const getUserId = () => {
+  const userId = localStorage.getItem("user_id");
+  return userId ? Number(userId) : null;
+};
+
+// After successful login
+// export const login = async (values) => {
+//   const res = await request("auth/login", "post", values);
+//   if (res && res.success) {
+//     setAuth({
+//       userId: res.data.userId, // Store the user_id
+//       token: res.data.token,
+//     });
+//     localStorage.setItem("auth", JSON.stringify({ userId: res.data.userId, token: res.data.token }));
+//     message.success("Login successful");
+//   } else {
+//     message.error(res?.message || "Login failed");
+//   }
+// };

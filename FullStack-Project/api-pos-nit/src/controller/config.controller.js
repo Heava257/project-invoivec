@@ -14,10 +14,15 @@ exports.getList = async (req, res) => {
     );
     const [user] = await db.query(
       `SELECT 
-          CONCAT(name, ' (U', id, ') ', address) AS label, 
-          id AS value 
+          id AS value, 
+          CONCAT(name, ' - ', branch_name, ' - ', address, ' - ', tel) AS label 
        FROM user`
     );
+    
+    // console.log(user); // 🔥 Debugging: ចេញ Console log ទិន្នន័យ
+    
+    
+    
     
     const [role] = await db.query("select id,name,code from role");
     const [supplier] = await db.query("select id,name,code from supplier");

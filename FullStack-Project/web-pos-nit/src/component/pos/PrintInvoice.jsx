@@ -203,14 +203,14 @@
 //       {/* Invoice Details */}
 //       <div className="grid grid-cols-2 gap-4 mb-8">
 //         <div>
-//           <p className="mb-1">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
+//           <p className="khmer-text">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
 //           <p>អាសយដ្ឋាន: ក្រុងភ្នំពេញ</p>
 //         </div>
 //         <div className="text-right">
-//           <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
-//           <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
-//           <p className="mb-1">Customer ID: {objSummary.customer_id || 'N/A'}</p>
-//           <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
+//           <p className="khmer-text">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
+//           <p className="khmer-text">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
+//           <p className="khmer-text">Customer ID: {objSummary.customer_id || 'N/A'}</p>
+//           <p className="khmer-text">Payment Method: {objSummary.payment_method || 'N/A'}</p>
 //           {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
 //         </div>
 //       </div>
@@ -367,16 +367,16 @@
 //       {/* Invoice Details */}
 //       <div className="grid grid-cols-2 gap-4 mb-8">
 //         <div>
-//           <p className="mb-1">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
+//           <p className="khmer-text">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
 //           <p>អាសយដ្ឋាន: ក្រុងភ្នំពេញ</p>
 //         </div>
 //         <div className="text-right">
-//           <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
-//           <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
-//           <p className="mb-1">Customer Name: {objSummary.customer_name || 'N/A'}</p>
+//           <p className="khmer-text">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
+//           <p className="khmer-text">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
+//           <p className="khmer-text">Customer Name: {objSummary.customer_name || 'N/A'}</p>
 
 
-//           <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
+//           <p className="khmer-text">Payment Method: {objSummary.payment_method || 'N/A'}</p>
 //           {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
 //         </div>
 //       </div>
@@ -471,8 +471,11 @@
 import React from "react";
 import logo from "../../assets/petronas.png";
 import "./fonts.css"; // Import the CSS file
+import { getProfile } from "../../store/profile.store";
 
 const PrintInvoice = React.forwardRef((props, ref) => {
+    const profile = getProfile();
+  
   const { objSummary = {
     sub_total: 0,
     total_qty: 0,
@@ -481,6 +484,7 @@ const PrintInvoice = React.forwardRef((props, ref) => {
     total: 0,
     total_paid: 0,
     customer_id: null,
+    user_id: null,
     payment_method: null,
     remark: null,
     order_no: null,
@@ -526,22 +530,28 @@ const PrintInvoice = React.forwardRef((props, ref) => {
         </div>
 
         <div className="text-right">
-          <h2 className="text-2xl font-bold text-white mb-2">វិក្កយបត្រ</h2>
-          <h2 className="text-xl text-white">INVOICE</h2>
+          <h2 className="text-2xl font-bold text-white mb-2 khmer-text">វិក្កយបត្រ</h2>
+          <h2 className="text-xl text-white khmer-text" >INVOICE</h2>
         </div>
       </div>
 
       {/* Invoice Details */}
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div>
-          <p className="mb-1">លេខទូរស័ព្ទ: 093 82 22 82 / 099 82 22 82</p>
-          <p>អាសយដ្ឋាន: ក្រុងភ្នំពេញ</p>
+          <p className="khmer-text">លេខទូរស័ព្ទ: {profile?.tel || 'N/A'}</p>
+          <p className="khmer-text">ទីតាំង: {profile?.branch_name || 'N/A'}</p>
+          <p className="khmer-text">អាសយដ្ឋាន: {profile?.address  || 'N/A'}</p>
+          {/* <p className="khmer-text">គោលដៅ: {objSummary?.user_address  || 'N/A'}</p>
+           */}
+          <p className="khmer-text">គោលដៅ: {objSummary.user_name || 'N/A'}</p>
+
         </div>
+
         <div className="text-right">
-          <p className="mb-1">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
-          <p className="mb-1">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
-          <p className="mb-1">Customer Name: {objSummary.customer_name || 'N/A'}</p>
-          <p className="mb-1">Payment Method: {objSummary.payment_method || 'N/A'}</p>
+          <p className="khmer-text">លេខវិក្កយបត្រ: {objSummary.order_no}</p>
+          <p className="khmer-text">ថ្ងៃចេញវិក្កយបត្រ: {formatDate(objSummary.order_date)}</p>
+          <p className="khmer-text">Customer Name: {objSummary.customer_name || 'N/A'}</p>
+          <p className="khmer-text">Payment Method: {objSummary.payment_method || 'N/A'}</p>
           {objSummary.remark && <p>Remark: {objSummary.remark}</p>}
         </div>
       </div>
@@ -551,11 +561,11 @@ const PrintInvoice = React.forwardRef((props, ref) => {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border p-2 w-1/12 text-left">No / លេខ</th>
-              <th className="border p-2 w-5/12 text-left">Description / ការពិពណ៌នា</th>
-              <th className="border p-2 w-2/12 text-center">Quantity / បរិមាណ</th>
-              <th className="border p-2 w-2/12 text-right">Unit Price / តម្លៃ​រាយ</th>
-              <th className="border p-2 w-2/12 text-right">Amount / តម្លៃ​សរុប</th>
+              <th className="border p-2 w-1/12 text-left khmer-text">No / លេខ</th>
+              <th className="border p-2 w-5/12 text-left khmer-text">Description / ការពិពណ៌នា</th>
+              <th className="border p-2 w-2/12 text-center khmer-text">Quantity / បរិមាណ</th>
+              <th className="border p-2 w-2/12 text-right khmer-text">Unit Price / តម្លៃ​រាយ</th>
+              <th className="border p-2 w-2/12 text-right khmer-text">Amount / តម្លៃ​សរុប</th>
             </tr>
           </thead>
 
@@ -573,18 +583,18 @@ const PrintInvoice = React.forwardRef((props, ref) => {
           <tbody>
             {cart_list.map((item, index) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="border p-2 text-center">{index + 1}</td>
-                <td className="border p-2">{item.name} <br /></td>
-                <td className="border p-2 text-center">{item.cart_qty} <span className="text-gray-500 text-sm">{item.unit }</span></td>
-                <td className="border p-2 text-right">$ {formatNumber(item.unit_price)}</td>
-                <td className="border p-2 text-right font-bold">$ {formatNumber(item.cart_qty * item.unit_price)}</td>
+                <td className="border p-2 text-center khmer-text">{index + 1}</td>
+                <td className="border p-2 khmer-text" >{item.name} <br /></td>
+                <td className="border p-2 text-center khmer-text">{item.cart_qty} <span className="text-gray-500 text-sm">{item.unit}</span></td>
+                <td className="border p-2 text-right khmer-text">$ {formatNumber(item.unit_price)}</td>
+                <td className="border p-2 text-right font-bold khmer-text">$ {formatNumber(item.cart_qty * item.unit_price)}</td>
               </tr>
             ))}
 
             {/* Total Row */}
             <tr className="bg-gray-200 font-bold">
-              <td className="border p-2 text-center" colSpan={4}>Total / សរុប</td>
-              <td className="border p-2 text-right">$ {formatNumber(cart_list.reduce((sum, item) => sum + item.cart_qty * item.unit_price, 0))}</td>
+              <td className="border p-2 text-center khmer-text" colSpan={4}>Total / សរុប</td>
+              <td className="border p-2 text-right khmer-text">$ {formatNumber(cart_list.reduce((sum, item) => sum + item.cart_qty * item.unit_price, 0))}</td>
             </tr>
           </tbody>
 
@@ -593,32 +603,32 @@ const PrintInvoice = React.forwardRef((props, ref) => {
 
       {/* Summary */}
       <div className="w-64 ml-auto space-y-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between khmer-text">
           <span>Subtotal:</span>
           <span>$ {formatNumber(objSummary.sub_total)}</span>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between khmer-text">
           <span>Total Qty:</span>
-          <span>{objSummary.total_qty || 0} PCS</span>
+          <span>{objSummary.total_qty || 0} liter</span>
         </div>
         {parseFloat(objSummary.save_discount) > 0 && (
-          <div className="flex justify-between">
+          <div className="flex justify-between khmer-text">
             <span>Discount:</span>
             <span>$ {formatNumber(objSummary.save_discount)}</span>
           </div>
         )}
         {parseFloat(objSummary.tax) > 0 && (
-          <div className="flex justify-between">
+          <div className="flex justify-between khmer-text">
             <span>Tax ({formatNumber(objSummary.tax)}%):</span>
             <span>$ {formatNumber(calculateTax())}</span>
           </div>
         )}
-        <div className="flex justify-between font-bold pt-2 border-t">
+        <div className="flex justify-between font-bold pt-2 border-t khmer-text">
           <span>Total:</span>
           <span>$ {formatNumber(objSummary.total)}</span>
         </div>
         {parseFloat(objSummary.total_paid) > 0 && (
-          <div className="flex justify-between text-green-600">
+          <div className="flex justify-between text-green-600 khmer-text">
             <span>Paid Amount:</span>
             <span>$ {formatNumber(objSummary.total_paid)}</span>
           </div>
@@ -627,27 +637,29 @@ const PrintInvoice = React.forwardRef((props, ref) => {
 
       {/* Footer */}
       <div className="grid grid-cols-2 gap-4 mt-8">
-        <div>
-          <p className="font-bold mb-2">អតិថិជន</p>
-          <p>Customer:</p>
+        <div className="mt-20 mb-10">  {/* Increase space above and below */}
+          <p className="font-bold mb-4 khmer-text">អតិថិជន</p>  {/* More space below this text */}
+          <p className="mb-8 khmer-text">Customer:</p>  {/* Add space below */}
 
-
-          <p className="mt-12 mb-4">ហត្ថលេខា</p>
-          <p>Date: ....../....../.....</p>
+          {/* Space for signature */}
+          <p className="mt-24 mb-6 khmer-text">ហត្ថលេខា</p>  {/* Increased space for signature */}
+          <p className="mt-4 khmer-text">Date: ....../....../.....</p>
         </div>
-        <div className="text-right mt-8 mb-8">  {/* Add space above and below */}
-          <p className="font-bold mb-2">គណនេយ្យករ</p>
-          <p>Accountant:</p>
 
-          {/* Add space for signature */}
-          <p className="mt-12 mb-4">ហត្ថលេខា</p>
+        <div className="text-right mt-20 mb-10 khmer-text">  {/* Increase space above and below */}
+          <p className="font-bold mb-4 khmer-text">គណនេយ្យករ</p>  {/* More space under this text */}
+          <p className="mb-8 khmer-text">Accountant:</p>  {/* Add space below */}
+
+          {/* Space for signature */}
+          <p className="mt-24 mb-6 khmer-text">ហត្ថលេខា</p>  {/* Increased space for signature */}
           <p>Date: {formatDate(objSummary.order_date)}</p>
         </div>
+
 
       </div>
 
       {/* Contact */}
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 khmer-text">
         <p>ទំនាក់ទំនងផ្នែកបច្ចេកទេស: +855 67 733 335 / +855 76 5555 713</p>
       </div>
     </div>

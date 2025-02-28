@@ -36,7 +36,7 @@ INSERT INTO user_roles (user_id,role_id) VALUES
 INSERT INTO permission	(name ,	`group`	,is_menu_web,	web_route_key	) VALUES
 
 ("dashboard.getlist","dashboard",1,"/"),
-("pos.getlist","pos",1,"/pos"),
+("invoices.getlist","invoices",1,"/invoices"),
 
 ("customer.getlist","customer",1,"/customer"),
 ("customer.getone","customer",NULL,NULL),

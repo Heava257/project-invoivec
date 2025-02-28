@@ -2,14 +2,118 @@ const { db, isArray, isEmpty, logError } = require("../util/helper");
 
 
 
+// exports.getList = async (req, res) => {
+//   try {
+
+//     var from_date = req.query.from_date;
+//     var to_date = req.query.to_date;
+//     var txtSearch = req.query.txtSearch;
+//     var sqlSelect = "SELECT o.*, c.name AS customer_name, c.tel AS customer_tel, c.address AS customer_address ";
+//     var sqlJoin = " FROM `order` o LEFT JOIN customer c ON o.customer_id = c.id ";
+//     var sqlWhere = " WHERE true "; // Ensure spacing
+
+//     if (!isEmpty(from_date) && isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') >= :from_date `;
+//     } else if (!isEmpty(from_date) && !isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') BETWEEN :from_date AND :to_date `;
+//     } else if (isEmpty(from_date) && !isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') <= :to_date `;
+//     }
+
+
+//     const sqlParams = {
+//       txtSearch: "%" + txtSearch + "%",
+//       from_date: from_date,
+//       to_date: to_date
+//     };
+//     if (!isEmpty(txtSearch)) {
+//       sqlWhere += " AND o.order_no LIKE :txtSearch "; // Use `?` for parameterized queries
+
+
+//     }
+
+//     var sqlList = sqlSelect + sqlJoin + sqlWhere;
+//     var sqlSummary = "SELECT COUNT(o.id) AS total_order, COALESCE(SUM(o.total_amount), 0) AS total_amount " + sqlJoin + sqlWhere;
+
+//     // Execute queries
+//     const [list] = await db.query(sqlList, sqlParams);
+//     const [summaryArray] = await db.query(sqlSummary, sqlParams);
+
+//     // Extract first item from summary array
+//     const summary = summaryArray?.[0] || { total_order: 0, total_amount: 0 };
+
+//     // Return JSON response
+//     res.json({
+//       list: list,
+//       summary: summary, // Ensure summary is an object, not an array
+//     });
+//   } catch (error) {
+//     logError("order.getList", error, res);
+//   }
+// };
+// exports.getList = async (req, res) => {
+//   try {
+//     var from_date = req.query.from_date;
+//     var to_date = req.query.to_date;
+//     var txtSearch = req.query.txtSearch;
+    
+//     var sqlSelect = "SELECT o.*, c.name AS customer_name, c.tel AS customer_tel, c.address AS customer_address ";
+//     var sqlJoin = " FROM `order` o LEFT JOIN customer c ON o.customer_id = c.id ";
+//     var sqlWhere = " WHERE true "; // Ensure spacing
+
+//     if (!isEmpty(from_date) && isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') >= :from_date `;
+//     } else if (!isEmpty(from_date) && !isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') BETWEEN :from_date AND :to_date `;
+//     } else if (isEmpty(from_date) && !isEmpty(to_date)) {
+//       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') <= :to_date `;
+//     }
+
+//     const sqlParams = {
+//       txtSearch: "%" + txtSearch + "%",
+//       from_date: from_date,
+//       to_date: to_date
+//     };
+
+//     if (!isEmpty(txtSearch)) {
+//       sqlWhere += " AND o.order_no LIKE :txtSearch ";
+//     }
+
+//     // Append ORDER BY to sort by create_at in descending order
+//     var sqlList = sqlSelect + sqlJoin + sqlWhere + " ORDER BY o.create_at DESC";
+//     var sqlSummary = "SELECT COUNT(o.id) AS total_order, COALESCE(SUM(o.total_amount), 0) AS total_amount " 
+//       + sqlJoin + sqlWhere; // No need for ORDER BY in summary queries
+
+//     // Execute queries
+//     const [list] = await db.query(sqlList, sqlParams);
+//     const [summaryArray] = await db.query(sqlSummary, sqlParams);
+
+//     // Extract first item from summary array
+//     const summary = summaryArray?.[0] || { total_order: 0, total_amount: 0 };
+
+//     // Return JSON response
+//     res.json({
+//       list: list,
+//       summary: summary, // Ensure summary is an object, not an array
+//     });
+//   } catch (error) {
+//     logError("order.getList", error, res);
+//   }
+// };
 exports.getList = async (req, res) => {
   try {
-
     var from_date = req.query.from_date;
     var to_date = req.query.to_date;
     var txtSearch = req.query.txtSearch;
-    var sqlSelect = "SELECT o.*, c.name AS customer_name, c.tel AS customer_tel, c.address AS customer_address ";
-    var sqlJoin = " FROM `order` o LEFT JOIN customer c ON o.customer_id = c.id ";
+    var user_id = req.query.user_id;
+
+    var sqlSelect = `
+      SELECT o.*, c.name AS customer_name, c.tel AS customer_tel, c.address AS customer_address 
+    `;
+    var sqlJoin = `
+      FROM \`order\` o 
+      LEFT JOIN customer c ON o.customer_id = c.id 
+    `;
     var sqlWhere = " WHERE true "; // Ensure spacing
 
     if (!isEmpty(from_date) && isEmpty(to_date)) {
@@ -20,37 +124,41 @@ exports.getList = async (req, res) => {
       sqlWhere += ` AND DATE_FORMAT(o.create_at, '%Y-%m-%d') <= :to_date `;
     }
 
+    if (!isEmpty(txtSearch)) {
+      sqlWhere += " AND o.order_no LIKE :txtSearch ";
+    }
+
+    if (!isEmpty(user_id)) {
+      sqlWhere += " AND o.user_id = :user_id ";
+    }
 
     const sqlParams = {
       txtSearch: "%" + txtSearch + "%",
       from_date: from_date,
-      to_date: to_date
+      to_date: to_date,
+      user_id: user_id,
     };
-    if (!isEmpty(txtSearch)) {
-      sqlWhere += " AND o.order_no LIKE :txtSearch "; // Use `?` for parameterized queries
 
+    var sqlList = sqlSelect + sqlJoin + sqlWhere + " ORDER BY o.create_at DESC";
+    var sqlSummary = `
+      SELECT COUNT(o.id) AS total_order, COALESCE(SUM(o.total_amount), 0) AS total_amount 
+      ${sqlJoin} ${sqlWhere}
+    `;
 
-    }
-
-    var sqlList = sqlSelect + sqlJoin + sqlWhere;
-    var sqlSummary = "SELECT COUNT(o.id) AS total_order, COALESCE(SUM(o.total_amount), 0) AS total_amount " + sqlJoin + sqlWhere;
-
-    // Execute queries
     const [list] = await db.query(sqlList, sqlParams);
     const [summaryArray] = await db.query(sqlSummary, sqlParams);
 
-    // Extract first item from summary array
     const summary = summaryArray?.[0] || { total_order: 0, total_amount: 0 };
 
-    // Return JSON response
     res.json({
       list: list,
-      summary: summary, // Ensure summary is an object, not an array
+      summary: summary,
     });
   } catch (error) {
     logError("order.getList", error, res);
   }
 };
+
 
 exports.getone = async (req, res) => {
   try {

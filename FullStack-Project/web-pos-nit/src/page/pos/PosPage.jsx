@@ -466,6 +466,7 @@ import { useReactToPrint } from "react-to-print";
 import PrintInvoice from "../../component/pos/PrintInvoice";
 
 function PosPage() {
+  const [isDisabled, setIsDisabled] = useState(false);
   const { config } = configStore();
   const refInvoice = React.useRef(null);
   const [state, setState] = useState({
@@ -504,6 +505,21 @@ function PosPage() {
 
   useEffect(() => {
     getList();
+  }, []);
+  useEffect(() => {
+    const checkTime = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      // Disable button at 12:00 AM
+      setIsDisabled(hours === 0 && minutes === 0);
+    };
+
+    checkTime(); // Run on mount
+    const interval = setInterval(checkTime, 60000); // Check every 1 minute
+
+    return () => clearInterval(interval); // Cleanup interval
   }, []);
 
   const getList = async () => {
@@ -697,7 +713,7 @@ function PosPage() {
       order_details.push(objItem);
     });
     var param = {
-      
+
       order: {
         customer_id: objSummary.customer_id,
         user_id: objSummary.user_id,
@@ -883,7 +899,7 @@ function PosPage() {
       ),
     },
   ];
-  
+
 
   return (
     <MainPage loading={state.loading}>
@@ -928,15 +944,18 @@ function PosPage() {
               <Button onClick={onFilter} type="primary">
                 Search
               </Button>
+              <Button type="primary" onClick={handlePrintInvoice}>
+                  Print Invoice{" "}
+                </Button>
             </Space>
-            <Space>
+            {/* <Space>
               <Button onClick={handleExportExcel}>Export to Excel</Button>
               <Button onClick={handleSavePdf}>Save as PDF</Button>
               <Button onClick={handlePrint}>Print</Button>
               <Button type="primary" onClick={() => setState((p) => ({ ...p, visibleModal: true }))}>
                 New
               </Button>
-            </Space>
+            </Space> */}
           </div>
           <Table
             dataSource={uniqueProducts}
@@ -1001,7 +1020,7 @@ function PosPage() {
                   }}
                 />
               </Col>
-              
+
               <Col span={12}>
                 <Select
                   allowClear
@@ -1033,8 +1052,29 @@ function PosPage() {
                   }}
                 />
               </Col>
+              <Col span={24}>
+                <Select
+                  allowClear
+                  style={{ width: "100%" }}
+                  placeholder="Select location"
+                  options={config?.user} // Make sure `config?.user` contains `branch_name`
+                  onSelect={(value, option) => {
+                    console.log(option); // 🔥 Debugging: ពិនិត្យ `option`
+                    setObjSummary((prev) => ({
+                      ...prev,
+                      user_id: value,
+                      user_name: option.label,
+                      user_address: option.address || "",
+                      branch_name: option.branch_name || "", // ✅ Fix: avoid undefined error
+                      tel: option.tel || "",
+                    }));
+                  }}
+                />
 
-              <Col span={12}>
+
+              </Col>
+
+              <Col span={24}>
                 <Input.TextArea
                   placeholder="Remark"
                   onChange={(e) => {
@@ -1042,21 +1082,7 @@ function PosPage() {
                   }}
                 />
               </Col>
-              <Col span={12}>
-                <Select
-                  allowClear
-                  style={{ width: "100%" }}
-                  placeholder="Select User"
-                  options={config?.user}
-                  onSelect={(value, option) => { // `option` contains the full selected object
-                    setObjSummary((p) => ({
-                      ...p,
-                      user_id: value, // `value` is the selected ID
-                      user_name: option.label, // `option.label` is the customer name
-                    }));
-                  }}
-                />
-              </Col>
+              
             </Row>
 
             <Row gutter={[16, 16]} style={{ marginTop: 15 }}>
@@ -1071,8 +1097,9 @@ function PosPage() {
                 />
               </Col>
               <Col span={12}>
+               
                 <Button
-                  disabled={state.cart_list.length == 0}
+                  disabled={isDisabled || state.cart_list.length == 0}
                   block
                   type="primary"
                   onClick={handleClickOut}
@@ -1080,11 +1107,11 @@ function PosPage() {
                   Checkout{" "}
                 </Button>
               </Col>
-              <Col span={24}>
+              {/* <Col span={24}>
                 <Button type="primary" onClick={handlePrintInvoice}>
                   Print Invoice{" "}
                 </Button>
-              </Col>
+              </Col> */}
             </Row>
           </div>
         </Col>

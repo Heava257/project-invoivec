@@ -139,7 +139,7 @@ function UserPage() {
             <Input.Search style={{ marginLeft: 10 }} placeholder="Search" />
 
 
-            <div>
+            {/* <div>
               <Space>
                 <Select
                   allowClear
@@ -160,7 +160,7 @@ function UserPage() {
                   }}
                 />
               </Space>
-            </div>
+            </div> */}
           </Space>
         </div>
         <Button type="primary" onClick={handleOpenModal}>

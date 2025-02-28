@@ -135,28 +135,17 @@ function Total_DuePage() {
       key: "customer_name",
       title: (
         <div>
-          <div className="khmer-text">ឈ្មោះ</div>
-          <div className="english-text">Customer Name</div>
+          <div className="khmer-text">ឈ្មោះអ្នកជំពាក់</div>
+          <div className="english-text">User Name</div>
         </div>
       ),
-      dataIndex: "customer_name",
+      dataIndex: "customer_name", // Correct the key to 'customer_name' instead of 'user_name'
       render: (text) => (
         <div className="truncate-text" title={text || ""}>
           {text || "N/A"}
         </div>
       ),
     },
-    // {
-    //   key: "barcode",
-    //   title: (
-    //     <div>
-    //       <div className="khmer-text">លេខបាកូដ</div>
-    //       <div className="english-text">Barcode</div>
-    //     </div>
-    //   ),
-    //   dataIndex: "barcode",
-    //   render: (value) => <Tag color="blue">{value}</Tag>,
-    // },
     {
       key: "branch_name",
       title: (
@@ -180,7 +169,7 @@ function Total_DuePage() {
           <div className="english-text">Province</div>
         </div>
       ),
-      dataIndex: "province_name",
+      dataIndex: "province_name", // Ensure the column name corresponds to your data model
     },
     {
       key: "tel",
@@ -193,15 +182,15 @@ function Total_DuePage() {
       dataIndex: "tel",
     },
     {
-      key: "Order_Date",
+      key: "order_date",
       title: (
         <div>
           <div className="khmer-text">កាលបរិច្ឆេទកម្មវិធី</div>
           <div className="english-text">Order Date</div>
         </div>
       ),
-      dataIndex: "order_date",
-       render: (value) => formatDateClient(value, "DD/MM/YYYY H:m A"),
+      dataIndex: "order_date",  // Make sure this field exists in your data
+      render: (value) => formatDateClient(value, "DD/MM/YYYY H:m A"), // Use appropriate date formatting
     },
     {
       key: "total_due",
@@ -211,7 +200,7 @@ function Total_DuePage() {
           <div className="english-text">Total Due</div>
         </div>
       ),
-      dataIndex: "total_due",
+      dataIndex: "total_due", // Correct field name if needed
       render: (value) => (
         <Tag color="red">
           {formatCurrency(value)} {/* Assuming formatCurrency is a function to format values */}
@@ -228,32 +217,33 @@ function Total_DuePage() {
       ),
       dataIndex: "create_by",
     },
-     {
-                key: "Action",
-                title: (
-                  <div className="table-header">
-                    <div className="khmer-text">សកម្មភាព</div>
-                    <div className="english-text">Action</div>
-                  </div>
-                ),
-                align: "center",
-                render: (item, data, index) => (
-                  <Space>
-                    <Button
-                      type="primary"
-                      icon={<MdEdit />}
-                      onClick={() => onClickEdit(data, index)}
-                    />
-                    <Button
-                      type="primary"
-                      danger
-                      icon={<MdDelete />}
-                      onClick={() => onClickDelete(data, index)}
-                    />
-                  </Space>
-                ),
-              },
+    {
+      key: "Action",
+      title: (
+        <div className="table-header">
+          <div className="khmer-text">សកម្មភាព</div>
+          <div className="english-text">Action</div>
+        </div>
+      ),
+      align: "center",
+      render: (item, data, index) => (
+        <Space>
+          <Button
+            type="primary"
+            icon={<MdEdit />}
+            onClick={() => onClickEdit(data, index)}
+          />
+          <Button
+            type="primary"
+            danger
+            icon={<MdDelete />}
+            onClick={() => onClickDelete(data, index)}
+          />
+        </Space>
+      ),
+    },
   ]}
+  
 />
 
     </MainPage>

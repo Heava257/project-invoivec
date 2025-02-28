@@ -267,7 +267,7 @@ function ReportSale_Summary() {
         color={value > 1 ? "green" : value > 2 ? "blue" : "pink"}
         style={{ fontSize: "14px" }}
       >
-        {value} Pcs
+        {value} Liter
       </Tag>
       
       ),

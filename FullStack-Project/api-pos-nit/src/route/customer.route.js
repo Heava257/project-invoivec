@@ -6,7 +6,9 @@ const {
   remove,
 } = require("../controller/customer.controller");
 module.exports = (app) => {
-  app.get("/api/customer", validate_token(), getList);
+ // In your backend file (e.g., server.js or routes.js)
+app.get("/api/customer/:id",getList);
+
   app.post("/api/customer", validate_token(), create);
   app.put("/api/customer", validate_token(), update);
   app.delete("/api/customer", validate_token(), remove);

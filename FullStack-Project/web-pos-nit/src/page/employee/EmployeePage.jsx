@@ -8,13 +8,16 @@ import {
   Select,
   Space,
   Table,
-  Tag,
+  DatePicker,
+  Tag
 } from "antd";
 import { formatDateClient, request } from "../../util/helper";
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { MdDelete, MdEdit } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
+import dayjs from 'dayjs';
+
 function EmployeePage() {
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
@@ -22,10 +25,6 @@ function EmployeePage() {
   const [state, setState] = useState({
     visibleModal: false,
     id: null,
-    name: "",
-    descriptoin: "",
-    status: "",
-    parentId: null,
     txtSearch: "",
   });
 
@@ -35,7 +34,7 @@ function EmployeePage() {
 
   const getList = async () => {
     setLoading(true);
-    var param = {
+    const param = {
       txtSearch: state.txtSearch,
     };
     const res = await request("employee", "get", param);
@@ -44,45 +43,55 @@ function EmployeePage() {
       setList(res.list);
     }
   };
+
   const onClickEdit = (data) => {
     setState({
       ...state,
       visibleModal: true,
+      id: data.id,
     });
     formRef.setFieldsValue({
-      id: data.id, // hiden id (save? | update?)
+      id: data.id,
       name: data.name,
-      description: data.description,
+      gender: data.gender,
+      dob: data.dob ? dayjs(data.dob) : null,
+      position: data.position,
+      salary: data.salary,
+      tel: data.tel,
+      email: data.email,
+      address: data.address,
       status: data.status,
     });
-    //
-    // formRef.getFieldValue("id")
   };
+
   const onClickDelete = async (data) => {
     Modal.confirm({
-      title: "លុ​ប",
-      descriptoin: "Are you sure to remove?",
-      okText: "យល់ព្រម",
+      title: "Delete",
+      content: "Are you sure you want to remove this employee?",
+      okText: "Yes",
+      cancelText: "No",
       onOk: async () => {
         const res = await request("employee", "delete", {
           id: data.id,
         });
         if (res && !res.error) {
-          // getList(); // request to api response
-          // remove in local
           message.success(res.message);
-          const newList = list.filter((item) => item.id != data.id);
+          const newList = list.filter((item) => item.id !== data.id);
           setList(newList);
         }
       },
     });
   };
+
   const onClickAddBtn = () => {
     setState({
       ...state,
       visibleModal: true,
+      id: null,
     });
+    formRef.resetFields();
   };
+
   const onCloseModal = () => {
     formRef.resetFields();
     setState({
@@ -92,19 +101,21 @@ function EmployeePage() {
     });
   };
 
-  const onFinish = async (items) => {
-    var data = {
-      id: formRef.getFieldValue("id"),
-      name: items.name,
-      description: items.description,
-      status: items.status,
-      parent_id: 0,
+  const onFinish = async (values) => {
+    const data = {
+      id: state.id,
+      name: values.name,
+      gender: values.gender,
+      dob: values.dob ? values.dob.format("YYYY-MM-DD") : null,
+      position: values.position,
+      salary: values.salary,
+      tel: values.tel,
+      email: values.email,
+      address: values.address,
+      status: values.status,
     };
-    var method = "post";
-    if (formRef.getFieldValue("id")) {
-      // case update
-      method = "put";
-    }
+
+    const method = state.id ? "put" : "post";
     const res = await request("employee", method, data);
     if (res && !res.error) {
       message.success(res.message);
@@ -115,35 +126,30 @@ function EmployeePage() {
 
   const ExportToExcel = () => {
     const data = list.map((item) => ({
-        ...item,
-        gender: item.gender == 1 ? "Male" : "Female",
-        dob: formatDateClient(item.dob),
-        create_at: formatDateClient(item.create_at),
+      ...item,
+      gender: item.gender === 1 ? "Male" : "Female",
+      dob: formatDateClient(item.dob),
+      create_at: formatDateClient(item.create_at),
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Employee");
-
-    // Delay the file generation for 3 seconds (3000 milliseconds)
-    setTimeout(() => {
-        XLSX.writeFile(wb, "Employee_Data.xlsx");
-    }, 2000);
-};
-
+    XLSX.writeFile(wb, "Employee_Data.xlsx");
+  };
 
   return (
     <MainPage loading={loading}>
       <div className="pageHeader">
         <Space>
-          <div>Employee</div>
+          <div>Employee Management</div>
           <Input.Search
-            onChange={(value) =>
-              setState((p) => ({ ...p, txtSearch: value.target.value }))
+            onChange={(e) =>
+              setState((prev) => ({ ...prev, txtSearch: e.target.value }))
             }
             allowClear
             onSearch={getList}
-            placeholder="Search"
+            placeholder="Search by name"
           />
           <Button type="primary" onClick={getList}>
             Filter
@@ -156,110 +162,193 @@ function EmployeePage() {
           NEW
         </Button>
       </div>
+
       <Modal
         open={state.visibleModal}
-        title={formRef.getFieldValue("id") ? "Edit Employee" : "New Employee"}
+        title={state.id ? "Edit Employee" : "New Employee"}
         footer={null}
         onCancel={onCloseModal}
       >
         <Form layout="vertical" onFinish={onFinish} form={formRef}>
-          <Form.Item name={"name"} label="Employee name">
-            <Input placeholder="Input Employee name" />
+          <Form.Item name="id" hidden>
+            <Input />
           </Form.Item>
-          <Form.Item name={"description"} label="description">
-            <Input.TextArea placeholder="description" />
+
+          <Form.Item
+            name="name"
+            label="Name"
+            rules={[{ required: true, message: "Please input the employee name" }]}
+          >
+            <Input placeholder="Input employee name" />
           </Form.Item>
-          <Form.Item name={"status"} label="status">
+
+          <Form.Item
+            name="gender"
+            label="Gender"
+            rules={[{ required: true, message: "Please select gender" }]}
+          >
+            <Select
+              placeholder="Select gender"
+              options={[
+                { label: "Male", value: 1 },
+                { label: "Female", value: 0 },
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="dob"
+            label="Date of Birth"
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            name="position"
+            label="Position"
+            rules={[{ required: true, message: "Please input the position" }]}
+          >
+            <Input placeholder="Input position" />
+          </Form.Item>
+
+          <Form.Item
+            name="salary"
+            label="Salary"
+            rules={[{ required: true, message: "Please input the salary" }]}
+          >
+            <Input type="number" placeholder="Input salary" />
+          </Form.Item>
+
+          <Form.Item
+            name="tel"
+            label="Telephone"
+            rules={[{ required: true, message: "Please input the telephone number" }]}
+          >
+            <Input placeholder="Input telephone number" />
+          </Form.Item>
+
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ type: "email", message: "Please input a valid email" }]}
+          >
+            <Input placeholder="Input email" />
+          </Form.Item>
+
+          <Form.Item
+            name="address"
+            label="Address"
+          >
+            <Input.TextArea placeholder="Input address" />
+          </Form.Item>
+
+          <Form.Item
+            name="status"
+            label="Status"
+            rules={[{ required: true, message: "Please select status" }]}
+          >
             <Select
               placeholder="Select status"
               options={[
-                {
-                  label: "Active",
-                  value: 1,
-                },
-                {
-                  label: "InActive",
-                  value: 0,
-                },
+                { label: "Active", value: 1 },
+                { label: "Inactive", value: 0 },
               ]}
             />
           </Form.Item>
 
           <Space>
-            <Button>Cancel</Button>
+            <Button onClick={onCloseModal}>Cancel</Button>
             <Button type="primary" htmlType="submit">
-              {formRef.getFieldValue("id") ? "Update" : "Save"}
+              {state.id ? "Update" : "Save"}
             </Button>
           </Space>
         </Form>
       </Modal>
+
       <Table
         dataSource={list}
         columns={[
           {
-            key: "No",
+            key: "no",
             title: "No",
-            render: (item, data, index) => index + 1,
+            render: (_, __, index) => index + 1,
           },
           {
-            key: "firstname",
+            key: "name",
             title: "Name",
             dataIndex: "name",
+            sorter: (a, b) => a.name.localeCompare(b.name),
           },
-          
           {
             key: "gender",
-            title: "gender",
+            title: "Gender",
             dataIndex: "gender",
-            render: (value) => (value ? "Male" : "Female"),
+            render: (value) => (value === 1 ? "Male" : "Female"),
+          },
+          {
+            key: "dob",
+            title: "Date of Birth",
+            dataIndex: "dob",
+            render: (value) => formatDateClient(value),
+          },
+          {
+            key: "position",
+            title: "Position",
+            dataIndex: "position",
+          },
+          {
+            key: "salary",
+            title: "Salary",
+            dataIndex: "salary",
+            render: (value) => `$${value}`,
           },
           {
             key: "tel",
-            title: "tel",
+            title: "Telephone",
             dataIndex: "tel",
           },
           {
             key: "email",
-            title: "email",
+            title: "Email",
             dataIndex: "email",
           },
           {
             key: "address",
-            title: "address",
+            title: "Address",
             dataIndex: "address",
           },
           {
-            key: "position",
-            title: "position",
-            dataIndex: "position",
+            key: "status",
+            title: "Status",
+            dataIndex: "status",
+            render: (value) => (
+              <Tag color={value === 1 ? "green" : "red"}>
+                {value === 1 ? "Active" : "Inactive"}
+              </Tag>
+            ),
           },
           {
-            key: "create_at",
-            title: "create_at",
-            dataIndex: "create_at",
-            render: (value) => formatDateClient(value),
-          },
-          {
-            key: "Action",
+            key: "action",
             title: "Action",
             align: "center",
-            render: (item, data, index) => (
+            render: (_, record) => (
               <Space>
                 <Button
                   type="primary"
                   icon={<MdEdit />}
-                  onClick={() => onClickEdit(data, index)}
+                  onClick={() => onClickEdit(record)}
                 />
                 <Button
                   type="primary"
                   danger
                   icon={<MdDelete />}
-                  onClick={() => onClickDelete(data, index)}
+                  onClick={() => onClickDelete(record)}
                 />
               </Space>
             ),
           },
         ]}
+        pagination={{ pageSize: 10 }}
       />
     </MainPage>
   );

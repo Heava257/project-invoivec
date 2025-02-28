@@ -38,6 +38,7 @@ function Stock_UserPage() {
     txt_search: "",
     category_id: "",
     brand: "",
+    user_id: "", // Add user_id to the filter state
   });
 
   useEffect(() => {
@@ -48,33 +49,29 @@ function Stock_UserPage() {
     var param = {
       ...filter,
       page: refPage.current,
+      user_id: filter.user_id, // Ensure user_id is included
     };
     setState((pre) => ({ ...pre, loading: true }));
-    const res = await request("stockUser", "get", param);
+    
+
+    const res = await request(`stockUser?user_id=${user_id}`, "get");
+
+    
+  
     if (res && !res.error) {
       setState((pre) => ({
         ...pre,
         list: res.list,
-        total: refPage.current == 1 ? res.total : pre.total,
+        total: refPage.current === 1 ? res.total : pre.total,
         loading: false,
       }));
     }
   };
-
-
-
-
-
-
-
+  
 
   const onFilter = () => {
     getList();
   };
-
-  
-
-  
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -128,6 +125,15 @@ function Stock_UserPage() {
             options={config.brand}
             onChange={(id) => {
               setFilter((pre) => ({ ...pre, brand: id }));
+            }}
+          />
+          <Select
+            allowClear
+            style={{ width: 160 }}
+            placeholder="User"
+            options={config.users} // Assuming config.users contains the list of users
+            onChange={(id) => {
+              setFilter((pre) => ({ ...pre, user_id: id }));
             }}
           />
           <Button onClick={onFilter} type="primary">

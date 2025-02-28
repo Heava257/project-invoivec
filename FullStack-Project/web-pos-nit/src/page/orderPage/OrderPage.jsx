@@ -17,13 +17,18 @@ import { formatDateClient, formatDateServer, request } from "../../util/helper";
 import MainPage from "../../component/layout/MainPage";
 import Style from "../../page/orderPage/OrderPage.module.css"
 import { Config } from "../../util/config";
+import { configStore } from "../../store/configStore";
+
 import dayjs from "dayjs";
 // import { formartDateClient } from "../../../../api-pos-nit/src/util/helper";
 function OrderPage() {
+    const { config } = configStore();
+  
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
 
   const [orderDetail, seOrderDetail] = useState([]);
+  
 
   const [summary, setSummary] = useState({ total_amount: 0, total_order: 0 });
 
@@ -36,12 +41,17 @@ function OrderPage() {
     status: "",
     parentId: null,
     txtSearch: "",
+    user_id: "",
+
 
   });
 
   const [filter, setFilter] = useState({
     from_date: dayjs(),  // Default to the current date (you can adjust this)
-    to_date: dayjs(),    // Default to the current date (you can adjust this)
+    to_date: dayjs(),
+    // txt_search: "",
+    user_id: "",
+    // brand: "",    // Default to the current date (you can adjust this)
   });
 
   useEffect(() => {
@@ -58,7 +68,8 @@ function OrderPage() {
       const param = {
         txtSearch: state.txtSearch,
         from_date: formatDateServer(filter.from_date),  // Ensure the date is in the correct format
-        to_date: formatDateServer(filter.to_date),      // Ensure the date is in the correct format
+        to_date: formatDateServer(filter.to_date),  
+        user_id:filter.user_id    // Ensure the date is in the correct format
       };
   
       // Send the request and wait for the response
@@ -207,7 +218,23 @@ function OrderPage() {
             }}
 
             
-          />
+          /> 
+           <Select style={{width:300}}
+                    allowClear
+                    placeholder="Select User"
+                    value={filter.user_id}
+                    options={config?.user}
+                    onChange={(value) => {
+                      setFilter((prev) => ({
+                        ...prev,
+                        user_id : value
+                        // Update to_date in the filter
+                       
+                      }));
+                      
+                    }}
+                    
+                    />
           
           <Button type="primary" onClick={getList}>
             Filter

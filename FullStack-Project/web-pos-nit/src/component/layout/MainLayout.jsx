@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
-import {
-  DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  SmileOutlined,
-  TeamOutlined,
-  UserOutlined,
-  ShoppingCartOutlined,
-  DollarOutlined,
-  SettingOutlined,
-  ShopOutlined,
-  CreditCardOutlined,
-  SolutionOutlined,
-  UsergroupAddOutlined,
-  SafetyCertificateOutlined,
-  FileProtectOutlined,
-  TrophyOutlined,
-  GlobalOutlined,
-} from "@ant-design/icons";
+// import {
+//   DesktopOutlined,
+//   FileOutlined,
+//   PieChartOutlined,
+//   SmileOutlined,
+//   TeamOutlined,
+//   UserOutlined,
+//   ShoppingCartOutlined,
+//   DollarOutlined,
+//   SettingOutlined,
+//   ShopOutlined,
+//   CreditCardOutlined,
+//   SolutionOutlined,
+//   UsergroupAddOutlined,
+//   SafetyCertificateOutlined,
+//   FileProtectOutlined,
+//   TrophyOutlined,
+//   GlobalOutlined,
+// } from "@ant-design/icons";
 
 import { Breadcrumb, Button, Dropdown, Input, Layout, Menu, Tag, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import "./MainLayout.css";
 import Logo from "../../assets/INT_LOGO1.png";
 import logo from "../../assets/petronas.png";
-import ImgUser from "../../assets/user-mage.jpg";
+import ImgUser from "../../assets/profile.png";
 import { IoIosNotifications } from "react-icons/io";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import {
@@ -35,10 +35,31 @@ import {
 } from "../../store/profile.store";
 import { request } from "../../util/helper";
 import { configStore } from "../../store/configStore";
+import {
+  PieChartOutlined,
+  DesktopOutlined,
+  FileOutlined,
+  ShopOutlined,
+  FileProtectOutlined,
+  SolutionOutlined,
+  ShoppingCartOutlined,
+  UsergroupAddOutlined,
+  DollarOutlined,
+  UserOutlined,
+  SafetyCertificateOutlined,
+  TrophyOutlined,
+  TagOutlined,
+  CreditCardOutlined,
+  SettingOutlined,
+  GlobalOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 const { Header, Content, Footer, Sider } = Layout;
 <div>
 <Tag>V 1.0.1</Tag>
 </div>
+
+
 const items_menu = [
   {
     key: "version",
@@ -49,7 +70,7 @@ const items_menu = [
   {
     key: "",
     label: "Dashboard",
-    icon: <PieChartOutlined />,
+    icon: <PieChartOutlined/>,
     className: "dashboard-item", // Custom class for dashboard item
   },
   {
@@ -67,7 +88,7 @@ const items_menu = [
   {
     key: "total_due",
     label: "Total Due",
-    icon: <FileOutlined />,
+    icon: <CreditCardOutlined />,
     className: "invoices-detail-item", // Custom class for invoices detail item
   },
   {
@@ -81,20 +102,12 @@ const items_menu = [
         icon: <FileProtectOutlined />,
         className: "list-product-item", // Custom class for list product item
       },
-      
       {
         key: "stockUser",
         label: "User Stock",
         icon: <FileProtectOutlined />,
         className: "list-product-item", // Custom class for list product item
       },
-      // {
-      //   key: "adminStockTransfer",
-      //   label: "AdminStockTransfer",
-      //   icon: <FileProtectOutlined />,
-      //   className: "list-product-item", // Custom class for list product item
-      // },
-     
       {
         key: "category",
         label: "Category",
@@ -114,19 +127,13 @@ const items_menu = [
         icon: <UsergroupAddOutlined />,
         className: "supplier-item", // Custom class for supplier item
       },
-      // {
-      //   key: "purchase",
-      //   label: "List Purchase",
-      //   icon: <FileOutlined />,
-      //   className: "list-purchase-item", // Custom class for list purchase item
-      // },
-      // {
-      //   key: "purchase_product",
-      //   label: "Purchase Product",
-      //   icon: <CreditCardOutlined />,
-      //   className: "purchase-product-item", // Custom class for purchase product item
-      // },
     ],
+  },
+  {
+    key: "customer",
+    label: "Customer",
+    icon: <UserOutlined />,
+    className: "list-Customer-item", // Custom class for list purchase item
   },
   {
     label: "Expense",
@@ -147,37 +154,6 @@ const items_menu = [
       },
     ],
   },
-  // {
-  //   label: "Stock",
-  //   icon: <DollarOutlined />,
-  //   className: "stock-menu", // Custom class for stock menu
-  //   children: [
-  //     {
-  //       key: "stock_in",
-  //       label: "Stock In",
-  //       icon: <DollarOutlined />,
-  //       className: "stock-in-item", // Custom class for stock in item
-  //     },
-  //     {
-  //       key: "stock_out",
-  //       label: "Stock Out",
-  //       icon: <DollarOutlined />,
-  //       className: "stock-out-item", // Custom class for stock out item
-  //     },
-  //     {
-  //       key: "List_stock",
-  //       label: "Stock Out List",
-  //       icon: <DollarOutlined />,
-  //       className: "stock-out-list-item", // Custom class for stock out list item
-  //     },
-  //     {
-  //       key: "in_stock",
-  //       label: "In Stock",
-  //       icon: <FileOutlined />,
-  //       className: "in-stock-item", // Custom class for in stock item
-  //     },
-  //   ],
-  // },
   {
     label: "Employee",
     icon: <UserOutlined />,
@@ -189,12 +165,6 @@ const items_menu = [
         icon: <UserOutlined />,
         className: "employee-item", // Custom class for employee item
       },
-      // {
-      //   key: "payroll",
-      //   label: "Payroll",
-      //   icon: <DollarOutlined />,
-      //   className: "payroll-item", // Custom class for payroll item
-      // },
     ],
   },
   {
@@ -214,12 +184,6 @@ const items_menu = [
         icon: <SafetyCertificateOutlined />,
         className: "role-item", // Custom class for role item
       },
-      // {
-      //   key: "role_permission",
-      //   label: "Role Permission",
-      //   icon: <FileProtectOutlined />,
-      //   className: "role-permission-item", // Custom class for role permission item
-      // },
     ],
   },
   {
@@ -230,7 +194,7 @@ const items_menu = [
       {
         key: "report_Sale_Summary",
         label: "Sale Summary",
-        icon: <UserOutlined />,
+        icon: <PieChartOutlined />,
         className: "sale-summary-item", // Custom class for sale summary item
       },
       {
@@ -376,7 +340,7 @@ const MainLayout = () => {
           changs your password
         </a>
       ),
-      icon: <SmileOutlined />,
+      icon: <SmileOutlined/>,
       disabled: true,
     },
     {
@@ -434,9 +398,10 @@ const MainLayout = () => {
       alt="Company Logo"
       className="w-50 h-12 object-contain filter brightness-0 invert"
     />
-    <h1 className="text-2xl font-bold text-white font-sans">
-      PETRONAS CAMBODIA CO., LTD
-    </h1>
+   <h1 className="text-2xl font-bold text-white font-sans text-left">
+  PETRONAS CAMBODIA CO., LTD
+</h1>
+
   </div>
 
   {/* Branch and Address */}
