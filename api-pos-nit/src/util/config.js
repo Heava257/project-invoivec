@@ -7,8 +7,8 @@ module.exports = {
       HOST: "localhost",
       USER: "root",
       PASSWORD: "",
-      DATABASE: "invoices-project",
-      PORT: 3306,
+      DATABASE: "posnew",
+      PORT: 3366,
     },
     token: {
       access_token_key:

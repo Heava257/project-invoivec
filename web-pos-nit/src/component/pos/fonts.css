@@ -13,3 +13,7 @@
   .brand-font {
     font-family: 'Roboto', sans-serif;
   }
+.borderprint{
+  border: 2px solid red !important;
+  padding: 60px !important;
+}

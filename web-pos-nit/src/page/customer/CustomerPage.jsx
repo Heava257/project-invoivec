@@ -416,12 +416,17 @@ function CustomerPage() {
   
     try {
       // setProfile(JSON.stringify(res.profile));
-      const res = await request(`customer/17`, "get", param);
+      const {id} = getProfile();
+      if(!id) {
+        // const res = await request(`customer/1`,"get", param)
+        return 
+        }
+      const res = await request(`customer/${id}`, "get", param);
      
    console.log(state.id)
       setLoading(false);
   
-      if (res?.success) { 
+      if (res?.success) {   
         setList(res.list || []);
       } else {
         message.error(res?.message || "Failed to fetch customer list");

@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
-// Receipt Component for Printing
+
 const Receipt = React.forwardRef((props, ref) => (
   <div
     ref={ref}

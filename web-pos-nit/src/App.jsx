@@ -39,6 +39,8 @@ import AboutHomepage from "./page/about/Aboutpage";
 import AdminStockTransfer from "./page/admin/admin_stock_transfer";
 import Stock_UserPage from "./page/product/Stock_User";
 import Total_DuePage from "./page/total_due/Total_DuePage";
+import Bighome from "./page/home/Bighome";
+import InvoiceCar from "./component/pos/PrintCarinvoice";
 
 
 function App() {
@@ -50,12 +52,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* <Route element={<Bighome/>}> */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/employee" element={<EmployeePage />} />
           <Route path="/customer" element={<CustomerPage />} />
           {/* <Route path="/invoices" element={<InvoicesPage />} /> */}
           <Route path="/invoices" element={<PosPage />} />
+          <Route path="/invoicecar" element={<InvoiceCar />} />
           <Route path="/category" element={<CategoryPage />} />
           <Route path="/order" element={<OrderPage />} />
           <Route path="/user" element={<UserPage />} />
@@ -65,7 +69,6 @@ function App() {
           <Route path="/supplier" element={<SupplierPage />} />
           <Route path="/total_due" element={<Total_DuePage />} />
           
-
           <Route path="/expanse_type" element={<ExpanseTypePage />} />
           <Route path="/expanse" element={<ExpansePage />} />
           <Route path="/report_Sale_Summary" element={<ReportSale_Summary />} />
@@ -79,11 +82,11 @@ function App() {
           <Route path="/stock_in" element={<StockInPage/>} />
           <Route path="/stock_out" element={<StockOutPage/>} />
           
-          
-
 
           <Route path="*" element={<h1>404-Route Not Found!</h1>} />
         </Route>
+        {/* </Route> */}
+     
 
         <Route element={<MainLayoutAuth />}>
           <Route path="/about" element={<AboutHomepage />} />
