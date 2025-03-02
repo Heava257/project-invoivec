@@ -2,10 +2,10 @@
 
 // exports.report_Sale_Summary = async (req, res) => {
 //   try { 
-   
+
 //     let {from_date,to_date,category_id,brand_id} = req.query
 //     // console.log(brand_id)
-    
+
 //     const sql =
 //     `
 //   SELECT 
@@ -28,20 +28,20 @@
 //     o.create_at BETWEEN :from_date AND :to_date
 //   GROUP BY DATE_FORMAT(o.create_at, '%d/%m/%Y');
 // ` ;
-    
+
 //     const [list] = await db.query(sql,{
 //       from_date,
 //       to_date,
 //       category_id,
 //       brand_id
-     
+
 //     })
 
 
 //     res.json({  
 //       list,
-     
-     
+
+
 //     });
 //     // console.log(list)
 //   } catch (error) {
@@ -53,7 +53,7 @@
 const { db, logError } = require("../util/helper");
 
 exports.report_Sale_Summary = async (req, res) => {
-  try { 
+  try {
     let { from_date, to_date, category_id, brand_id } = req.query;
 
     // Ensure that to_date includes the entire day
@@ -61,7 +61,7 @@ exports.report_Sale_Summary = async (req, res) => {
     to_date.setHours(23, 59, 59, 999);
 
     const sql =
-    `
+      `
       SELECT 
         DATE_FORMAT(o.create_at, '%d/%m/%Y') AS order_date, 
         SUM(od.total_qty) AS total_qty, 
@@ -81,7 +81,7 @@ exports.report_Sale_Summary = async (req, res) => {
       WHERE o.create_at BETWEEN :from_date AND :to_date
       GROUP BY DATE_FORMAT(o.create_at, '%d/%m/%Y');
     `;
-    
+
     const [list] = await db.query(sql, {
       from_date,
       to_date,
@@ -95,8 +95,8 @@ exports.report_Sale_Summary = async (req, res) => {
   }
 };
 exports.report_Expense_Summary = async (req, res) => {
-  try { 
-    let { from_date, to_date ,expense_type_id} = req.query;
+  try {
+    let { from_date, to_date, expense_type_id } = req.query;
 
     // Ensure that to_date includes the entire day
     // console.log(from_date,to_date)
@@ -113,12 +113,12 @@ exports.report_Expense_Summary = async (req, res) => {
     GROUP BY e.expense_date;
 `;
 
-    
+
     const [list] = await db.query(sql, {
       from_date,
       to_date,
       expense_type_id
-     
+
     });
 
     res.json({ list });
@@ -129,7 +129,7 @@ exports.report_Expense_Summary = async (req, res) => {
 
 
 exports.report_Customer = async (req, res) => {
-  try { 
+  try {
     let { from_date, to_date } = req.query;
 
     // Ensure that to_date includes the entire day
@@ -139,19 +139,21 @@ exports.report_Customer = async (req, res) => {
 
     const sql = `
    SELECT 
-  DATE_FORMAT(cu.create_at,'%d-%m-%Y') title,
-  COUNT(cu.id) total_amount
-  FROM customer cu
-  WHERE DATE_FORMAT(cu.create_at,'%Y-%m-%d') BETWEEN :from_date AND :to_date
-  GROUP BY cu.create_at;
+  DATE_FORMAT(cu.create_at, '%d-%m-%Y') AS title, -- Format date for readability
+  COUNT(cu.id) AS total_amount
+FROM customer cu
+WHERE cu.create_at BETWEEN :from_date AND :to_date
+GROUP BY DATE(cu.create_at) -- Group by date only
+ORDER BY cu.create_at ASC; -- Sort in chronological order
+
 `;
 
-    
+
     const [list] = await db.query(sql, {
       from_date,
       to_date,
-    
-     
+
+
     });
 
     res.json({ list });
@@ -160,8 +162,8 @@ exports.report_Customer = async (req, res) => {
   }
 };
 exports.report_Purchase_Summary = async (req, res) => {
-  try { 
-    let { from_date, to_date,supplier_id } = req.query;
+  try {
+    let { from_date, to_date, supplier_id } = req.query;
 
     // Ensure that to_date includes the entire day
     // console.log(from_date,to_date,supplier_id)
@@ -177,13 +179,13 @@ exports.report_Purchase_Summary = async (req, res) => {
     GROUP BY pu.create_at;
 `;
 
-    
+
     const [list] = await db.query(sql, {
       from_date,
       to_date,
       supplier_id
-    
-     
+
+
     });
 
     res.json({ list });
@@ -193,27 +195,29 @@ exports.report_Purchase_Summary = async (req, res) => {
 };
 
 exports.top_sale = async (req, res) => {
-  try { 
-   
+  try {
 
 
-   
+
+
     const sql = `
     SELECT 
-p.id AS product_id,
-p.name AS product_name,
-p.image AS product_image,
-SUM(od.qty * od.price) AS total_sale_amount
+    p.id AS product_id,
+    p.name AS product_name,
+    c.name AS category_name, -- Added category name
+    SUM(od.qty * od.price) AS total_sale_amount
 FROM product p
 JOIN order_detail od ON p.id = od.product_id
+JOIN category c ON p.category_id = c.id -- Join category table
 GROUP BY 
-p.id, p.name ,p.image
+    p.id, p.name, c.name -- Include category_name in GROUP BY
 ORDER BY 
-total_sale_amount DESC
+    total_sale_amount DESC
 LIMIT 10;
+
 `;
 
-    
+
     const [list] = await db.query(sql);
 
     res.json({ list });

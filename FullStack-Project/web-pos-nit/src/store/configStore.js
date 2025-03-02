@@ -1,5 +1,4 @@
-import { create } from "zustand"; // global state
-
+import { create } from "zustand";
 export const configStore = create((set) => ({
   config: {
     category: null,
@@ -7,20 +6,17 @@ export const configStore = create((set) => ({
     supplier: null,
     purchase_status: null,
     brand: null,
-    customer: null,
+    customer: [],
     expense_type: null,
     expense : null,
     unit:null,
     company_name:null,
     user:null,
-    branch_name:null
+    branch_name:null,
+    createby:null
   },
   setConfig: (params) =>
     set((state) => ({
       config: params,
     })),
-  //   descrease: () =>
-  //     set((state) => ({
-  //       count: state.count - 1,
-  //     })),
 }));

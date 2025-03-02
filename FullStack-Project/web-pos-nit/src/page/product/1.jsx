@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload } from "antd";
-
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -9,7 +8,6 @@ const getBase64 = (file) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
-
 const App = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -33,7 +31,6 @@ const App = () => {
       status: "error",
     },
   ]);
-
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -41,9 +38,7 @@ const App = () => {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-
   const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-
   const uploadButton = (
     <button
       style={{

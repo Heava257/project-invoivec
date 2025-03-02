@@ -1,5 +1,4 @@
 import React from "react";
-
 const InvoiceComponent = React.forwardRef((props, ref) => (
   <div
     ref={ref}

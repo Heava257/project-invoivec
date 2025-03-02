@@ -12,12 +12,10 @@ import {
   Tag
 } from "antd";
 import { formatDateClient, request } from "../../util/helper";
-import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { MdDelete, MdEdit } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import dayjs from 'dayjs';
-
 function EmployeePage() {
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
@@ -27,11 +25,9 @@ function EmployeePage() {
     id: null,
     txtSearch: "",
   });
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     setLoading(true);
     const param = {
@@ -43,7 +39,6 @@ function EmployeePage() {
       setList(res.list);
     }
   };
-
   const onClickEdit = (data) => {
     setState({
       ...state,
@@ -63,7 +58,6 @@ function EmployeePage() {
       status: data.status,
     });
   };
-
   const onClickDelete = async (data) => {
     Modal.confirm({
       title: "Delete",
@@ -82,7 +76,6 @@ function EmployeePage() {
       },
     });
   };
-
   const onClickAddBtn = () => {
     setState({
       ...state,
@@ -91,7 +84,6 @@ function EmployeePage() {
     });
     formRef.resetFields();
   };
-
   const onCloseModal = () => {
     formRef.resetFields();
     setState({
@@ -100,7 +92,6 @@ function EmployeePage() {
       id: null,
     });
   };
-
   const onFinish = async (values) => {
     const data = {
       id: state.id,
@@ -114,7 +105,6 @@ function EmployeePage() {
       address: values.address,
       status: values.status,
     };
-
     const method = state.id ? "put" : "post";
     const res = await request("employee", method, data);
     if (res && !res.error) {
@@ -123,7 +113,6 @@ function EmployeePage() {
       onCloseModal();
     }
   };
-
   const ExportToExcel = () => {
     const data = list.map((item) => ({
       ...item,
@@ -131,13 +120,11 @@ function EmployeePage() {
       dob: formatDateClient(item.dob),
       create_at: formatDateClient(item.create_at),
     }));
-
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Employee");
     XLSX.writeFile(wb, "Employee_Data.xlsx");
   };
-
   return (
     <MainPage loading={loading}>
       <div className="pageHeader">
@@ -162,7 +149,6 @@ function EmployeePage() {
           NEW
         </Button>
       </div>
-
       <Modal
         open={state.visibleModal}
         title={state.id ? "Edit Employee" : "New Employee"}
@@ -173,7 +159,6 @@ function EmployeePage() {
           <Form.Item name="id" hidden>
             <Input />
           </Form.Item>
-
           <Form.Item
             name="name"
             label="Name"
@@ -181,7 +166,6 @@ function EmployeePage() {
           >
             <Input placeholder="Input employee name" />
           </Form.Item>
-
           <Form.Item
             name="gender"
             label="Gender"
@@ -195,14 +179,12 @@ function EmployeePage() {
               ]}
             />
           </Form.Item>
-
           <Form.Item
             name="dob"
             label="Date of Birth"
           >
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
-
           <Form.Item
             name="position"
             label="Position"
@@ -210,7 +192,6 @@ function EmployeePage() {
           >
             <Input placeholder="Input position" />
           </Form.Item>
-
           <Form.Item
             name="salary"
             label="Salary"
@@ -218,7 +199,6 @@ function EmployeePage() {
           >
             <Input type="number" placeholder="Input salary" />
           </Form.Item>
-
           <Form.Item
             name="tel"
             label="Telephone"
@@ -226,7 +206,6 @@ function EmployeePage() {
           >
             <Input placeholder="Input telephone number" />
           </Form.Item>
-
           <Form.Item
             name="email"
             label="Email"
@@ -234,14 +213,12 @@ function EmployeePage() {
           >
             <Input placeholder="Input email" />
           </Form.Item>
-
           <Form.Item
             name="address"
             label="Address"
           >
             <Input.TextArea placeholder="Input address" />
           </Form.Item>
-
           <Form.Item
             name="status"
             label="Status"
@@ -255,7 +232,6 @@ function EmployeePage() {
               ]}
             />
           </Form.Item>
-
           <Space>
             <Button onClick={onCloseModal}>Cancel</Button>
             <Button type="primary" htmlType="submit">
@@ -264,7 +240,6 @@ function EmployeePage() {
           </Space>
         </Form>
       </Modal>
-
       <Table
         dataSource={list}
         columns={[
@@ -353,5 +328,4 @@ function EmployeePage() {
     </MainPage>
   );
 }
-
 export default EmployeePage;

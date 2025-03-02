@@ -7,9 +7,9 @@ const {
   getone,
 } = require("../controller/order.controller");
 module.exports = (app) => {
-  app.get("/api/order", validate_token(), getList);
-  app.get("/api/order_detail/:id", validate_token(),getone ); 
-  app.post("/api/order", validate_token(), create);
-  app.put("/api/order", validate_token(), update);
-  app.delete("/api/order", validate_token(), remove);
+  app.get("/api/order", validate_token("order.getlist"), getList);
+  app.get("/api/order_detail/:id", validate_token("order.getone"),getone ); 
+  app.post("/api/order", validate_token("order.create","order"), create);
+  app.put("/api/order", validate_token("order.update","order"), update);
+  app.delete("/api/order", validate_token("order.remove","order"), remove);
 };

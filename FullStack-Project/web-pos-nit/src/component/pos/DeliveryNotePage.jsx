@@ -1,14 +1,11 @@
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import ProductDeliveryNote from './ProductDeliveryNote';
-
 function DeliveryNotePage() {
   const componentRef = useRef();
-  
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-  
   const sampleData = {
     depot: "SAMRONG THOM",
     pdn_no: "000673",
@@ -28,13 +25,11 @@ function DeliveryNotePage() {
       }
     ]
   };
-  
   return (
     <div>
       <button onClick={handlePrint} className="bg-blue-600 text-white px-4 py-2 rounded mb-4">
         Print Delivery Note
       </button>
-      
       <ProductDeliveryNote 
         ref={componentRef} 
         deliveryData={sampleData} 
@@ -42,5 +37,4 @@ function DeliveryNotePage() {
     </div>
   );
 }
-
 export default DeliveryNotePage;

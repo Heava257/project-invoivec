@@ -3,6 +3,6 @@ const {
   getList,
 } = require("../controller/dashbaord.controller");
 module.exports = (app) => {
-  app.get("/api/dashbaord", validate_token(), getList);
+  app.get("/api/dashbaord", validate_token("dashboard.getlist"), getList);
   
 };

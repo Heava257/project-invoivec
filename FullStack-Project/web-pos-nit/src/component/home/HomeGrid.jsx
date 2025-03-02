@@ -1,8 +1,6 @@
 import React from "react";
 import { Row, Col, Card } from "antd";
-
-const colors = ["#4CAF50", "#2196F3", "#FFC107", "#FF5722"]; // Colors for different cards
-
+const colors = ["#4CAF50", "#2196F3", "#FFC107", "#FF5722"];
 function HomeGrid({ data = [] }) {
   return (
     <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
@@ -21,10 +19,6 @@ function HomeGrid({ data = [] }) {
             <div style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}>
               {item.title}
             </div>
-            {/* <div style={{ fontSize: 30, fontWeight: "bold" }}>{item.total}</div> */}
-            {/* <div>{item.Summary && Object.keys(item.Summary).map((key,index)=>(
-              
-            ))}</div> */}
             {item.Summary && Object.keys(item.Summary).map((key,index)=>(
               <div key={index}>
                  <div>
@@ -41,5 +35,4 @@ function HomeGrid({ data = [] }) {
     </Row>
   );
 }
-
 export default HomeGrid;

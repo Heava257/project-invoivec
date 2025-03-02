@@ -2,17 +2,16 @@
   height: 80px;
   display: flex;
   justify-content: space-between;
-  padding: 0 20px; /* Increased padding for better spacing */
+  padding: 0 20px; 
   align-items: center;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25); /* Deeper shadow for depth */
-  color: white; /* White text for contrast */
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
-  position: relative; /* For pseudo-elements */
-  overflow: hidden; /* Ensures pseudo-elements don't overflow */
-  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Blue gradient background */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.25); 
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: relative; 
+  overflow: hidden;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   padding: 50px;
 }
-
 .admin-header::before {
   content: '';
   position: absolute;
@@ -20,41 +19,34 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.1); /* Subtle overlay */
-  pointer-events: none; /* Ensures clicks pass through */
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
-
 .admin-header h1 {
   font-size: 24px;
   font-weight: 600;
   margin: 0;
-  letter-spacing: 1px; /* Slight letter spacing for elegance */
+  letter-spacing: 1px; 
 }
-
 .admin-header nav {
   display: flex;
-  gap: 20px; /* Space between nav items */
+  gap: 20px; 
 }
-
 .admin-header nav a {
   text-decoration: none;
   font-size: 16px;
   font-weight: 500;
   padding: 8px 12px;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  color: white; /* Ensure links are white */
+  color: white;
 }
-
 .admin-header nav a:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* Hover effect */
-  transform: translateY(-2px); /* Slight lift on hover */
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
-
 .admin-header nav a:active {
-  transform: translateY(0); /* Reset on click */
+  transform: translateY(0); 
 }
-
-/* Optional: Add a subtle animation to the header */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -65,89 +57,64 @@
     transform: translateY(0);
   }
 }
-
 .admin-header {
   animation: fadeIn 0.5s ease-out;
 }
-
-/* Admin Body Styling */
 .admin-body {
   padding: 16px;
-  height: calc(100vh - 110px); /* Adjust height based on header and footer */
-  overflow-y: auto; /* Enable smooth scrolling */
-  background: linear-gradient(135deg, #76bfd1, #5e7397); /* Soft gradient */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.1); /* Soft inner shadow */
+  height: calc(100vh - 110px);
+  overflow-y: auto; 
+  background: linear-gradient(135deg, #76bfd1, #5e7397);
+  border-radius: 10px;
+  box-shadow: inset 0px 4px 10px rgba(0, 0, 0, 0.1); 
 }
-
-/* Custom Scrollbar */
 .admin-body::-webkit-scrollbar {
   width: 8px;
 }
-
 .admin-body::-webkit-scrollbar-track {
-  background: #69948e; /* Light background */
+  background: #69948e;
   border-radius: 10px;
 }
-
 .admin-body::-webkit-scrollbar-thumb {
-  background: #5c6bc0; /* Modern blue shade */
+  background: #5c6bc0; 
   border-radius: 10px;
 }
-
 .admin-body::-webkit-scrollbar-thumb:hover {
-  background: #3949ab; /* Darker shade on hover */
+  background: #3949ab;
 }
-
-/* Admin Header Group 1 - Logo and Brand Name */
 .admin-header-g1 {
   display: flex;
 }
-
-/* Admin Header Group 2 - Icons and User Info */
 .admin-header-g2 {
   display: flex;
   align-items: center;
 }
-
-/* Brand Name Styling */
 .txt-brand-name {
   font-size: 18px;
   font-weight: bold;
-  color: #ffffff; /* White text */
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Text shadow for effect */
+  color: #ffffff; 
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); 
 }
-
-/* Username Styling */
 .txt-username {
   font-size: 16px;
   font-weight: bold;
-  color: #ffffff; /* White text */
+  color: #ffffff; 
 }
-
-/* Admin Logo Styling */
 .admin-logo {
   width: 150px;
-  /* height: 90px; */
   margin-left: -20px;
   margin-right: 1px;
-  /* border-radius: 10px; Optional if you want rounded logo */
 }
-
-/* User Image Styling */
 .img-user {
   width: 60px;
   margin-left: 10px;
-  border-radius: 50%; /* Rounded user image */
+  border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.3s; /* Zoom effect on hover */
+  transition: transform 0.3s; 
 }
-
 .img-user:hover {
-  transform: scale(1.1); /* Slight zoom on hover */
+  transform: scale(1.1);
 }
-
-/* Notification and Email Icon Styling */
 .icon-notify,
 .icon-email {
   font-size: 32px;
@@ -156,16 +123,10 @@
   cursor: pointer;
   transition: 0.3s;
 }
-
 .icon-notify:hover,
 .icon-email:hover {
   color: #f1c40f;
 }
-
-/* 🌟 Ant Design Sidebar Menu */
-/* 🎨 Main Menu */
-/* 
-/* 🚀 Animations */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -176,10 +137,7 @@
     transform: translateX(0);
   }
 }
-
 .ant-menu-item,
 .ant-menu-submenu-title {
   animation: slideIn 0.3s ease-out;
 }
-
-

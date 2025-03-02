@@ -10,10 +10,11 @@ const {
 const { uploadFile } = require("../util/helper");
 
 module.exports = (app) => {
-  app.post("/api/product",validate_token(),create);
-  app.get("/api/product", validate_token(), getList);
-  app.put("/api/product",validate_token(), update);
-  app.delete("/api/product/:id", validate_token(), remove);
+  app.post("/api/product",validate_token("product.create","product"),create);
+  app.get('/api/product/:user_id',validate_token("product.getlist"),getList);
+  
+  app.put("/api/product",validate_token("product.update","product"), update);
+  app.delete("/api/product/:id", validate_token("product.remove"), remove);
   app.post("/api/new_barcode", validate_token(), newBarcode);
   // app.get("/api/product_image/:product_id", validate_token(), productImage);
 };

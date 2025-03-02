@@ -1,124 +1,14 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Button,
-//   Form,
-//   Image,
-//   Input,
-//   message,
-//   Modal,
-//   Select,
-//   Space,
-//   Table,
-//   Tag,
-// } from "antd";
-// import { MdAdd, MdRefresh } from "react-icons/md";
-// import MainPage from "../../component/layout/MainPage";
-// import { configStore } from "../../store/configStore";
-
-// function Top_Sales() {
-//   const { config } = configStore();
-//   const [formRef] = Form.useForm();
-//   const [list, setList] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [state, setState] = useState({
-//     txtSearch: "",
-//   });
-
-//   useEffect(() => {
-//     getList();
-//   }, []);
-
-//   const getList = async () => {
-//     setLoading(true); // Set loading state to true
-//     const res = await request("top_sales", "get");
-//     setLoading(false); // Set loading state to false after response
-//     if (res && res.list) {
-//       setList(res.list);
-//     } else {
-//       message.error("Failed to fetch data. Please try again later.");
-//     }
-//   };
-  
-
-//   const refreshList = () => {
-//     getList();
-//     message.success("List refreshed successfully!");
-//   };
-
-//   return (
-//     <MainPage loading={loading}>
-//       <div className="pageHeader" style={{ marginBottom: "20px" }}>
-//         <Space style={{ justifyContent: "space-between", width: "100%" }}>
-//           <h2 style={{ fontWeight: "bold", color: "#1890ff" }}>Top Sales</h2>
-//           <Space>
-//             <Button
-//               icon={<MdRefresh />}
-//               onClick={refreshList}
-//               type="primary"
-//               style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
-//             >
-//               Refresh
-//             </Button>
-//           </Space>
-//         </Space>
-//       </div>
-
-//       <Table
-//         dataSource={list}
-//         columns={[
-//          
-//           {
-//             key: "name",
-//             title: "Product Name",
-//             dataIndex: "product_name",
-//             render: (text) => (
-//               <span style={{ fontWeight: "bold", color: "#595959" }}>{text}</span>
-//             ),
-//           },
-//           {
-//             key: "total_sale_amount",
-//             title: "Total Sale Amount",
-//             dataIndex: "total_sale_amount",
-//             render: (value) => (
-//               <Tag color="green" style={{ fontSize: "14px" }}>
-//                 ${value.toLocaleString()}
-//               </Tag>
-//             ),
-//             align: "center",
-//           },
-         
-        
-//         bordered
-//         pagination={{ pageSize: 5 }}
-//         rowClassName="custom-row"
-//         style={{
-//           backgroundColor: "white",
-//           borderRadius: "8px",
-//           overflow: "hidden",
-//         }}
-//       />
-//     </MainPage>
-//   );
-// }
-
-// export default Top_Sales;
-
-
 import React, { useEffect, useState } from "react";
 import {
   Button,
   Form,
   Image,
-  Input,
-  message,
-  Modal,
-  Select,
   Space,
   Table,
   Tag,
 } from "antd";
 import { request } from "../../util/helper";
-import { MdAdd, MdDelete, MdEdit, MdRefresh } from "react-icons/md";
+import {MdRefresh } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import { configStore } from "../../store/configStore";
 function Top_Sales() {
@@ -135,11 +25,9 @@ function Top_Sales() {
     parentId: null,
     txtSearch: "",
   });
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     setLoading(true);
     const res = await request("top_sales", "get");
@@ -150,12 +38,7 @@ function Top_Sales() {
   };
   const refreshList =()=>{
    window.location.reload();
-  }
-  
- 
-
-  
-
+  }    
   return (
     <MainPage loading={loading}>
       <div className="pageHeader" style={{ marginBottom: "20px" }}>
@@ -173,7 +56,6 @@ function Top_Sales() {
           </Space>
         </Space>
       </div>
-
       <Table
         dataSource={list}
         columns={[
@@ -189,6 +71,14 @@ function Top_Sales() {
             key: "name",
             title: "Product Name",
             dataIndex: "product_name",
+            render: (text) => (
+              <span style={{ fontWeight: "bold", color: "#595959" }}>{text}</span>
+            ),
+          },
+          {
+            key: "name",
+            title: "Category Name",
+            dataIndex: "category_name",
             render: (text) => (
               <span style={{ fontWeight: "bold", color: "#595959" }}>{text}</span>
             ),
@@ -249,5 +139,4 @@ function Top_Sales() {
     </MainPage>
   );
 }
-
 export default Top_Sales;

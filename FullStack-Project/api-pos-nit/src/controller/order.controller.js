@@ -169,7 +169,7 @@ exports.getone = async (req, res) => {
         p.name AS p_name, 
         p.brand AS p_brand, 
         p.description AS p_des, 
-        p.image AS p_image,
+       
         c.name AS p_category_name 
       FROM order_detail od
       INNER JOIN product p ON od.product_id = p.id  -- Ensure 'product_id' exists in 'order_detail'
@@ -505,75 +505,75 @@ exports.create = async (req, res) => {
         });
 
         // Update user_stock table with complete product information
-        const sqlUpdateUserStock = `
-          INSERT INTO user_stock (
-            user_id, 
-            product_id, 
-            category_id, 
-            qty, 
-            barcode, 
-            brand, 
-            description, 
-            price, 
-            discount, 
-            status, 
-            image, 
-            create_by, 
-            create_at, 
-            unit, 
-            unit_price, 
-            last_updated
-          )
-          VALUES (
-            :user_id, 
-            :product_id, 
-            :category_id, 
-            :qty, 
-            :barcode, 
-            :brand, 
-            :description, 
-            :price, 
-            :discount, 
-            :status, 
-            :image, 
-            :create_by, 
-            NOW(), 
-            :unit, 
-            :unit_price, 
-            NOW()
-          )
-          ON DUPLICATE KEY UPDATE 
-            qty = qty + :qty, 
-            last_updated = NOW(),
-            barcode = :barcode,
-            brand = :brand,
-            description = :description,
-            price = :price,
-            discount = :discount,
-            status = :status,
-            image = :image,
-            create_by = :create_by,
-            create_at = NOW(),
-            unit = :unit,
-            unit_price = :unit_price;
-        `;
+    //     const sqlUpdateUserStock = `
+    //       INSERT INTO user_stock (
+    //         user_id, 
+    //         product_id, 
+    //         category_id, 
+    //         qty, 
+    //         barcode, 
+    //         brand, 
+    //         description, 
+    //         price, 
+    //         discount, 
+    //         status, 
+    //         image, 
+    //         create_by, 
+    //         create_at, 
+    //         unit, 
+    //         unit_price, 
+    //         last_updated
+    //       )
+    //       VALUES (
+    //         :user_id, 
+    //         :product_id, 
+    //         :category_id, 
+    //         :qty, 
+    //         :barcode, 
+    //         :brand, 
+    //         :description, 
+    //         :price, 
+    //         :discount, 
+    //         :status, 
+    //         :image, 
+    //         :create_by, 
+    //         NOW(), 
+    //         :unit, 
+    //         :unit_price, 
+    //         NOW()
+    //       )
+    //       ON DUPLICATE KEY UPDATE 
+    //         qty = qty + :qty, 
+    //         last_updated = NOW(),
+    //         barcode = :barcode,
+    //         brand = :brand,
+    //         description = :description,
+    //         price = :price,
+    //         discount = :discount,
+    //         status = :status,
+    //         image = :image,
+    //         create_by = :create_by,
+    //         create_at = NOW(),
+    //         unit = :unit,
+    //         unit_price = :unit_price;
+    //     `;
         
-        await db.query(sqlUpdateUserStock, {
-          user_id: req.auth?.id || null,
-          product_id: item.product_id,
-          category_id: product.category_id, // Using category_id from product data
-          qty: item.qty,
-          barcode: product.barcode || "",
-          brand: product.brand || "",
-          description: product.description || "",
-          price: item.price || product.price,
-          discount: item.discount || product.discount || 0,
-          status: product.status || "active",
-          image: product.image || "",
-          create_by: req.auth?.name || "System",
-          unit: product.unit || "",
-          unit_price: product.unit_price || 0
-        });
+    //     await db.query(sqlUpdateUserStock, {
+    //       user_id: req.auth?.id || null,
+    //       product_id: item.product_id,
+    //       category_id: product.category_id, // Using category_id from product data
+    //       qty: item.qty,
+    //       barcode: product.barcode || "",
+    //       brand: product.brand || "",
+    //       description: product.description || "",
+    //       price: item.price || product.price,
+    //       discount: item.discount || product.discount || 0,
+    //       status: product.status || "active",
+    //       image: product.image || "",
+    //       create_by: req.auth?.name || "System",
+    //       unit: product.unit || "",
+    //       unit_price: product.unit_price || 0
+    //     });
       })
     );
 

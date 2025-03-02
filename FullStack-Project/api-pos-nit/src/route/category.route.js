@@ -6,8 +6,8 @@ const {
   remove,
 } = require("../controller/category.controller");
 module.exports = (app) => {
-  app.get("/api/category", validate_token(), getList);
-  app.post("/api/category", validate_token(), create);
-  app.put("/api/category", update);
-  app.delete("/api/category", remove);
+  app.get("/api/category", validate_token("category.getlist"), getList);
+  app.post("/api/category", validate_token("category.create"), create);
+  app.put("/api/category",validate_token("category.update"), update);
+  app.delete("/api/category",validate_token("category.remove"), remove);
 };

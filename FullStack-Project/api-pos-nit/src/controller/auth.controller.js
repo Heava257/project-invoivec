@@ -117,37 +117,159 @@ exports.update = async (req, res) => {
 //     logError("auth.register", error, res);
 //   }
 // };
+// exports.register = async (req, res) => {
+//   try {
+//     let password = bcrypt.hashSync(req.body.password, 10);
+
+//     // Generate a new barcode
+//     const { role_id, name, username, address, tel, branch_name, barcode, status } = req.body;
+
+//     let sql = `
+//       INSERT INTO user (role_id, name, username, password, is_active, address, tel, branch_name, barcode, create_by, create_at)
+//       VALUES (:role_id, :name, :username, :password, :is_active, :address, :tel, :branch_name, :barcode, :create_by, :create_at);
+//     `;
+
+//     let data = await db.query(sql, {
+//       role_id,
+//       name,
+//       username,
+//       password,
+//       address,
+//       tel,
+//       branch_name,
+//       barcode, // Use the generated barcode
+//       status,
+//       create_by: req.auth?.name,
+//       create_at: req.auth?.create_at,
+//     });
+
+//     res.json({
+//       message: "Create new account success!",
+//       data: data,
+//     });
+//   } catch (error) {
+//     logError("auth.register", error, res);
+//   }
+// };
+
+// exports.register = async (req, res) => {
+//   try {
+//     let password = bcrypt.hashSync(req.body.password, 10);
+
+//     const { role_id, name, username, address, tel, branch_name, barcode, status } = req.body;
+
+//     // Insert into the user table
+//     let userSql = `
+//       INSERT INTO user (role_id, name, username, password, is_active, address, tel, branch_name, barcode, create_by, create_at)
+//       VALUES (:role_id, :name, :username, :password, :is_active, :address, :tel, :branch_name, :barcode, :create_by, :create_at);
+//     `;
+
+//     let userData = await db.query(userSql, {
+//       role_id,
+//       name,
+//       username,
+//       password,
+//       is_active: status, // Assuming status corresponds to is_active
+//       address,
+//       tel,
+//       branch_name,
+//       barcode,
+//       create_by: req.auth?.name,
+//       create_at: new Date(), // Using current date if create_at is not provided
+//     });
+
+//     // Get the newly created user's ID
+//     const userId = userData.insertId;
+
+//     // Insert into user_roles table
+//     let rolesSql = `
+//       INSERT INTO user_roles (user_id, role_id) 
+//       VALUES (:user_id, :role_id);
+//     `;
+
+//     await db.query(rolesSql, {
+//       user_id: userId,
+//       role_id
+//     });
+
+//     res.json({
+//       message: "Create new account success!",
+//       data: userData,
+//     });
+//   } catch (error) {
+//     logError("auth.register", error, res);
+//   }
+// };
+
 exports.register = async (req, res) => {
   try {
     let password = bcrypt.hashSync(req.body.password, 10);
 
-    // Generate a new barcode
     const { role_id, name, username, address, tel, branch_name, barcode, status } = req.body;
 
-    let sql = `
+    // Insert into the user table
+    let userSql = `
       INSERT INTO user (role_id, name, username, password, is_active, address, tel, branch_name, barcode, create_by, create_at)
       VALUES (:role_id, :name, :username, :password, :is_active, :address, :tel, :branch_name, :barcode, :create_by, :create_at);
     `;
 
-    let data = await db.query(sql, {
+    let userData = await db.query(userSql, {
       role_id,
       name,
       username,
       password,
+      is_active: status, // Assuming status corresponds to is_active
       address,
       tel,
       branch_name,
-      barcode, // Use the generated barcode
-      status,
+      barcode,
       create_by: req.auth?.name,
-      create_at: req.auth?.create_at,
+      create_at: new Date(), // Using current date if create_at is not provided
+    });
+
+    // Get the newly created user's ID - add debugging to see the structure
+    // console.log("Database response:", JSON.stringify(userData));
+    
+    // Try different ways to get the ID based on common database return formats
+    let userId;
+    if (userData.insertId) {
+      userId = userData.insertId;
+    } else if (userData.rows && userData.rows.insertId) {
+      userId = userData.rows.insertId;
+    } else if (userData[0] && userData[0].insertId) {
+      userId = userData[0].insertId;
+    } else if (userData.lastInsertId) {
+      userId = userData.lastInsertId;
+    } else {
+      // If we can't find the ID, query for it
+      const findUserSql = `SELECT id FROM user WHERE username = :username LIMIT 1`;
+      const userResult = await db.query(findUserSql, { username });
+      userId = userResult[0]?.id;
+      
+      if (!userId) {
+        throw new Error("Failed to retrieve the newly created user ID");
+      }
+    }
+    
+    console.log("Using user ID:", userId);
+
+    // Insert into user_roles table
+    let rolesSql = `
+      INSERT INTO user_roles (user_id, role_id) 
+      VALUES (:user_id, :role_id);
+    `;
+
+    await db.query(rolesSql, {
+      user_id: userId,
+      role_id
     });
 
     res.json({
       message: "Create new account success!",
-      data: data,
+      data: userData,
     });
   } catch (error) {
+    // console.error("Registration error:", error);
     logError("auth.register", error, res);
   }
 };
@@ -259,7 +381,7 @@ exports.profile = async (req, res) => {
   }
 };
 
-exports.validate_token = () => {
+exports.validate_token = (permission_name) => {
   // call in midleware in route (role route, user route, teacher route)
   return (req, res, next) => {
     var authorization = req.headers.authorization; // token from client
@@ -283,6 +405,19 @@ exports.validate_token = () => {
               error: error,
             });
           } else {
+
+            if (permission_name){
+              let findIdex = result.data.permision?.findIdex(
+                (item) => item.name == permission_name
+              );
+              if (findIdex == -1 ){
+                res.status(401).send({
+                  message:"Unauthorized",
+                  error:error 
+                });
+                return;
+              }
+            }
             req.current_id = result.data.profile.id;
             req.auth = result.data.profile; // write user property
             req.permision = result.data.permision; // write user property

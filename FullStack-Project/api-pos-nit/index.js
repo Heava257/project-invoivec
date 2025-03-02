@@ -71,8 +71,9 @@ require("./src/route/dashbaord.route")(app);
 require("./src/route/report.route")(app);
 require("./src/route/currency.route")(app);
 require("./src/route/invoices.route")(app);
-require("./src/route/admin_stock_transfer.route")(app);
+require("./src/route/admin_stock_transfer.route")(app); 
 require("./src/route/StockUser.route")(app);
+// require("./src/route/expense_type.route")(app);
 
 const PORT = 8081;
 app.listen(PORT, () => {

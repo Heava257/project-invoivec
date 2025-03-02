@@ -8,11 +8,9 @@ function RolePage() {
     visible: false,
   });
   const [form] = Form.useForm();
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     const res = await request("role", "get");
     if (res && !res.error) {
@@ -22,13 +20,9 @@ function RolePage() {
       }));
     }
   };
-
   const clickBtnEdit = (item) => {
     form.setFieldsValue({
       ...item,
-      // id : item.id,
-      // code : item.code,
-      // name : item.name,
     });
     handleOpenModal();
   };
@@ -51,7 +45,6 @@ function RolePage() {
       },
     });
   };
-
   const onFinish = async (item) => {
     var data = {
       id: form.getFieldValue("id"),
@@ -71,14 +64,12 @@ function RolePage() {
       message.warning(res.error);
     }
   };
-
   const handleOpenModal = () => {
     setState((pre) => ({
       ...pre,
       visible: true,
     }));
   };
-
   const handleCloseModal = () => {
     setState((pre) => ({
       ...pre,
@@ -86,7 +77,6 @@ function RolePage() {
     }));
     form.resetFields();
   };
-
   return (
     <div>
       <div
@@ -127,7 +117,6 @@ function RolePage() {
           </Form.Item>
         </Form>
       </Modal>
-
       <Table
         dataSource={state.list}
         columns={[
@@ -181,5 +170,4 @@ function RolePage() {
     </div>
   );
 }
-
 export default RolePage;

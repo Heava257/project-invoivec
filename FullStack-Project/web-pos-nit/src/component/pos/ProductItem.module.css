@@ -3,16 +3,13 @@
   background-color: #eeeeee;
   border-radius: 10px;
 }
-
 .p_name {
   font-weight: bold;
   margin-top: 10px;
 }
-
 .p_des {
   margin-top: 5px;
 }
-
 .p_price {
   text-decoration: line-through;
   margin-right: 5px;
@@ -35,7 +32,3 @@
   text-align: right;
   margin-top: 15px;
 }
-/* p_des
-p_price
-p_dis
-p_final_price */

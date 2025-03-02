@@ -1,31 +1,9 @@
 import React, { useEffect, useState } from "react";
-// import {
-//   DesktopOutlined,
-//   FileOutlined,
-//   PieChartOutlined,
-//   SmileOutlined,
-//   TeamOutlined,
-//   UserOutlined,
-//   ShoppingCartOutlined,
-//   DollarOutlined,
-//   SettingOutlined,
-//   ShopOutlined,
-//   CreditCardOutlined,
-//   SolutionOutlined,
-//   UsergroupAddOutlined,
-//   SafetyCertificateOutlined,
-//   FileProtectOutlined,
-//   TrophyOutlined,
-//   GlobalOutlined,
-// } from "@ant-design/icons";
-
 import { Breadcrumb, Button, Dropdown, Input, Layout, Menu, Tag, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import "./MainLayout.css";
-import Logo from "../../assets/INT_LOGO1.png";
 import logo from "../../assets/petronas.png";
 import ImgUser from "../../assets/profile.png";
-import { IoIosNotifications } from "react-icons/io";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import {
   getPermission,
@@ -48,84 +26,73 @@ import {
   UserOutlined,
   SafetyCertificateOutlined,
   TrophyOutlined,
-  TagOutlined,
   CreditCardOutlined,
-  SettingOutlined,
-  GlobalOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
 const { Header, Content, Footer, Sider } = Layout;
 <div>
 <Tag>V 1.0.1</Tag>
 </div>
-
-
 const items_menu = [
   {
     key: "version",
-    label: <Tag color="green">V 1.0.1</Tag>, // Version Display
-    disabled: true, // Prevent clicking
-    className: "version-item", // Custom class for version item
+    label: <Tag color="green">V 1.0.1</Tag>,
+    disabled: true,
+    className: "version-item",
   },
   {
     key: "",
     label: "Dashboard",
     icon: <PieChartOutlined/>,
-    className: "dashboard-item", // Custom class for dashboard item
+    className: "dashboard-item",
   },
-  {
+  { 
     key: "invoices",
     label: "Invoices",
     icon: <DesktopOutlined />,
-    className: "invoices-item", // Custom class for invoices item
+    className: "invoices-item",
   },
   {
     key: "order",
     label: "Invoices Detail",
     icon: <FileOutlined />,
-    className: "invoices-detail-item", // Custom class for invoices detail item
+    className: "invoices-detail-item", 
   },
   {
     key: "total_due",
     label: "Total Due",
     icon: <CreditCardOutlined />,
-    className: "invoices-detail-item", // Custom class for invoices detail item
+    className: "invoices-detail-item",
   },
   {
     label: "Product",
     icon: <ShopOutlined />,
-    className: "product-menu", // Custom class for product menu
+    className: "product-menu",
     children: [
       {
         key: "product",
         label: "Warehouse",
         icon: <FileProtectOutlined />,
-        className: "list-product-item", // Custom class for list product item
-      },
-      {
-        key: "stockUser",
-        label: "User Stock",
-        icon: <FileProtectOutlined />,
-        className: "list-product-item", // Custom class for list product item
+        className: "list-product-item",
       },
       {
         key: "category",
         label: "Category",
         icon: <SolutionOutlined />,
-        className: "category-item", // Custom class for category item
+        className: "category-item",
       },
     ],
   },
   {
     label: "Purchase",
     icon: <ShoppingCartOutlined />,
-    className: "purchase-menu", // Custom class for purchase menu
+    className: "purchase-menu",
     children: [
       {
         key: "supplier",
         label: "Supplier",
         icon: <UsergroupAddOutlined />,
-        className: "supplier-item", // Custom class for supplier item
+        className: "supplier-item",
       },
     ],
   },
@@ -133,115 +100,90 @@ const items_menu = [
     key: "customer",
     label: "Customer",
     icon: <UserOutlined />,
-    className: "list-Customer-item", // Custom class for list purchase item
+    className: "list-Customer-item", 
   },
   {
     label: "Expense",
     icon: <DollarOutlined />,
-    className: "expense-menu", // Custom class for expense menu
+    className: "expense-menu", 
     children: [
-      {
-        key: "expanse_type",
-        label: "Expense Type",
-        icon: <FileOutlined />,
-        className: "expense-type-item", // Custom class for expense type item
-      },
       {
         key: "expanse",
         label: "Expense",
         icon: <DollarOutlined />,
-        className: "expense-item", // Custom class for expense item
+        className: "expense-item",
       },
     ],
   },
   {
     label: "Employee",
     icon: <UserOutlined />,
-    className: "employee-menu", // Custom class for employee menu
+    className: "employee-menu",
     children: [
       {
         key: "employee",
         label: "Employee",
         icon: <UserOutlined />,
-        className: "employee-item", // Custom class for employee item
+        className: "employee-item",
       },
     ],
   },
   {
     label: "User",
     icon: <SolutionOutlined />,
-    className: "user-menu", // Custom class for user menu
+    className: "user-menu",
     children: [
       {
         key: "user",
         label: "User",
         icon: <UserOutlined />,
-        className: "user-item", // Custom class for user item
+        className: "user-item",
       },
       {
         key: "role",
         label: "Role",
         icon: <SafetyCertificateOutlined />,
-        className: "role-item", // Custom class for role item
+        className: "role-item",
       },
     ],
   },
   {
     label: "Report",
     icon: <FileOutlined />,
-    className: "report-menu", // Custom class for report menu
+    className: "report-menu",
     children: [
       {
         key: "report_Sale_Summary",
         label: "Sale Summary",
         icon: <PieChartOutlined />,
-        className: "sale-summary-item", // Custom class for sale summary item
+        className: "sale-summary-item",
       },
       {
         key: "report_Expense_Summary",
         label: "Expense Summary",
         icon: <DollarOutlined />,
-        className: "expense-summary-item", // Custom class for expense summary item
+        className: "expense-summary-item",
       },
       {
         key: "purchase_Summary",
         label: "Purchase Summary",
         icon: <ShoppingCartOutlined />,
-        className: "purchase-summary-item", // Custom class for purchase summary item
+        className: "purchase-summary-item",
       },
       {
         key: "report_Customer",
         label: "New Customer Summary",
         icon: <UserOutlined />,
-        className: "new-customer-summary-item", // Custom class for new customer summary item
+        className: "new-customer-summary-item",
       },
       {
         key: "Top_Sale",
         label: "Top Sale",
         icon: <TrophyOutlined />,
-        className: "top-sale-item", // Custom class for top sale item
+        className: "top-sale-item"
       },
     ],
   },
-  // {
-  //   label: "Setting",
-  //   icon: <SettingOutlined />,
-  //   className: "setting-menu", // Custom class for setting menu
-  //   children: [
-  //     {
-  //       key: "Currency",
-  //       label: "Currency",
-  //       icon: <DollarOutlined />,
-  //       className: "currency-item", // Custom class for currency item
-  //     },
-  //     {
-  //       key: "language",
-  //       label: "Language",
-  //       icon: <GlobalOutlined />,
-  //       className: "language-item", // Custom class for language item
-  //     },
-  //   ],
-  // },
 ];
 const MainLayout = () => {
   const permision = getPermission();
@@ -256,7 +198,7 @@ const MainLayout = () => {
 
   useEffect(() => {
     checkISnotPermissionViewPage();
-    // getMenuByUser();
+    getMenuByUser();
     getConfig();
     if (!profile) {
       navigate("/login");
@@ -270,13 +212,10 @@ const MainLayout = () => {
       for (let i = 0; i < permision.length; i++) {
        navigate(permision[i].web_route_key);
        break;
-        
       }
     }
   }
-
   const getMenuByUser =() =>{
-    // items_menu
     let new_items_menu = [];
     items_menu?.map((item1)=>{
       const p1 = permision?.findIndex(
@@ -285,7 +224,6 @@ const MainLayout = () => {
       if (p1 != -1){
         new_items_menu.push(item1);
       }
-      // new_items_menu.push(item1);
       if (item1?.children && item1?.children.length > 0) {
         let childTmp = [];
         item1?.children.map((data1)=>{
@@ -303,14 +241,12 @@ const MainLayout = () => {
     })
     setItems(new_items_menu)
   }
-
   const getConfig = async () => {
     const res = await request("config", "get");
     if (res) {
       setConfig(res);
     }
   };
-
   const onClickMenu = (item) => {
     navigate(item.key);
   };
@@ -319,11 +255,9 @@ const MainLayout = () => {
     setAcccessToken("");
     navigate("/login");
   };
-
   if (!profile) {
     return null;
   }
-
   const itemsDropdown = [
     {
       key: "1",
@@ -349,26 +283,17 @@ const MainLayout = () => {
       label: "Logout",
     },
   ];
-
   return (
     <Layout
       style={{
         minHeight: "100vh",
       }}
     >
-      
       <Sider
-
-
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        {/* {permision?.map((item, index) => (
-  <div key={index}>
-    <div>{item.name}|{item.web_route_key}</div>
-  </div>
-))} */}
         <div className="demo-logo-vertical" />
         <Menu
   theme="dark"
@@ -376,22 +301,12 @@ const MainLayout = () => {
   mode="inline"
   items={items}
   onClick={onClickMenu}
-  // style={{
-  //   // background: "linear-gradient(135deg, #667eea, #764ba2)", // Gradient color
-  //   // color: "#ffffff", // White text color
-  //   fontWeight: "bold",
-  //   fontSize: "16px",
-    
-  // }}
 />
-
-      </Sider>
+     </Sider>
       <Layout>
         <div className="admin-header">
           <div className="admin-header-g1">
-            
           <div className="flex flex-col items-start space-y-1">
-  {/* Logo and Company Name */}
   <div className="flex items-center gap-2">
     <img
       src={logo}
@@ -401,10 +316,7 @@ const MainLayout = () => {
    <h1 className="text-2xl font-bold text-white font-sans text-left">
   PETRONAS CAMBODIA CO., LTD
 </h1>
-
   </div>
-
-  {/* Branch and Address */}
   <div className="text-white text-sm">
     <div className="khmer-text font-semibold text-white">
       សាខា: {profile?.branch_name}
@@ -414,24 +326,8 @@ const MainLayout = () => {
     </div>
   </div>
 </div>
-
-
-            <div>
-              {/* <div className="txt-brand-name">POS-NU</div> */}
-              {/* <div className="txt-brand-name">Count : {count}</div> */}
-
-              {/* <div>Computer & Phone Shop</div> */}
-            </div>
-            {/* <div>
-              <Input.Search
-                style={{ width: 180, marginLeft: 15, marginTop: 10 }}
-                size="large"
-                placeholder="Search"
-              />
-            </div> */}
           </div>
           <div className="admin-header-g2">
-            {/* <IoIosNotifications className="icon-notify" /> */}
             <MdOutlineMarkEmailUnread className="icon-email" />
             <div>
               <div className="txt-username">{profile?.name}</div>
@@ -460,7 +356,6 @@ const MainLayout = () => {
             className="admin-body"
             style={{
               background: colorBgContainer,
-              // backgroundColor:"green",
               borderRadius: borderRadiusLG,
             }}
           >
@@ -472,9 +367,3 @@ const MainLayout = () => {
   );
 };
 export default MainLayout;
-
-
-
-
-
-

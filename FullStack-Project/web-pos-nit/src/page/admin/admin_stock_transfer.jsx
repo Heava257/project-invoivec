@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 const AdminStockTransfer = () => {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -14,34 +13,23 @@ const AdminStockTransfer = () => {
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
-
-  // Fetch users and products on component mount
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Fetch users
         const userResponse = await axios.get("/api/users");
         setUsers(userResponse.data.list || []);
-        
-        // Fetch products
         const productResponse = await axios.get("/api/products");
         setProducts(productResponse.data.list || []);
-        
-        // Fetch transfer history
         fetchTransfers();
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
     };
-
     fetchInitialData();
   }, []);
-
-  // Fetch transfer list when page or search changes
   useEffect(() => {
     fetchTransfers();
   }, [page, txtSearch]);
-
   const fetchTransfers = async () => {
     setIsLoading(true);
     try {
@@ -52,7 +40,6 @@ const AdminStockTransfer = () => {
           page: page
         }
       });
-      
       setTransfers(response.data.list || []);
       setTotalItems(response.data.total);
       setIsLoading(false);
@@ -61,15 +48,12 @@ const AdminStockTransfer = () => {
       setIsLoading(false);
     }
   };
-
   const handleTransfer = async (e) => {
     e.preventDefault();
-    
     if (!selectedUser || !selectedProduct || !qtyTransferred || qtyTransferred <= 0) {
       alert("Please fill in all fields with valid values");
       return;
     }
-    
     setIsLoading(true);
     try {
       await axios.post("/api/admin_stock_transfer", {
@@ -77,12 +61,11 @@ const AdminStockTransfer = () => {
         product_id: selectedProduct,
         qty_transferred: qtyTransferred
       });
-      
       alert("Stock transfer successful!");
       setSelectedUser("");
       setSelectedProduct("");
       setQtyTransferred("");
-      fetchTransfers(); // Refresh the transfer list
+      fetchTransfers();
     } catch (error) {
       console.error("Error transferring stock:", error);
       alert("Stock transfer failed: " + (error.response?.data?.message || error.message));
@@ -90,33 +73,27 @@ const AdminStockTransfer = () => {
       setIsLoading(false);
     }
   };
-
   const handleSearch = (e) => {
     e.preventDefault();
-    setPage(1); // Reset to first page when searching
+    setPage(1);
     fetchTransfers();
   };
-
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this transfer?")) {
       return;
     }
-    
     try {
       await axios.delete(`/api/admin_stock_transfer/${id}`);
       alert("Transfer deleted successfully!");
-      fetchTransfers(); // Refresh the list
+      fetchTransfers();
     } catch (error) {
       console.error("Error deleting transfer:", error);
       alert("Failed to delete transfer");
     }
   };
-
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Admin - Stock Transfer</h2>
-      
-      {/* Search Form */}
       <div className="bg-white p-4 rounded shadow mb-6">
         <form onSubmit={handleSearch} className="flex gap-4 mb-4">
           <input
@@ -145,8 +122,6 @@ const AdminStockTransfer = () => {
           </button>
         </form>
       </div>
-      
-      {/* Transfer Form */}
       <div className="bg-white p-4 rounded shadow mb-6">
         <h3 className="text-xl font-semibold mb-4">Create New Transfer</h3>
         <form onSubmit={handleTransfer} className="space-y-4">
@@ -164,7 +139,6 @@ const AdminStockTransfer = () => {
               ))}
             </select>
           </div>
-          
           <div>
             <label className="block mb-1">Select Product:</label>
             <select 
@@ -181,7 +155,6 @@ const AdminStockTransfer = () => {
               ))}
             </select>
           </div>
-          
           <div>
             <label className="block mb-1">Quantity:</label>
             <input
@@ -193,7 +166,6 @@ const AdminStockTransfer = () => {
               required
             />
           </div>
-          
           <button 
             type="submit" 
             className="bg-green-500 text-white px-4 py-2 rounded"
@@ -203,11 +175,8 @@ const AdminStockTransfer = () => {
           </button>
         </form>
       </div>
-      
-      {/* Transfer List */}
       <div className="bg-white p-4 rounded shadow">
         <h3 className="text-xl font-semibold mb-4">Transfer History</h3>
-        
         {isLoading ? (
           <p className="text-center p-4">Loading...</p>
         ) : transfers.length === 0 ? (
@@ -251,8 +220,6 @@ const AdminStockTransfer = () => {
                 </tbody>
               </table>
             </div>
-            
-            {/* Pagination */}
             <div className="flex justify-between items-center mt-4">
               <span>
                 Showing {transfers.length} of {totalItems} entries
@@ -281,5 +248,4 @@ const AdminStockTransfer = () => {
     </div>
   );
 };
-
 export default AdminStockTransfer;

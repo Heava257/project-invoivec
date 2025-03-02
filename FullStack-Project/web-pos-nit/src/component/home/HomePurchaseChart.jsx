@@ -1,6 +1,5 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-
 export const options = {
   title: "Expense Summary By Month",
   curveType: "function",
@@ -17,5 +16,4 @@ const HomePurchaseChart = ({data =[]}) => {
     />
   );
 };
-
 export default HomePurchaseChart;

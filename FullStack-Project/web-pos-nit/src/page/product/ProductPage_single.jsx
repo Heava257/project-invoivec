@@ -19,7 +19,6 @@ import { request } from "../../util/helper";
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import { configStore } from "../../store/configStore";
-
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -27,7 +26,6 @@ const getBase64 = (file) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
-
 function ProductPage() {
   const { config } = configStore();
   const [form] = Form.useForm();
@@ -35,25 +33,20 @@ function ProductPage() {
     list: [],
     visibleModal: false,
   });
-
   const [filter, setFilter] = useState({
     txt_search: "",
     category_id: "",
     brand: "",
   });
-
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [imageDefault, setImageDefault] = useState([]);
   const [imageOptional, setImageOptional] = useState([]);
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     var param = {
-      // ...filter,
       txt_search: filter.txt_search,
       category_id: filter.category_id,
       brand: filter.brand,
@@ -66,7 +59,6 @@ function ProductPage() {
       }));
     }
   };
-
   const onCloseModal = () => {
     setState((p) => ({
       ...p,
@@ -77,21 +69,17 @@ function ProductPage() {
   };
   const onFinish = async (items) => {
     var params = new FormData();
-    // id	category_id	barcode	name	brand	description	qty	price	discount	status	image
     params.append("name", items.name);
     params.append("category_id", items.category_id);
-    params.append("barcode", items.barcode); //
+    params.append("barcode", items.barcode);
     params.append("brand", items.brand);
     params.append("description", items.description);
     params.append("qty", items.qty);
     params.append("price", items.price);
     params.append("discount", items.discount);
     params.append("status", items.status);
-
-    // when update this two more key
-    params.append("image", form.getFieldValue("image")); // just name image
+    params.append("image", form.getFieldValue("image"));
     params.append("id", form.getFieldValue("id"));
-
     if (items.image_default) {
       if (items.image_default.file.status === "removed") {
         params.append("image_remove", "1");
@@ -126,7 +114,6 @@ function ProductPage() {
       }));
     }
   };
-
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -134,16 +121,13 @@ function ProductPage() {
     setPreviewImage(file.url || file.preview);
     setPreviewOpen(true);
   };
-
   const handleChangeImageDefault = ({ fileList: newFileList }) =>
     setImageDefault(newFileList);
   const handleChangeImageOptional = ({ fileList: newFileList }) =>
     setImageOptional(newFileList);
-
   const onFilter = () => {
     getList();
   };
-
   const onClickEdit = (item, index) => {
     form.setFieldsValue({
       ...item,
@@ -174,7 +158,6 @@ function ProductPage() {
       },
     });
   };
-
   return (
     <MainPage loading={false}>
       <div className="pageHeader">
@@ -312,10 +295,7 @@ function ProductPage() {
             <Upload
               customRequest={(options) => {
                 options.onSuccess();
-                // options.onProgress({ percent: 0 });
-                // options.onProgress({ percent: 100 });
               }}
-              // accept=""
               maxCount={1}
               listType="picture-card"
               fileList={imageDefault}
@@ -325,7 +305,6 @@ function ProductPage() {
               <div>+Upload</div>
             </Upload>
           </Form.Item>
-
           <Form.Item name={"image_optional"} label="Image (Optional)">
             <Upload
               customRequest={(options) => {
@@ -341,7 +320,6 @@ function ProductPage() {
               <div>+Upload</div>
             </Upload>
           </Form.Item>
-
           {previewImage && (
             <Image
               wrapperStyle={{
@@ -428,8 +406,6 @@ function ProductPage() {
             key: "image",
             title: "image",
             dataIndex: "image",
-            // render: (value) =>
-            //   "http://localhost:81/fullstack/image_pos/" + value,
             render: (value) =>
               value ? (
                 <Image
@@ -467,5 +443,4 @@ function ProductPage() {
     </MainPage>
   );
 }
-
 export default ProductPage;

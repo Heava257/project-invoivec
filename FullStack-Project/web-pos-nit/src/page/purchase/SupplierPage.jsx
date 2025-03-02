@@ -14,9 +14,7 @@ function SupplierPage() {
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
-    // ?txtSearch=VN-101 query paramter
     setState((p) => ({
       ...p,
       loading: true,
@@ -33,14 +31,12 @@ function SupplierPage() {
       }));
     }
   };
-
   const openModal = () => {
     setState((p) => ({
       ...p,
       visible: true,
     }));
   };
-
   const closeModal = () => {
     setState((p) => ({
       ...p,
@@ -48,7 +44,6 @@ function SupplierPage() {
     }));
     form.resetFields();
   };
-
   const onFinish = async (items) => {
     var method = "post";
     if (form.getFieldValue("id")) {
@@ -75,7 +70,6 @@ function SupplierPage() {
     });
     openModal();
   };
-
   const onClickBtnDelete = (items) => {
     Modal.confirm({
       title: "Delete Suppler",
@@ -95,13 +89,11 @@ function SupplierPage() {
             list: newList,
             loading: false,
           }));
-          // getList();
           message.success(res.message);
         }
       },
     });
   };
-
   return (
     <MainPage loading={state.loading}>
       <div className="pageHeader">
@@ -307,9 +299,7 @@ function SupplierPage() {
     },
   ]}
 />
-
     </MainPage>
   );
 }
-
 export default SupplierPage;

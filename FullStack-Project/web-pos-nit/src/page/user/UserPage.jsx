@@ -13,7 +13,6 @@ import {
   Table,
   Tag,
 } from "antd";
-import { resetWarned } from "antd/es/_util/warning";
 import { configStore } from "../../store/configStore";
 function UserPage() {
   const [form] = Form.useForm();
@@ -26,14 +25,12 @@ function UserPage() {
   const [state, setState] = useState({
     list: [],
     role: [],
-    // branch_name: [],
     loading: false,
     visible: false,
   });
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     const res = await request("auth/get-list", "get");
     if (res && !res.error) {
@@ -45,18 +42,14 @@ function UserPage() {
       }));
     }
   };
-
   const onClickEdit = (data) => {
     setState((pre) => ({
       ...pre,
-      // handleOpenModal
       visible: true
     }))
     form.setFieldsValue({
       ...data
     });
-    //
-    // form.getFieldValue("id")
   };
   const clickBtnDelete = (item) => {
     Modal.confirm({
@@ -64,7 +57,6 @@ function UserPage() {
       content: "Are you sure you want to remove this user?",
       onOk: async () => {
         const res = await request("user", "delete", { id: item.id });
-
         if (res && !res.error) {
           message.success(res.message);
           const newList = state.list.filter((item1) => item1.id !== item.id);
@@ -73,14 +65,11 @@ function UserPage() {
             list: newList,
           }));
         } else {
-          // If the user is already in use
           message.error(res.message || "This user cannot be deleted because they are linked to other records.");
         }
       },
     });
   };
-
-
   const handleCloseModal = () => {
     setState((pre) => ({
       ...pre,
@@ -88,42 +77,34 @@ function UserPage() {
     }));
     form.resetFields();
   };
-
   const handleOpenModal = () => {
     setState((pre) => ({
       ...pre,
       visible: true,
     }));
   };
-  // {"name":"a","username":"b","password":"12","role_id":2,"is_active":0}
   const onFinish = async (item) => {
     if (item.password !== item.confirm_password) {
       message.warning("Password and Confirm Password Not Match!");
       return;
     }
-
     const data = {
-      id: form.getFieldValue("id"), // Ensure this is correct
+      id: form.getFieldValue("id"),
       ...item,
     };
-
     let method = "post";
     if (form.getFieldValue("id")) {
       method = "put";
     }
-
     const res = await request("auth/register", method, data);
     if (res && !res.error) {
       message.success(res.message);
-      getList(); // Refresh the list after update
+      getList();
       handleCloseModal();
     } else {
       message.warning(res.message);
     }
   };
-
-
-  //  const clickBtnDelete =()=>{}
   return (
     <div>
       <div
@@ -137,30 +118,6 @@ function UserPage() {
           <div>User</div>
           <Space>
             <Input.Search style={{ marginLeft: 10 }} placeholder="Search" />
-
-
-            {/* <div>
-              <Space>
-                <Select
-                  allowClear
-                  style={{ width: 130 }}
-                  placeholder="Select Province"
-                  options={config.category}
-                  onChange={(id) => {
-                    setFilter((pre) => ({ ...pre, category_id: id }));
-                  }}
-                />
-                <Select
-                  allowClear
-                  style={{ width: 130 }}
-                  placeholder="Select Tel"
-                  options={config.brand}
-                  onChange={(id) => {
-                    setFilter((pre) => ({ ...pre, brand: id }));
-                  }}
-                />
-              </Space>
-            </div> */}
           </Space>
         </div>
         <Button type="primary" onClick={handleOpenModal}>
@@ -168,15 +125,12 @@ function UserPage() {
         </Button>
       </div>
       <Modal
-
         open={state.visible}
         onCancel={handleCloseModal}
         footer={null}
         title={form.getFieldValue("id") ? "Update Customer" : "New Customer"}
-
       >
         <Form layout="vertical" form={form} onFinish={onFinish}>
-
           <Row gutter={[16, 16]}> {/* Added vertical spacing between rows */}
             <Col span={12}>
               <Form.Item
@@ -253,7 +207,6 @@ function UserPage() {
                 />
               </Form.Item>
             </Col>
-
             <Col span={12}>
               <Form.Item
                 name={"password"}
@@ -311,11 +264,8 @@ function UserPage() {
                   style={{ borderRadius: "6px" }}
                 />
               </Form.Item>
-
             </Col>
           </Row>
-
-
           <div style={{ textAlign: "right" }}>
             <Space>
               <Button onClick={handleCloseModal}>Cancel</Button>
@@ -326,7 +276,6 @@ function UserPage() {
           </div>
         </Form>
       </Modal>
-      {/* <div>{form.getFieldValue("id") +""}</div> */}
       <Table
         dataSource={state.list}
         columns={[
@@ -338,15 +287,13 @@ function UserPage() {
                 <div className="english-text">Code</div>
               </div>
             ),
-            dataIndex: "id", // Keep the actual id as dataIndex
+            dataIndex: "id",
             render: (text) => (
               <Tag color="blue">
-                {"U" + text} {/* Prefix U before the id */}
+                {"U" + text}
               </Tag>
             ),
           },
-
-
           {
             key: "name",
             title: (
@@ -367,7 +314,6 @@ function UserPage() {
             ),
             dataIndex: "role_name",
           },
-          
           {
             key: "username",
             title: (
@@ -467,9 +413,7 @@ function UserPage() {
 
         ]}
       />
-
     </div>
   );
 }
-
 export default UserPage;

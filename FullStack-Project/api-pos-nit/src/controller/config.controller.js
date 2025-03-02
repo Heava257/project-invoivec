@@ -8,6 +8,9 @@ exports.getList = async (req, res) => {
     
   
     
+    // const [createby] = await db.query(
+    //   "select id as value, name as label from `order`"
+    // );
     
     const [expense] = await db.query(
       "select id as value, name as label from expense"
@@ -74,29 +77,28 @@ exports.getList = async (req, res) => {
         { label: "Petronas Malaysia", value: "petronas-malaysia", country: "Malaysia" }
       ];
       const branch_name = [
-        { label: "Phnom Penh - ភ្នំពេញ", value: "PP" },
-        { label: "Siem Reap - សៀមរាប", value: "SR" },
-        { label: "Battambang - បាត់ដំបង", value: "BB" },
-        { label: "Sihanoukville - សីហនុ", value: "SHV" },
-        { label: "Kampot - កំពត", value: "KP" },
-        { label: "Koh Kong - កោះកុង", value: "KK" },
-        { label: "Takeo - តាកែវ", value: "TK" },
-        { label: "Preah Vihear - ព្រះវិហារ", value: "PV" },
-        { label: "Kandal - កណ្ដាល", value: "KD" },
-        { label: "Kampong Cham - កំពង់ចាម", value: "KC" },
-        { label: "Kampong Thom - កំពង់ធំ", value: "KT" },
-        { label: "Kratie - ក្រចេះ", value: "KR" },
-        { label: "Mondulkiri - មណ្ឌលគីរី", value: "MK" },
-        { label: "Ratanakiri - រតនគិរី", value: "RK" },
-        { label: "Pursat - ពោធិ៍សាត់", value: "PS" },
-        { label: "Svay Rieng - ស្វាយរៀង", value: "SR" },
-        { label: "Prey Veng - ព្រៃវែង", value: "PV" },
-        { label: "Stung Treng - ស្ទឹងត្រង់", value: "ST" },
-        { label: "Tboung Khmum - ត្បូងខ្មុំ", value: "TKM" },
-        { label: "Pailin - ប៉ៃលិន", value: "PL" },
-        { label: "Banteay Meanchey - បន្ទាយមានជ័យ", value: "BM" },
-        { label: "Koh Kong - កោះកុង", value: "KK" },
-    
+        { label: "Phnom Penh - ភ្នំពេញ", value: "Phnom Penh" },
+        { label: "Siem Reap - សៀមរាប", value: "Siem Reap" },
+        { label: "Battambang - បាត់ដំបង", value: "Battambang" },
+        { label: "Sihanoukville - សីហនុ", value: "Sihanoukville" },
+        { label: "Kampot - កំពត", value: "Kampot" },
+        { label: "Koh Kong - កោះកុង", value: "Koh Kong" },
+        { label: "Takeo - តាកែវ", value: "Takeo" },
+        { label: "Preah Vihear - ព្រះវិហារ", value: "Preah Vihear" },
+        { label: "Kandal - កណ្ដាល", value: "Kandal" },
+        { label: "Kampong Cham - កំពង់ចាម", value: "Kampong Cham" },
+        { label: "Kampong Thom - កំពង់ធំ", value: "Kampong Thom" },
+        { label: "Kratie - ក្រចេះ", value: "Kratie" },
+        { label: "Mondulkiri - មណ្ឌលគីរី", value: "Mondulkiri" },
+        { label: "Ratanakiri - រតនគិរី", value: "Ratanakiri" },
+        { label: "Pursat - ពោធិ៍សាត់", value: "Pursat" },
+        { label: "Svay Rieng - ស្វាយរៀង", value: "Svay Rieng" },
+        { label: "Prey Veng - ព្រៃវែង", value: "Prey Veng" },
+        { label: "Stung Treng - ស្ទឹងត្រង់", value: "Stung Treng" },
+        { label: "Tboung Khmum - ត្បូងខ្មុំ", value: "Tboung Khmum" },
+        { label: "Pailin - ប៉ៃលិន", value: "Pailin" },
+        { label: "Banteay Meanchey - បន្ទាយមានជ័យ", value: "Banteay Meanchey" },
+        // Removed duplicate Koh Kong entry
       ];
       
       
@@ -114,14 +116,17 @@ exports.getList = async (req, res) => {
      
      
     ];
+
+
+    // const expanse_id = ("SELECT expense_type_id AS FROM expense");
     // const [customer_name] = await db.query(
     //   "SELECT name FROM customer WHERE id = ?",
       
     // );
 
-    const [customer] = await db.query(
-      "select id as value, concat(name,'-',tel) as label, name, tel, email from customer"
-    );
+    // const [customer] = await db.query(
+    //   `select * from customer where user_id = ?` 
+    // );
 
     res.json({
       category,
@@ -130,15 +135,16 @@ exports.getList = async (req, res) => {
       purchase_status,
       brand,
       expense_type,
-      customer,
+      // customer,
       expense,
       unit,
       company_name,
       user,
       branch_name
+      // expanse_id
       // customer_name
     });
   } catch (error) {
     logError("config.getList", error, res);
   }
-};
+}; 

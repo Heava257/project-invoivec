@@ -56,22 +56,51 @@ const { db, isArray, isEmpty, logError } = require("../util/helper");
 //   }
 // };
 
+// exports.getList = async (req, res) => {
+//   try {
+//     const { txtSearch } = req.query;
+//     const { user_id } = req.params; // Get user_id from URL parameter
+
+//     if (!user_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "user_id is required",
+//       });
+//     }
+
+//     let sql = "SELECT * FROM customer WHERE user_id = :user_id";
+//     const params = { user_id };
+
+//     if (txtSearch) {
+//       sql += " AND (name LIKE :txtSearch OR tel LIKE :txtSearch OR email LIKE :txtSearch)";
+//       params.txtSearch = `%${txtSearch}%`;
+//     }
+
+//     const [list] = await db.query(sql, params);
+
+//     res.json({
+//       success: true,
+//       list,
+//     });
+//   } catch (error) {
+//     logError("customer.getList", error, res);
+//   }
+// };
 exports.getList = async (req, res) => {
   try {
     const { txtSearch } = req.query;
-    const { id: user_id } = req.params; // Get user_id from URL parameter
+    const { user_id } = req.params; // Get user_id from URL parameter
 
     if (!user_id) {
       return res.status(400).json({
         success: false,
-        message: " b user_id is required",
+        message: "user_id is required",
       });
     }
 
-    // ✅ Get customers only created by this user
     let sql = "SELECT * FROM customer WHERE user_id = :user_id";
     const params = { user_id };
-// console.log(user_id);
+
     if (txtSearch) {
       sql += " AND (name LIKE :txtSearch OR tel LIKE :txtSearch OR email LIKE :txtSearch)";
       params.txtSearch = `%${txtSearch}%`;
@@ -84,7 +113,7 @@ exports.getList = async (req, res) => {
       list,
     });
   } catch (error) {
-    logError("customer.getlist", error, res);
+    logError("customer.getList", error, res);
   }
 };
 
@@ -107,7 +136,7 @@ exports.create = async (req, res) => {
 
     // Construct SQL query
     const sql = `
-      INSERT INTO customer_seller (name, tel, email, address, type, create_by, user_id)
+      INSERT INTO customer (name, tel, email, address, type, create_by, user_id)
       VALUES (:name, :tel, :email, :address, :type, :create_by, :user_id)
     `;
 
@@ -132,26 +161,42 @@ exports.create = async (req, res) => {
       message: "Customer created successfully!",
     });
   } catch (error) {
-    // Log and handle errors
-    console.error("Error in customer.create:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while creating the customer.",
-      error: error.message, // Include error message for debugging (remove in production)
-    });
+    logError("customer.create", error, res);
   }
 };
 
 exports.update = async (req, res) => {
   try {
-    var sql =
-      "UPDATE  customer set name=:name, code=:code, tel=:tel, email=:email, address=:address, website=:website, note=:note WHERE id=:id ";
-    var [data] = await db.query(sql, {
-      ...req.body,
+    const { id } = req.params; // Extract `id` from URL parameters
+    const { name, tel, email, address, type } = req.body; // Extract fields from request body
+
+    // Validate required fields
+    if (!name || !tel || !email || !address || !type) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: name, tel, email, address, type",
+      });
+    }
+
+    const sql = `
+      UPDATE customer 
+      SET name = :name, tel = :tel, email = :email, address = :address, type = :type 
+      WHERE id = :id
+    `;
+
+    const [data] = await db.query(sql, {
+      name,
+      tel,
+      email,
+      address,
+      type,
+      id, // Include `id` in the query parameters
     });
+
     res.json({
+      success: true,
       data: data,
-      message: "Update success!",
+      message: "Customer updated successfully!",
     });
   } catch (error) {
     logError("customer.update", error, res);
@@ -160,12 +205,31 @@ exports.update = async (req, res) => {
 
 exports.remove = async (req, res) => {
   try {
-    var [data] = await db.query("DELETE FROM customer WHERE id = :id", {
-      ...req.body,
-    });
+    const { id } = req.params; // Extract `id` from URL parameters
+
+    // Validate `id`
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID is required!",
+      });
+    }
+
+    const sql = "DELETE FROM customer WHERE id = :id";
+    const [data] = await db.query(sql, { id });
+
+    // Check if any rows were affected
+    if (data.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found!",
+      });
+    }
+
     res.json({
+      success: true,
       data: data,
-      message: "Data delete success!",
+      message: "Customer deleted successfully!",
     });
   } catch (error) {
     logError("customer.remove", error, res);

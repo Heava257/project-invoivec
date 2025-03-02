@@ -3,16 +3,18 @@ import {
   Button,
   Form,
   Input,
+  InputNumber,
   message,
   Modal,
   Select,
   Space,
   Table,
-  Tag,
+  DatePicker,
 } from "antd";
 import { request } from "../../util/helper";
 import { MdDelete, MdEdit } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
+import dayjs from "dayjs";
 function ExpansePage() {
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
@@ -20,57 +22,51 @@ function ExpansePage() {
   const [state, setState] = useState({
     visibleModal: false,
     id: null,
-    name: "",
-    descriptoin: "",
-    status: "",
-    parentId: null,
     txtSearch: "",
   });
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     setLoading(true);
-    var param = {
+    const param = {
       txtSearch: state.txtSearch,
     };
-    const res = await request("expanse", "get", param);
+    const res = await request("expense", "get", param);
     setLoading(false);
-    if (res) {
-      setList(res.list);
+    if (res && !res.error) {
+      setList(res.list || []);
     }
   };
   const onClickEdit = (data) => {
     setState({
       ...state,
       visibleModal: true,
+      id: data.id,
     });
     formRef.setFieldsValue({
-      id: data.id, // hiden id (save? | update?)
+      id: data.id,
+      expense_type_id: data.expense_type_id,
+      ref_no: data.ref_no,
       name: data.name,
-      description: data.description,
-      status: data.status,
+      amount: data.amount,
+      remark: data.remark,
+      expense_date: dayjs(data.expense_date),
     });
-    //
-    // formRef.getFieldValue("id")
   };
   const onClickDelete = async (data) => {
     Modal.confirm({
-      title: "លុ​ប",
-      descriptoin: "Are you sure to remove?",
+      title: "លុប",
+      content: "Are you sure to remove?",
       okText: "យល់ព្រម",
       onOk: async () => {
-        const res = await request("customer", "delete", {
-          id: data.id,
-        });
+        const res = await request(`expense/${data.id}`, "delete");
         if (res && !res.error) {
-          // getList(); // request to api response
-          // remove in local
           message.success(res.message);
-          const newList = list.filter((item) => item.id != data.id);
+          const newList = list.filter((item) => item.id !== data.id);
           setList(newList);
+        } else {
+          message.error(res?.message || "Failed to delete expense.");
         }
       },
     });
@@ -79,7 +75,9 @@ function ExpansePage() {
     setState({
       ...state,
       visibleModal: true,
+      id: null,
     });
+    formRef.resetFields();
   };
   const onCloseModal = () => {
     formRef.resetFields();
@@ -89,35 +87,38 @@ function ExpansePage() {
       id: null,
     });
   };
-
-  const onFinish = async (items) => {
-    var data = {
+  const onFinish = async (values) => {
+    const data = {
       id: formRef.getFieldValue("id"),
-      name: items.name,
-      description: items.description,
-      status: items.status,
-      parent_id: 0,
+      expense_type_id: values.expense_type_id,
+      ref_no: values.ref_no,
+      name: values.name,
+      amount: values.amount,
+      remark: values.remark,
+      expense_date: values.expense_date?.format("YYYY-MM-DD"),
     };
-    var method = "post";
-    if (formRef.getFieldValue("id")) {
-      // case update
-      method = "put";
-    }
-    const res = await request("customer", method, data);
+    const method = formRef.getFieldValue("id") ? "put" : "post";
+    const url = formRef.getFieldValue("id") ? `expense/${data.id}` : "expense";
+    console.log("Request URL:", url); 
+    console.log("Request Method:", method);
+    console.log("Request Payload:", data);
+    const res = await request(url, method, data);
     if (res && !res.error) {
       message.success(res.message);
       getList();
       onCloseModal();
+    } else {
+      message.error(res?.message || "Failed to save expense.");
     }
   };
   return (
     <MainPage loading={loading}>
       <div className="pageHeader">
         <Space>
-          <div>Customer</div>
+          <div>Expense Management</div>
           <Input.Search
-            onChange={(value) =>
-              setState((p) => ({ ...p, txtSearch: value.target.value }))
+            onChange={(e) =>
+              setState((p) => ({ ...p, txtSearch: e.target.value }))
             }
             allowClear
             onSearch={getList}
@@ -133,35 +134,58 @@ function ExpansePage() {
       </div>
       <Modal
         open={state.visibleModal}
-        title={formRef.getFieldValue("id") ? "Edit Customer" : "New Customer"}
+        title={formRef.getFieldValue("id") ? "Edit Expense" : "New Expense"}
         footer={null}
         onCancel={onCloseModal}
       >
         <Form layout="vertical" onFinish={onFinish} form={formRef}>
-          <Form.Item name={"name"} label="Customer name">
-            <Input placeholder="Input Customer name" />
+          <Form.Item name="id" hidden>
+            <Input />
           </Form.Item>
-          <Form.Item name={"description"} label="description">
-            <Input.TextArea placeholder="description" />
+          <Form.Item
+            name="expense_type_id"
+            label="Expense Type"
+            rules={[{ required: true, message: "Expense Type is required" }]}
+          >
+            <Input placeholder="Enter Expense Type ID" />
           </Form.Item>
-          <Form.Item name={"status"} label="status">
-            <Select
-              placeholder="Select status"
-              options={[
-                {
-                  label: "Active",
-                  value: 1,
-                },
-                {
-                  label: "InActive",
-                  value: 0,
-                },
-              ]}
+          <Form.Item
+            name="ref_no"
+            label="Reference Number"
+            rules={[{ required: true, message: "Reference Number is required" }]}
+          >
+            <Input placeholder="Enter Reference Number" />
+          </Form.Item>
+          <Form.Item
+            name="name"
+            label="Name"
+            rules={[{ required: true, message: "Name is required" }]}
+          >
+            <Input placeholder="Enter Name" />
+          </Form.Item>
+          <Form.Item
+            name="amount"
+            label="Amount"
+            rules={[{ required: true, message: "Amount is required" }]}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              placeholder="Enter Amount"
+              min={0}
             />
           </Form.Item>
-
+          <Form.Item name="remark" label="Remark">
+            <Input.TextArea placeholder="Enter Remark" />
+          </Form.Item>
+          <Form.Item
+            name="expense_date"
+            label="Expense Date"
+            rules={[{ required: true, message: "Expense Date is required" }]}
+          >
+            <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
+          </Form.Item>
           <Space>
-            <Button>Cancel</Button>
+            <Button onClick={onCloseModal}>Cancel</Button>
             <Button type="primary" htmlType="submit">
               {formRef.getFieldValue("id") ? "Update" : "Save"}
             </Button>
@@ -172,56 +196,61 @@ function ExpansePage() {
         dataSource={list}
         columns={[
           {
-            key: "No",
+            key: "no",
             title: "No",
-            render: (item, data, index) => index + 1,
+            render: (_, __, index) => index + 1,
           },
           {
             key: "expense_type_id",
-            title: "expense_type_id",
-            dataIndex: "expense_type_id",
-          },
-          {
-            key: "name",
-            title: "name",
-            dataIndex: "name",
+            title: "Expense Type",
+            dataIndex: "expense_type_name",
           },
           {
             key: "ref_no",
-            title: "ref_no",
+            title: "Reference Number",
             dataIndex: "ref_no",
           },
           {
+            key: "name",
+            title: "Name",
+            dataIndex: "name",
+          },
+          {
             key: "amount",
-            title: "amount",
+            title: "Amount",
             dataIndex: "amount",
+            render: (value) => {
+              const numericValue = parseFloat(value);
+              return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
+            },
           },
           {
             key: "remark",
-            title: "remark",
+            title: "Remark",
             dataIndex: "remark",
           },
           {
             key: "expense_date",
-            title: "expense_date",
+            title: "Expense Date",
             dataIndex: "expense_date",
+            render: (value) => dayjs(value).format("YYYY-MM-DD h:mm A"), // Format date
           },
           {
-            key: "Action",
+            key: "action",
             title: "Action",
             align: "center",
-            render: (item, data, index) => (
+            render: (_, record) => (
               <Space>
                 <Button
                   type="primary"
                   icon={<MdEdit />}
-                  onClick={() => onClickEdit(data, index)}
+                  onClick={() => onClickEdit(record)}
                 />
                 <Button
                   type="primary"
                   danger
                   icon={<MdDelete />}
-                  onClick={() => onClickDelete(data, index)}
+                  onClick={() => onClickDelete(record)}
                 />
               </Space>
             ),
@@ -231,5 +260,4 @@ function ExpansePage() {
     </MainPage>
   );
 }
-
 export default ExpansePage;

@@ -29,7 +29,7 @@ CREATE TABLE permission_roles (
 INSERT INTO user_roles (user_id,role_id) VALUES
 -- (1,1)
 -- (1,3)
-(17,3)
+(52,25)
 
 
 
@@ -57,6 +57,12 @@ INSERT INTO permission	(name ,	`group`	,is_menu_web,	web_route_key	) VALUES
 ("order.update","order",NULL,NULL),
 ("order.remove","order",NULL,NULL),
 
+("total_due.getlist","total_due",1,"/total_due"),
+("total_due.getone","total_due",NULL,NULL),
+("total_due.create","total_due",NULL,NULL),
+("total_due.update","total_due",NULL,NULL),
+("total_due.remove","total_due",NULL,NULL),
+
 ("product.getlist","product",1,"/product"),
 ("product.getone","product",NULL,NULL),
 ("product.create","product",NULL,NULL),
@@ -83,6 +89,13 @@ INSERT INTO permission	(name ,	`group`	,is_menu_web,	web_route_key	) VALUES
 ("supplier.create","supplier",NULL,NULL),
 ("supplier.update","supplier",NULL,NULL),
 ("supplier.remove","supplier",NULL,NULL),
+
+
+("employee.getlist","employee",1,"/employee"),
+("employee.getone","employee",NULL,NULL),
+("employee.create","employee",NULL,NULL),
+("employee.update","employee",NULL,NULL),
+("employee.remove","employee",NULL,NULL),
 
 ("expanse_type.getlist","expanse_type",1,"/expanse_type"),
 ("expanse_type.getone","expanse_type",NULL,NULL),
@@ -158,6 +171,31 @@ INSERT INTO permission_roles (role_id, permission_id) VALUES
 
 
 INSERT INTO permission (name, `group`, is_menu_web, web_route_key) VALUES
+
+("report_Expense_Summary.getlist","report_Expense_Summary",1,"/report_Expense_Summary"),
+("report_Expense_Summary.getone","report_Expense_Summary",NULL,NULL),
+("report_Expense_Summary.create","report_Expense_Summary",NULL,NULL),
+("report_Expense_Summary.update","report_Expense_Summary",NULL,NULL),
+("report_Expense_Summary.remove","report_Expense_Summary",NULL,NULL),
+
+("purchase_Summary.getlist","purchase_Summary",1,"/purchase_Summary"),
+("purchase_Summary.getone","purchase_Summary",NULL,NULL),
+("purchase_Summary.create","purchase_Summary",NULL,NULL),
+("purchase_Summary.update","purchase_Summary",NULL,NULL),
+("purchase_Summary.remove","purchase_Summary",NULL,NULL),
+
+("report_Customer.getlist","report_Customer",1,"/report_Customer"),
+("report_Customer.getone","report_Customer",NULL,NULL),
+("report_Customer.create","report_Customer",NULL,NULL),
+("report_Customer.update","report_Customer",NULL,NULL),
+("report_Customer.remove","report_Customer",NULL,NULL),
+
+("Top_Sale.getlist","Top_Sale",1,"/Top_Sale"),
+("Top_Sale.getone","Top_Sale",NULL,NULL),
+("Top_Sale.create","Top_Sale",NULL,NULL),
+("Top_Sale.update","Top_Sale",NULL,NULL),
+("Top_Sale.remove","Top_Sale",NULL,NULL),
+
 ("dashboard.getlist","dashboard",1,"/"),
 ("pos.getlist","pos",1,"/pos"),
 
@@ -356,6 +394,95 @@ VALUES
 
 (11, 100),
 (11, 105),
+
+
+
+
+
+INSERT INTO permission_roles (role_id, permission_id)
+VALUES 
+
+(25, 166),
+(25, 167),
+(25, 187)
+(1, 169),
+(1, 170),
+(1, 171),
+(1, 172),
+(1, 173),
+(1, 174),
+(1, 175),
+(1, 176),
+(1, 177),
+(1, 178),
+(1, 179),
+(1, 180),
+(1, 181),
+(1, 182),
+(1, 183),
+(1, 184),
+(1, 185),
+(1, 186),
+(1, 187),
+(1, 188),
+(1, 189),
+(1, 190),
+(1, 191),
+(1, 192),
+(1, 193),
+(1, 194),
+(1, 195),
+(1, 196),
+(1, 197),
+(1, 198),
+(1, 199),
+(1, 200),
+(1, 201),
+(1, 202),
+(1, 203),
+(1, 204),
+(1, 205),
+(1, 206),
+(1, 207),
+(1, 208),
+(1, 209),
+(1, 210),
+(1, 211),
+(1, 212),
+(1, 213),
+(1, 214),
+(1, 215),
+(1, 216),
+(1, 217),
+(1, 218),
+(1, 219),
+(1, 220),
+(1, 221),
+(1, 222),
+(1, 223),
+(1, 224),
+(1, 225),
+(1, 226),
+(1, 227),
+(1, 228),
+(1, 229),
+(1, 230),
+(1, 231),
+(1, 232),
+(1, 233),
+(1, 234),
+(1, 235),
+(1, 236),
+(1, 237),
+(1, 238),
+(1, 239),
+(1, 240),
+(1, 241),
+(1, 242),
+(1, 243),
+(1, 244),
+(1, 245),
+(1, 246);
 
 
 

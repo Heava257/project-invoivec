@@ -27,13 +27,10 @@ function CategoryPage() {
     status: "",
     parentId: null,
     txtSearch: "",
-    
   });
-
   useEffect(() => {
     getList();
   }, []);
-
   const getList = async () => {
     setLoading(true);
     const res = await request("category", "get");
@@ -48,13 +45,11 @@ function CategoryPage() {
       visibleModal: true,
     });
     formRef.setFieldsValue({
-      id: data.id, // hiden id (save? | update?)
+      id: data.id,
       name: data.name,
       description: data.description,
       status: data.status,
     });
-    //
-    // formRef.getFieldValue("id")
   };
   const onClickDelete = async (data, index) => {
     Modal.confirm({
@@ -66,8 +61,6 @@ function CategoryPage() {
           id: data.id,
         });
         if (res && !res.error) {
-          // getList(); // request to api response
-          // remove in local
           message.success(res.message);
           const newList = list.filter((item) => item.id != data.id);
           setList(newList);
@@ -89,7 +82,6 @@ function CategoryPage() {
       id: null,
     });
   };
-
   const onFinish = async (items) => {
     var data = {
       id: formRef.getFieldValue("id"),
@@ -100,7 +92,6 @@ function CategoryPage() {
     };
     var method = "post";
     if (formRef.getFieldValue("id")) {
-      // case update
       method = "put";
     }
     const res = await request("category", method, data);
@@ -110,10 +101,8 @@ function CategoryPage() {
       onCloseModal();
     }
   };
-
   return (
     <MainPage loading={loading}>
-      {/* <h1>{formRef.getFieldValue("id")+""}</h1> */}
       <div className="pageHeader">
         <Space>
           <div>Category</div>
@@ -158,7 +147,6 @@ function CategoryPage() {
               ]}
             />
           </Form.Item>
-
           <Space>
             <Button>Cancel</Button>
             <Button type="primary" htmlType="submit">
@@ -243,9 +231,7 @@ function CategoryPage() {
     },
   ]}
 />
-
     </MainPage>
   );
 }
-
 export default CategoryPage;

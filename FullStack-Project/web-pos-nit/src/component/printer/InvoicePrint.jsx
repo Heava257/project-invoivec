@@ -1,7 +1,5 @@
 import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-
-// Receipt Component for Printing
 const Receipt = React.forwardRef((props, ref) => (
   <div
     ref={ref}
@@ -29,26 +27,21 @@ const Receipt = React.forwardRef((props, ref) => (
     <p style={{ textAlign: "center" }}>Thank you for your purchase!</p>
   </div>
 ));
-
 const App = () => {
   const componentRef = React.useRef(null);
-
   const handleAfterPrint = React.useCallback(() => {
     console.log("`onAfterPrint` called");
   }, []);
-
   const handleBeforePrint = React.useCallback(() => {
     console.log("`onBeforePrint` called");
     return Promise.resolve();
   }, []);
-
   const printFn = useReactToPrint({
     contentRef: componentRef,
     documentTitle: "AwesomeFileName",
     onAfterPrint: handleAfterPrint,
     onBeforePrint: handleBeforePrint,
   });
-
   return (
     <div>
       <button onClick={printFn}>Print</button>
@@ -56,5 +49,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;

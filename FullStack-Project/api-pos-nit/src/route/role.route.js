@@ -6,8 +6,8 @@ const {
   remove,
 } = require("../controller/role.controller");
 module.exports = (app) => {
-  app.get("/api/role", validate_token(), getList);
-  app.post("/api/role", validate_token(), create);
-  app.put("/api/role", validate_token(), update);
-  app.delete("/api/role", validate_token(), remove);
+  app.get("/api/role", validate_token("role.getlist"), getList);
+  app.post("/api/role", validate_token("role.create"), create);
+  app.put("/api/role", validate_token("role.update"), update);
+  app.delete("/api/role", validate_token("role.remove"), remove);
 };

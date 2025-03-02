@@ -1,5 +1,4 @@
 import React from "react";
-
 function RegisterPage() {
   return (
     <div>
@@ -7,5 +6,4 @@ function RegisterPage() {
     </div>
   );
 }
-
 export default RegisterPage;

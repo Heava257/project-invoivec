@@ -1,11 +1,9 @@
 import React from "react";
-import { Config } from "../../util/config";
 import styles from "./BillItem.module.css";
 import { Button, Col, Row, Space } from "antd";
 import { MdAdd, MdDelete, MdHorizontalRule } from "react-icons/md";
 function BillItem({
   name,
-  image,
   brand,
   category_name,
   unit_price,
@@ -15,7 +13,6 @@ function BillItem({
   handleIncrease,
   handleDescrease,
   handleRemove,
-
 }) {
   var final_price = unit_price;
   if (discount != 0 && discount != null) {
@@ -25,13 +22,6 @@ function BillItem({
   return (
     <div className={styles.container}>
       <Row>
-        {/* <Col span={6}>
-          <img
-            src={Config.image_path + image}
-            alt={image}
-            style={{ width: 70, marginRight: 10 }}
-          />
-        </Col> */}
         <Col span={18}>
           <div
             style={{
@@ -83,13 +73,10 @@ function BillItem({
               shape="circle"
               icon={<MdAdd />}
             />
-            
           </Space>
-         
         </Col>
       </Row>
     </div>
   );
 }
-
 export default BillItem;

@@ -1,4 +1,4 @@
-import { Button, message, Result, Spin } from "antd";
+import { Button, Result, Spin } from "antd";
 import React from "react";
 import { getServerStatus } from "../../store/server.store";
 const info = {
@@ -36,7 +36,6 @@ export default function MainPage({ children, loading }) {
       />
     );
   }
-
   return (
     <div>
       <Spin spinning={loading}>{children}</Spin>
