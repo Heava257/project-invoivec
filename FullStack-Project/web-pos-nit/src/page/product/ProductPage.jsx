@@ -16,11 +16,12 @@ import {
   Upload,
 } from "antd";
 import { formatDateClient, isPermission, request } from "../../util/helper";
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdOutlineCreateNewFolder } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import { configStore } from "../../store/configStore";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { getProfile } from "../../store/profile.store";
+import { BsSearch } from "react-icons/bs";
 function ProductPage() {
   const { config } = configStore();
   const [form] = Form.useForm();
@@ -184,7 +185,7 @@ function ProductPage() {
     <MainPage loading={state.loading}>
       <div className="pageHeader">
         <Space>
-          <div>Product {state.total}</div>
+          <div className="khmer-text">ផលិតផល/{state.total}</div>
           <Input.Search
             onChange={(event) =>
               setFilter((p) => ({ ...p, txt_search: event.target.value }))
@@ -210,11 +211,12 @@ function ProductPage() {
               setFilter((pre) => ({ ...pre, brand: id }));
             }}
           />
-          <Button onClick={onFilter} type="primary">
+          
+          <Button onClick={onFilter} type="primary" icon={<BsSearch/>}>
             Filter
           </Button>
         </Space>
-        <Button type="primary" onClick={onBtnNew}>
+        <Button type="primary" onClick={onBtnNew} icon={<MdOutlineCreateNewFolder />}>
           NEW
         </Button>
       </div>
@@ -236,8 +238,26 @@ function ProductPage() {
               }>
                 <Input placeholder="Product Name" style={{ width: "100%" }} />
               </Form.Item>
-
               <Form.Item
+                name={"category_id"}
+                label={
+                  <div>
+                    <div className="khmer-text">ប្រភេទផលិតផល</div>
+                    <div className="english-text">Category</div>
+                  </div>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fill in product category",
+                  },
+                ]}
+              >
+                <Select placeholder="Select category" options={config.category} />
+              </Form.Item>
+              
+
+              {/* <Form.Item
                 name={"brand"}
                 label={
                   <div>
@@ -251,15 +271,15 @@ function ProductPage() {
                     message: "Please fill in product brand",
                   },
                 ]}
-              >
-                <Select
+              > */}
+                {/* <Select
                   placeholder="Select brand"
                   options={config.brand?.map((item) => ({
                     label: item.label + " (" + item.country + ")",
                     value: item.value,
                   }))}
                 />
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item name={"barcode"} label={
                 <div>
                   <div className="khmer-text">លេខបាកូដ</div>
@@ -284,7 +304,10 @@ function ProductPage() {
               }>
                 <InputNumber placeholder="Discount" style={{ width: "100%" }} />
               </Form.Item>
-              <Form.Item
+             
+            </Col>
+            <Col span={12}>
+            <Form.Item
                 name={"company_name"}
                 label={
                   <div>
@@ -301,25 +324,7 @@ function ProductPage() {
               >
                 <Select placeholder="Select Company" options={config?.company_name} />
               </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name={"category_id"}
-                label={
-                  <div>
-                    <div className="khmer-text">ប្រភេទផលិតផល</div>
-                    <div className="english-text">Category</div>
-                  </div>
-                }
-                rules={[
-                  {
-                    required: true,
-                    message: "Please fill in product category",
-                  },
-                ]}
-              >
-                <Select placeholder="Select category" options={config.category} />
-              </Form.Item>
+             
 
               <Form.Item name={"unit"} label={
                 <div>
@@ -459,16 +464,16 @@ function ProductPage() {
             ),
             dataIndex: "category_name",
           },
-          {
-            key: "brand",
-            title: (
-              <div className="table-header">
-                <div className="khmer-text">ម៉ាក</div>
-                <div className="english-text">Brand</div>
-              </div>
-            ),
-            dataIndex: "brand",
-          },
+          // {
+          //   key: "brand",
+          //   title: (
+          //     <div className="table-header">
+          //       <div className="khmer-text">ម៉ាក</div>
+          //       <div className="english-text">Brand</div>
+          //     </div>
+          //   ),
+          //   dataIndex: "brand",
+          // },
           {
             key: "company_name",
             title: (

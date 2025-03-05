@@ -382,7 +382,7 @@ exports.getList = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     // Extract values from request body
-    const { name, category_id, barcode, brand, company_name, description, qty, unit, unit_price, discount, status } = req.body;
+    const { name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status } = req.body;
     
     // Get user_id from authentication or fallback to request body
     const user_id = req.auth?.id || req.body.user_id;
@@ -396,15 +396,14 @@ exports.create = async (req, res) => {
     }
 
     var sql =
-      " INSERT INTO product (user_id, name, category_id, barcode, brand, company_name, description, qty, unit, unit_price, discount, status, create_by) " +
-      " VALUES (:user_id, :name, :category_id, :barcode, :brand, :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by) ";
+      " INSERT INTO product (user_id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, create_by) " +
+      " VALUES (:user_id, :name, :category_id, :barcode,  :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by) ";
 
     var [data] = await db.query(sql, {
       user_id,
       name,
       category_id,
       barcode,
-      brand,
       company_name,
       description,
       qty,

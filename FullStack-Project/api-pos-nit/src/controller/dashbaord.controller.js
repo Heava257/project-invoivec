@@ -49,55 +49,63 @@ exports.getList = async (req, res) => {
   JOIN role r ON u.role_id = r.id
   GROUP BY r.name;
 `);
-
+    const malePercentage = 0.6; // 60%
+    const femalePercentage = 0.4; // 40%
 
     let dashboard = [
       {
-        title: "User Summary",
+        title: "អ្នកប្រើបាស់",
         Summary: {
-          Total: User_Summary.reduce((sum, row) => sum + row.total_users, 0), // Sum of all users
-          Admin: User_Summary.find(role => role.name === 'Admin')?.total_users || 0,
-          User: User_Summary.find(role => role.name === 'User')?.total_users || 0
+          "សរុប": User_Summary.reduce((sum, row) => sum + row.total_users, 0), // បូកសរុបអ្នកប្រើប្រាស់ទាំងអស់
+          "អ្នកគ្រប់គ្រង": User_Summary.find(role => role.name === 'Admin')?.total_users || 0, // ចំនួនអ្នកគ្រប់គ្រង
+          "អ្នកប្រើប្រាស់": User_Summary.find(role => role.name === 'User')?.total_users || 0 // ចំនួនអ្នកប្រើប្រាស់
+
         }
 
       },
       {
-        title: "Customer",
+        title: "អតិថិជន",
         Summary: {
-          Total: customer[0].total,
-          Male: 1,
-          Female: 2
+          សរុប: customer[0].total,
+          បុរស: Math.round(customer[0].total * malePercentage), // 60% Male
+          ស្ត្រី: Math.round(customer[0].total * femalePercentage) // 40% Female
         }
-      },
-      {
-        title: "Employee",
 
-        Summary: {
-          Total: employee[0].total,
-          Male: 1,
-          Female: 2
-        }
-      },
-      {
-        title: "Expanse",
-        Summary: {
-          Expense: "This Month",
-          Total: expanse[0].total + "$",
-          Total_Expense: expanse[0].total_expense
-        }
 
       },
       {
+        title: "និយោជិត", // Employee
 
-        title: "Sale",
         Summary: {
-          Sale: "This Month",
-          Total: sale[0].total,
-          Total_Order: sale[0].total_order
+          សរុប: employee[0].total, // Total
+          បុរស: 1, // Male
+          ស្ត្រី: 2 // Female
+        }
+      }
+      ,
+      {
+        title: "ប្រព័ន្ធចំណាយ",
+        Summary: {
+          "ចំណាយ": "ខែនេះ",
+          "សរុប": expanse[0].total + "$", // Total translated as "សរុប"
+          "ចំនួនសរុប": expanse[0].total_expense // Total_Expense translated as "ចំណាយសរុប"
+        }
+
+      }
+      ,
+      {
+
+        title: "ការលក់",
+        Summary: {
+          "លក់": "ខែនេះ",
+          "សរុប": sale[0].total,
+          "ការបញ្ជាទិញសរុប": sale[0].total_order
         }
 
       }
     ];
+
+    
 
     res.json({
       dashboard,

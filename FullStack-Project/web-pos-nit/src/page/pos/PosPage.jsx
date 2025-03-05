@@ -24,6 +24,10 @@ import styles from "./PosPage.module.css";
 import { useReactToPrint } from "react-to-print";
 import PrintInvoice from "../../component/pos/PrintInvoice";
 import { getProfile } from "../../store/profile.store";
+import { MdAddToPhotos } from "react-icons/md";
+import { BsPrinter } from "react-icons/bs";
+import { FiSearch } from "react-icons/fi";
+import { FcDeleteRow } from "react-icons/fc";
 function PosPage() {
   const [isDisabled, setIsDisabled] = useState(false);
   const { config } = configStore();
@@ -73,6 +77,7 @@ function PosPage() {
     total: 0,
     total_paid: 0,
     customers: null,
+    customer_id: null,
     user_id: null,
     payment_method: null,
     remark: null,
@@ -135,7 +140,7 @@ function PosPage() {
     var findIndex = cart_tmp.findIndex((row) => row.barcode == item.barcode);
     var isNoStock = false;
     if (findIndex == -1) {
-      if (item.qty > 500) {
+      if (item.qty > 0) {
         cart_tmp.push({ ...item, cart_qty: 1 });
       } else {
         isNoStock = true;
@@ -150,7 +155,7 @@ function PosPage() {
       notification.error({
         message: "Warning",
         description: "No stock!. Currently quantity in stock available " + item.qty,
-        placement: "top",
+        placement: "bottomRight",
         style: {
           backgroundColor: "hsl(359,100%,98%)",
           outline: "1px solid #ff4d4f",
@@ -164,6 +169,37 @@ function PosPage() {
     }));
     handleCalSummary();
   };
+
+
+  const handleIncrease = (item, index) => {
+    // Check if increasing the quantity exceeds the available stock
+    if (item.cart_qty + 100 > item.qty) {
+      notification.error({
+        message: "Warning",
+        description: `Cannot increase quantity: Only ${item.qty} items available in stock.`,
+        placement: "bottomRight",
+        style: {
+          backgroundColor: "hsl(359,100%,98%)",
+          outline: "1px solid #ff4d4f",
+        },
+      });
+      return; // Exit the function if stock is insufficient
+    }
+  
+    // Increase the quantity by 100
+    state.cart_list[index].cart_qty += 100;
+    setState((p) => ({ ...p, cart_list: state.cart_list }));
+    handleCalSummary();
+  };
+  const handleDescrease = (item, index) => {
+    if (item.cart_qty > 1) {
+      state.cart_list[index].cart_qty -= 1;
+      setState((p) => ({ ...p, cart_list: state.cart_list }));
+      handleCalSummary();
+    }
+  };
+
+  
   const handleClearCart = () => {
     setState((p) => ({ ...p, cart_list: [] }));
     setObjSummary((p) => ({
@@ -176,18 +212,7 @@ function PosPage() {
       total_paid: 0,
     }));
   };
-  const handleIncrease = (item, index) => {
-    state.cart_list[index].cart_qty += 100;
-    setState((p) => ({ ...p, cart_list: state.cart_list }));
-    handleCalSummary();
-  };
-  const handleDescrease = (item, index) => {
-    if (item.cart_qty > 1) {
-      state.cart_list[index].cart_qty -= 1;
-      setState((p) => ({ ...p, cart_list: state.cart_list }));
-      handleCalSummary();
-    }
-  };
+
 
 
   const handleRemove = (item, index) => {
@@ -308,15 +333,24 @@ function PosPage() {
     setState((p) => ({ ...p, visibleModal: false }));
   };
 
-  const uniqueProducts = state.list.reduce((acc, product) => {
-    const existingCategory = acc.find((p) => p.category_name === product.category_name);
+  // Replace the current uniqueProducts function with this:
+const uniqueProducts = state.list || []; // Simply use the original list
 
-    if (existingCategory) {
-      existingCategory.qty += product.qty; 
-      acc.push({ ...product });
-    }
-    return acc;
-  }, []);
+// If you want to actually summarize by category (which might not be what you want), use this instead:
+/*
+const uniqueProducts = state.list.reduce((acc, product) => {
+  const existingCategoryIndex = acc.findIndex((p) => p.category_name === product.category_name);
+
+  if (existingCategoryIndex >= 0) {
+    // Update existing category's quantity
+    acc[existingCategoryIndex].qty += product.qty;
+  } else {
+    // Add new product to accumulator
+    acc.push({ ...product });
+  }
+  return acc;
+}, []);
+*/
   const columns = [
     {
       title: (
@@ -404,7 +438,7 @@ function PosPage() {
       ),
       key: "action",
       render: (text, record) => (
-        <Button className="add-to-cart-btn" onClick={() => handleAdd(record)} type="primary">
+        <Button className="add-to-cart-btn" onClick={() => handleAdd(record)} type="primary"  icon={<MdAddToPhotos />}>
           Add to Cart
         </Button>
       ),
@@ -425,7 +459,7 @@ function PosPage() {
         <Col span={16} className={styles.grid1}>
           <div className="pageHeader">
             <Space>
-              <div>Product {state.total}</div>
+              <div className="khmer-text">ផលិតផល/ {state.total}</div>
               <Input.Search
                 onChange={(event) =>
                   setFilter((p) => ({ ...p, txt_search: event.target.value }))
@@ -452,10 +486,10 @@ function PosPage() {
                   setFilter((pre) => ({ ...pre, brand: id }));
                 }}
               />
-              <Button onClick={onFilter} type="primary">
+              <Button onClick={onFilter} type="primary" icon={<FiSearch/>}>
                 Search
               </Button>
-              <Button type="primary" onClick={handlePrintInvoice}>
+              <Button type="primary" onClick={handlePrintInvoice} icon={<BsPrinter/>}>
                 Print Invoice{" "}
               </Button>
             </Space>
@@ -482,7 +516,7 @@ function PosPage() {
         <Col span={8}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>Items {state.cart_list.length}</div>
-            <Button onClick={handleClearCart}>Clear</Button>
+            <Button onClick={handleClearCart} icon={<FcDeleteRow />}>Clear</Button>
           </div>
           {state.cart_list?.map((item, index) => (
             <BillItem

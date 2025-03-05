@@ -17,7 +17,10 @@ import { formatDateClient, formatDateServer, request } from "../../util/helper";
 import MainPage from "../../component/layout/MainPage";
 import Style from "../../page/orderPage/OrderPage.module.css"
 import { configStore } from "../../store/configStore";
+import { GrFormView } from "react-icons/gr";
 import dayjs from "dayjs";
+import { BsSearch } from "react-icons/bs";
+import { LuUserRoundSearch } from "react-icons/lu";
 function OrderPage() {
   const { config } = configStore();
   const [formRef] = Form.useForm();
@@ -134,7 +137,7 @@ function OrderPage() {
             placeholder="Search"
           />
           <DatePicker.RangePicker
-            allowClear
+            allowClear={false}
             defaultValue={[
               dayjs(filter.from_date, "DD/MM/YYYY"),
               dayjs(filter.to_date, "DD/MM/YYYY")
@@ -159,8 +162,8 @@ function OrderPage() {
                         user_id : value
                       }));
                     }}
-                    />
-          <Button type="primary" onClick={getList}>
+                   icon={<LuUserRoundSearch />} />
+          <Button type="primary" onClick={getList} icon={<BsSearch />}>
             Filter
           </Button>
         </Space>
@@ -381,7 +384,7 @@ function OrderPage() {
         <Space>
           <Button
             type="primary"
-            icon={<RiCodeView />}
+            icon={<GrFormView />}
             onClick={() => getOderdetail(data, index)}
           />
         </Space>

@@ -11,7 +11,7 @@ import {
   Tag,
 } from "antd";
 import { request } from "../../util/helper";
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md";
+import { MdAdd, MdDelete, MdEdit, MdOutlineCreateNewFolder } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import { configStore } from "../../store/configStore";
 function CategoryPage() {
@@ -105,7 +105,7 @@ function CategoryPage() {
     <MainPage loading={loading}>
       <div className="pageHeader">
         <Space>
-          <div>Category</div>
+          <div className="khmer-text">ប្រភេទផលិតផល</div>
           <Input.Search
             onChange={(value) =>
               setState((p) => ({ ...p, txtSearch: value.target.value }))
@@ -115,46 +115,94 @@ function CategoryPage() {
             placeholder="Search"
           />
         </Space>
-        <Button type="primary" onClick={onClickAddBtn}>
+        <Button type="primary" onClick={onClickAddBtn} icon={<MdOutlineCreateNewFolder />}>
           NEW
         </Button>
       </div>
       <Modal
-        open={state.visibleModal}
-        title={formRef.getFieldValue("id") ? "Edit Category" : "New Category"}
-        footer={null}
-        onCancel={onCloseModal}
-      >
-        <Form layout="vertical" onFinish={onFinish} form={formRef}>
-          <Form.Item name={"name"} label="Category name">
+    open={state.visibleModal}
+    title={
+        <div>
+            <span className="khmer-text">
+                {formRef.getFieldValue("id") ? "កែសម្រួលប្រភេទ" : "ប្រភេទថ្មី"}
+            </span>
+          
+        </div>
+    }
+    footer={null}
+    onCancel={onCloseModal}
+>
+    <Form layout="vertical" onFinish={onFinish} form={formRef}>
+        {/* Category Name */}
+        <Form.Item
+            name={"name"}
+            label={
+                <div>
+                    <span className="khmer-text">ឈ្មោះប្រភេទ</span>
+                </div>
+            }
+        >
             <Input placeholder="Input Category name" />
-          </Form.Item>
-          <Form.Item name={"description"} label="description">
+        </Form.Item>
+
+        {/* Description */}
+        <Form.Item
+            name={"description"}
+            label={
+                <div>
+                    <span className="khmer-text">ការពិពណ៌នា</span>
+                </div>
+            }
+        >
             <Input.TextArea placeholder="description" />
-          </Form.Item>
-          <Form.Item name={"status"} label="status">
+        </Form.Item>
+
+        {/* Status */}
+        <Form.Item
+            name={"status"}
+            label={
+                <div>
+                    <span className="khmer-text">ស្ថានភាព</span>
+                </div>
+            }
+        >
             <Select
-              placeholder="Select status"
-              options={[
-                {
-                  label: "Active",
-                  value: 1,
-                },
-                {
-                  label: "InActive",
-                  value: 0,
-                },
-              ]}
+                placeholder="Select status"
+                options={[
+                    {
+                        label: (
+                            <div>
+                                <span className="khmer-text">សកម្ម</span>
+                            </div>
+                        ),
+                        value: 1,
+                    },
+                    {
+                        label: (
+                            <div>
+                                <span className="khmer-text">អសកម្ម</span>
+                            </div>
+                        ),
+                        value: 0,
+                    },
+                ]}
             />
-          </Form.Item>
-          <Space>
-            <Button>Cancel</Button>
-            <Button type="primary" htmlType="submit">
-              {formRef.getFieldValue("id") ? "Update" : "Save"}
+        </Form.Item>
+
+        {/* Buttons */}
+        <Space>
+            <Button>
+                <span className="khmer-text">បោះបង់</span>
             </Button>
-          </Space>
-        </Form>
-      </Modal>
+            <Button type="primary" htmlType="submit">
+                <span className="khmer-text">
+                    {formRef.getFieldValue("id") ? "កែសម្រួល" : "រក្សាទុក"}
+                </span>
+               
+            </Button>
+        </Space>
+    </Form>
+</Modal>
   <Table
   dataSource={list}
   columns={[

@@ -12,9 +12,10 @@ import {
   DatePicker,
 } from "antd";
 import { request } from "../../util/helper";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit, MdOutlineCreateNewFolder } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import dayjs from "dayjs";
+import { FiSearch } from "react-icons/fi";
 function ExpansePage() {
   const [formRef] = Form.useForm();
   const [list, setList] = useState([]);
@@ -124,139 +125,237 @@ function ExpansePage() {
             onSearch={getList}
             placeholder="Search"
           />
-          <Button type="primary" onClick={getList}>
+          <Button type="primary" onClick={getList} icon={<FiSearch />}>
             Filter
           </Button>
         </Space>
-        <Button type="primary" onClick={onClickAddBtn}>
+        <Button type="primary" onClick={onClickAddBtn} icon={<MdOutlineCreateNewFolder />}>
           NEW
         </Button>
       </div>
       <Modal
-        open={state.visibleModal}
-        title={formRef.getFieldValue("id") ? "Edit Expense" : "New Expense"}
-        footer={null}
-        onCancel={onCloseModal}
-      >
-        <Form layout="vertical" onFinish={onFinish} form={formRef}>
-          <Form.Item name="id" hidden>
+    open={state.visibleModal}
+    title={
+        <div>
+            <div className="khmer-text">
+                {formRef.getFieldValue("id") ? "កែសម្រួលចំណាយ" : "ចំណាយថ្មី"}
+            </div>
+          
+        </div>
+    }
+    footer={null}
+    onCancel={onCloseModal}
+>
+    <Form layout="vertical" onFinish={onFinish} form={formRef}>
+        {/* Hidden ID Field */}
+        <Form.Item name="id" hidden>
             <Input />
-          </Form.Item>
-          <Form.Item
+        </Form.Item>
+
+        {/* Expense Type */}
+        <Form.Item
             name="expense_type_id"
-            label="Expense Type"
+            label={
+                <div>
+                    <div className="khmer-text">ប្រភេទចំណាយ</div>
+                </div>
+            }
             rules={[{ required: true, message: "Expense Type is required" }]}
-          >
+        >
             <Input placeholder="Enter Expense Type ID" />
-          </Form.Item>
-          <Form.Item
+        </Form.Item>
+
+        {/* Reference Number */}
+        <Form.Item
             name="ref_no"
-            label="Reference Number"
+            label={
+                <div>
+                    <div className="khmer-text">លេខយោង</div>
+                </div>
+            }
             rules={[{ required: true, message: "Reference Number is required" }]}
-          >
+        >
             <Input placeholder="Enter Reference Number" />
-          </Form.Item>
-          <Form.Item
+        </Form.Item>
+
+        {/* Name */}
+        <Form.Item
             name="name"
-            label="Name"
+            label={
+                <div>
+                    <div className="khmer-text">ឈ្មោះ</div>
+                </div>
+            }
             rules={[{ required: true, message: "Name is required" }]}
-          >
+        >
             <Input placeholder="Enter Name" />
-          </Form.Item>
-          <Form.Item
+        </Form.Item>
+
+        {/* Amount */}
+        <Form.Item
             name="amount"
-            label="Amount"
+            label={
+                <div>
+                    <div className="khmer-text">ចំនួនទឹកប្រាក់</div>
+                </div>
+            }
             rules={[{ required: true, message: "Amount is required" }]}
-          >
+        >
             <InputNumber
-              style={{ width: "100%" }}
-              placeholder="Enter Amount"
-              min={0}
+                style={{ width: "100%" }}
+                placeholder="Enter Amount"
+                min={0}
             />
-          </Form.Item>
-          <Form.Item name="remark" label="Remark">
+        </Form.Item>
+
+        {/* Remark */}
+        <Form.Item
+            name="remark"
+            label={
+                <div>
+                    <div className="khmer-text">ផ្សេងៗ</div>
+                </div>
+            }
+        >
             <Input.TextArea placeholder="Enter Remark" />
-          </Form.Item>
-          <Form.Item
+        </Form.Item>
+
+        {/* Expense Date */}
+        <Form.Item
             name="expense_date"
-            label="Expense Date"
+            label={
+                <div>
+                    <div className="khmer-text">កាលបរិច្ឆេទចំណាយ</div>
+                </div>
+            }
             rules={[{ required: true, message: "Expense Date is required" }]}
-          >
+        >
             <DatePicker style={{ width: "100%" }} format="YYYY-MM-DD" />
-          </Form.Item>
-          <Space>
-            <Button onClick={onCloseModal}>Cancel</Button>
-            <Button type="primary" htmlType="submit">
-              {formRef.getFieldValue("id") ? "Update" : "Save"}
+        </Form.Item>
+
+        {/* Buttons */}
+        <Space>
+            <Button onClick={onCloseModal}>
+                <div>
+                    <div className="khmer-text">បោះបង់</div>
+                </div>
             </Button>
-          </Space>
-        </Form>
-      </Modal>
+            <Button type="primary" htmlType="submit">
+                <div>
+                    <div className="khmer-text">
+                        {formRef.getFieldValue("id") ? "កែសម្រួល" : "រក្សាទុក"}
+                    </div>
+                   
+                </div>
+            </Button>
+        </Space>
+    </Form>
+</Modal>
       <Table
-        dataSource={list}
-        columns={[
-          {
+    dataSource={list}
+    columns={[
+        {
             key: "no",
-            title: "No",
+            title: (
+                <div>
+                    <div className="khmer-text">ល.រ</div>
+                    <div className="english-text">No</div>
+                </div>
+            ),
             render: (_, __, index) => index + 1,
-          },
-          {
+        },
+        {
             key: "expense_type_id",
-            title: "Expense Type",
+            title: (
+                <div>
+                    <div className="khmer-text">ប្រភេទចំណាយ</div>
+                    <div className="english-text">Expense Type</div>
+                </div>
+            ),
             dataIndex: "expense_type_name",
-          },
-          {
+        },
+        {
             key: "ref_no",
-            title: "Reference Number",
+            title: (
+                <div>
+                    <div className="khmer-text">លេខយោង</div>
+                    <div className="english-text">Reference Number</div>
+                </div>
+            ),
             dataIndex: "ref_no",
-          },
-          {
+        },
+        {
             key: "name",
-            title: "Name",
+            title: (
+                <div>
+                    <div className="khmer-text">ឈ្មោះ</div>
+                    <div className="english-text">Name</div>
+                </div>
+            ),
             dataIndex: "name",
-          },
-          {
+        },
+        {
             key: "amount",
-            title: "Amount",
+            title: (
+                <div>
+                    <div className="khmer-text">ចំនួនទឹកប្រាក់</div>
+                    <div className="english-text">Amount</div>
+                </div>
+            ),
             dataIndex: "amount",
             render: (value) => {
-              const numericValue = parseFloat(value);
-              return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
+                const numericValue = parseFloat(value);
+                return !isNaN(numericValue) ? `$${numericValue.toFixed(2)}` : "N/A";
             },
-          },
-          {
+        },
+        {
             key: "remark",
-            title: "Remark",
+            title: (
+                <div>
+                    <div className="khmer-text">ផ្សេងៗ</div>
+                    <div className="english-text">Remark</div>
+                </div>
+            ),
             dataIndex: "remark",
-          },
-          {
+        },
+        {
             key: "expense_date",
-            title: "Expense Date",
+            title: (
+                <div>
+                    <div className="khmer-text">កាលបរិច្ឆេទចំណាយ</div>
+                    <div className="english-text">Expense Date</div>
+                </div>
+            ),
             dataIndex: "expense_date",
             render: (value) => dayjs(value).format("YYYY-MM-DD h:mm A"), // Format date
-          },
-          {
+        },
+        {
             key: "action",
-            title: "Action",
+            title: (
+                <div>
+                    <div className="khmer-text">សកម្មភាព</div>
+                    <div className="english-text">Action</div>
+                </div>
+            ),
             align: "center",
             render: (_, record) => (
-              <Space>
-                <Button
-                  type="primary"
-                  icon={<MdEdit />}
-                  onClick={() => onClickEdit(record)}
-                />
-                <Button
-                  type="primary"
-                  danger
-                  icon={<MdDelete />}
-                  onClick={() => onClickDelete(record)}
-                />
-              </Space>
+                <Space>
+                    <Button
+                        type="primary"
+                        icon={<MdEdit />}
+                        onClick={() => onClickEdit(record)}
+                    />
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<MdDelete />}
+                        onClick={() => onClickDelete(record)}
+                    />
+                </Space>
             ),
-          },
-        ]}
-      />
+        },
+    ]}
+/>
     </MainPage>
   );
 }

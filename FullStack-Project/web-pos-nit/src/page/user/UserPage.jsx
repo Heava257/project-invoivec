@@ -14,6 +14,7 @@ import {
   Tag,
 } from "antd";
 import { configStore } from "../../store/configStore";
+import { MdOutlineCreateNewFolder } from "react-icons/md";
 function UserPage() {
   const [form] = Form.useForm();
   const { config } = configStore();
@@ -120,22 +121,28 @@ function UserPage() {
             <Input.Search style={{ marginLeft: 10 }} placeholder="Search" />
           </Space>
         </div>
-        <Button type="primary" onClick={handleOpenModal}>
+        <Button type="primary" onClick={handleOpenModal} icon={<MdOutlineCreateNewFolder />}>
           New
         </Button>
       </div>
-      <Modal
+      <Modal className="khmer-branch"
         open={state.visible}
         onCancel={handleCloseModal}
         footer={null}
-        title={form.getFieldValue("id") ? "Update Customer" : "New Customer"}
+        title={form.getFieldValue("id") ? "កែប្រែអ្នកប្រើប្រាស់" : "បញ្ចូលអ្នកប្រើប្រាស់ថ្មី"}
       >
-        <Form layout="vertical" form={form} onFinish={onFinish}>
-          <Row gutter={[16, 16]}> {/* Added vertical spacing between rows */}
+        <Form layout="vertical" form={form} onFinish={onFinish} className="custom-form">
+          <Row gutter={[16, 16]}>
+            {/* Added vertical spacing between rows */}
             <Col span={12}>
               <Form.Item
                 name={"name"}
-                label="Name"
+                label={
+                  <div>
+                    <span className="khmer-text">ឈ្មោះ</span>
+                    {/* <span className="english-text">Name</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -143,11 +150,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input placeholder="Name" style={{ borderRadius: "6px" }} />
+                <Input placeholder="Name" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"address"}
-                label="Address"
+                label={
+                  <div>
+                    <span className="khmer-text">អាសយដ្ឋាន</span>
+                    {/* <span className="english-text">Address</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -155,11 +168,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input placeholder="Address" style={{ borderRadius: "6px" }} />
+                <Input placeholder="Address" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"tel"}
-                label="Tel"
+                label={
+                  <div>
+                    <span className="khmer-text">លេខទូរស័ព្ទ</span>
+                    {/* <span className="english-text">Tel</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -167,11 +186,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input placeholder="Tel" style={{ borderRadius: "6px" }} />
+                <Input placeholder="Tel" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"username"}
-                label="Email"
+                label={
+                  <div>
+                    <span className="khmer-text">អ៊ីម៉ែល</span>
+                    {/* <span className="english-text">Email</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -179,11 +204,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input placeholder="Email" style={{ borderRadius: "6px" }} />
+                <Input placeholder="Email" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"is_active"}
-                label="Status"
+                label={
+                  <div>
+                    <span className="khmer-text">ស្ថានភាព</span>
+                    {/* <span className="english-text">Status</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -203,14 +234,20 @@ function UserPage() {
                       value: 0,
                     },
                   ]}
-                  style={{ borderRadius: "6px" }}
+                  className="select-field"
                 />
               </Form.Item>
             </Col>
+
             <Col span={12}>
               <Form.Item
                 name={"password"}
-                label="Password"
+                label={
+                  <div>
+                    <span className="khmer-text">ពាក្យសម្ងាត់</span>
+                    {/* <span className="english-text">Password</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -218,11 +255,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input.Password placeholder="Password" style={{ borderRadius: "6px" }} />
+                <Input.Password placeholder="Password" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"confirm_password"}
-                label="Confirm Password"
+                label={
+                  <div>
+                    <span className="khmer-text">បញ្ជាក់ពាក្យសម្ងាត់</span>
+                    {/* <span className="english-text">Confirm Password</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -230,11 +273,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Input.Password placeholder="Confirm Password" style={{ borderRadius: "6px" }} />
+                <Input.Password placeholder="Confirm Password" className="input-field" />
               </Form.Item>
+
               <Form.Item
                 name={"role_id"}
-                label="Role"
+                label={
+                  <div>
+                    <span className="khmer-text">តួនាទី</span>
+                    {/* <span className="english-text">Role</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -242,15 +291,17 @@ function UserPage() {
                   },
                 ]}
               >
-                <Select
-                  placeholder="Select Role"
-                  options={state?.role}
-                  style={{ borderRadius: "6px" }}
-                />
+                <Select placeholder="Select Role" options={state?.role} className="select-field" />
               </Form.Item>
+
               <Form.Item
                 name={"branch_name"}
-                label="Branch"
+                label={
+                  <div>
+                    <span className="khmer-text">សាខា</span>
+                    {/* <span className="english-text">Branch</span> */}
+                  </div>
+                }
                 rules={[
                   {
                     required: true,
@@ -258,14 +309,11 @@ function UserPage() {
                   },
                 ]}
               >
-                <Select
-                  placeholder="Select Branch"
-                  options={config?.branch_name}
-                  style={{ borderRadius: "6px" }}
-                />
+                <Select placeholder="Select Branch" options={config?.branch_name} className="select-field" />
               </Form.Item>
             </Col>
           </Row>
+
           <div style={{ textAlign: "right" }}>
             <Space>
               <Button onClick={handleCloseModal}>Cancel</Button>
@@ -275,6 +323,7 @@ function UserPage() {
             </Space>
           </div>
         </Form>
+
       </Modal>
       <Table
         dataSource={state.list}

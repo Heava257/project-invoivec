@@ -38,153 +38,154 @@ const items_menu = [
     key: "version",
     label: <Tag color="green">V 1.0.1</Tag>,
     disabled: true,
-    className: "version-item",
+    className: "version-item khmrt-branch",
   },
   {
     key: "",
-    label: "Dashboard",
+    label: "ផ្ទាំងគ្រប់គ្រង",
     icon: <PieChartOutlined/>,
-    className: "dashboard-item",
+    className: "dashboard-item khmrt-branch",
   },
   { 
     key: "invoices",
-    label: "Invoices",
+    label: "វិក្កយបត្រ",
     icon: <DesktopOutlined />,
-    className: "invoices-item",
+    className: "invoices-item khmrt-branch",
   },
   {
     key: "order",
-    label: "Invoices Detail",
+    label: "សេចក្ដីលម្អិតវិក្កយបត្រ",
     icon: <FileOutlined />,
-    className: "invoices-detail-item", 
+    className: "invoices-detail-item khmrt-branch", 
   },
   {
     key: "total_due",
-    label: "Total Due",
+    label: "សរុបដែលត្រូវបង់",
     icon: <CreditCardOutlined />,
-    className: "invoices-detail-item",
+    className: "invoices-detail-item khmrt-branch",
   },
   {
-    label: "Product",
+    label: "ផលិតផល",
     icon: <ShopOutlined />,
-    className: "product-menu",
+    className: "product-menu khmrt-branch",
     children: [
       {
         key: "product",
-        label: "Warehouse",
+        label: "ឃ្លាំងសន្សំ",
         icon: <FileProtectOutlined />,
-        className: "list-product-item",
-      },
-      {
-        key: "category",
-        label: "Category",
-        icon: <SolutionOutlined />,
-        className: "category-item",
+        className: "list-product-item khmrt-branch",
       },
     ],
   },
   {
-    label: "Purchase",
+    key: "category",
+    label: "ប្រភេទ",
+    icon: <SolutionOutlined />,
+    className: "category-item khmrt-branch",
+  },
+  {
+    label: "ការទិញ",
     icon: <ShoppingCartOutlined />,
-    className: "purchase-menu",
+    className: "purchase-menu khmrt-branch",
     children: [
       {
         key: "supplier",
-        label: "Supplier",
+        label: "អ្នកផ្គត់ផ្គង់",
         icon: <UsergroupAddOutlined />,
-        className: "supplier-item",
+        className: "supplier-item khmrt-branch",
       },
     ],
   },
   {
     key: "customer",
-    label: "Customer",
+    label: "អតិថិជន",
     icon: <UserOutlined />,
-    className: "list-Customer-item", 
+    className: "list-Customer-item khmrt-branch", 
   },
   {
-    label: "Expense",
+    label: "ចំណាយ",
     icon: <DollarOutlined />,
-    className: "expense-menu", 
+    className: "expense-menu khmrt-branch", 
     children: [
       {
         key: "expanse",
-        label: "Expense",
+        label: "ចំណាយ",
         icon: <DollarOutlined />,
-        className: "expense-item",
+        className: "expense-item khmrt-branch",
       },
     ],
   },
   {
-    label: "Employee",
+    label: "និយោជិក",
     icon: <UserOutlined />,
-    className: "employee-menu",
+    className: "employee-menu khmrt-branch",
     children: [
       {
         key: "employee",
-        label: "Employee",
+        label: "និយោជិក",
         icon: <UserOutlined />,
-        className: "employee-item",
+        className: "employee-item khmrt-branch",
       },
     ],
   },
   {
-    label: "User",
+    label: "អ្នកប្រើប្រាស់",
     icon: <SolutionOutlined />,
-    className: "user-menu",
+    className: "user-menu khmrt-branch",
     children: [
       {
         key: "user",
-        label: "User",
+        label: "អ្នកប្រើប្រាស់",
         icon: <UserOutlined />,
-        className: "user-item",
+        className: "user-item khmrt-branch",
       },
       {
         key: "role",
-        label: "Role",
+        label: "តួនាទី",
         icon: <SafetyCertificateOutlined />,
-        className: "role-item",
+        className: "role-item khmrt-branch",
       },
     ],
   },
   {
-    label: "Report",
+    label: "របាយការណ៍",
     icon: <FileOutlined />,
-    className: "report-menu",
+    className: "report-menu khmrt-branch",
     children: [
       {
         key: "report_Sale_Summary",
-        label: "Sale Summary",
+        label: "សង្ខេបការលក់",
         icon: <PieChartOutlined />,
-        className: "sale-summary-item",
+        className: "sale-summary-item khmrt-branch",
       },
       {
         key: "report_Expense_Summary",
-        label: "Expense Summary",
+        label: "សង្ខេបការចំណាយ",
         icon: <DollarOutlined />,
-        className: "expense-summary-item",
+        className: "expense-summary-item khmrt-branch",
       },
       {
         key: "purchase_Summary",
-        label: "Purchase Summary",
+        label: "សង្ខេបការទិញ",
         icon: <ShoppingCartOutlined />,
-        className: "purchase-summary-item",
+        className: "purchase-summary-item khmrt-branch",
       },
       {
         key: "report_Customer",
-        label: "New Customer Summary",
+        label: "សង្ខេបអតិថិជនថ្មី",
         icon: <UserOutlined />,
-        className: "new-customer-summary-item",
+        className: "new-customer-summary-item khmrt-branch",
       },
       {
         key: "Top_Sale",
-        label: "Top Sale",
+        label: "ការលក់កំពូល",
         icon: <TrophyOutlined />,
-        className: "top-sale-item"
+        className: "top-sale-item khmrt-branch",
       },
     ],
   },
 ];
+
 const MainLayout = () => {
   const permision = getPermission();
   const { setConfig } = configStore();
@@ -262,8 +263,9 @@ const MainLayout = () => {
     {
       key: "1",
       label: (
-        <a target="_blank" rel="noopener noreferrer" href="/">
-          profile
+        <a  disabled target="_blank" rel="noopener noreferrer">
+           {/* href="/" */}
+          Profile
         </a>
       ),
     },
@@ -271,7 +273,7 @@ const MainLayout = () => {
       key: "2",
       label: (
         <a target="_blank" rel="noopener noreferrer" href="/">
-          changs your password
+          Changs Your Password
         </a>
       ),
       icon: <SmileOutlined/>,
@@ -318,10 +320,10 @@ const MainLayout = () => {
 </h1>
   </div>
   <div className="text-white text-sm">
-    <div className="khmer-text font-semibold text-white">
+    <div className="khmer-branch text-white">
       សាខា: {profile?.branch_name}
     </div>
-    <div className="khmer-text text-white">
+    <div className="khmer-branch text-white">
       អាសយដ្ឋាន: {profile?.address}
     </div>
   </div>
@@ -362,7 +364,15 @@ const MainLayout = () => {
             <Outlet />
           </div>
         </Content>
+        <Footer
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        ©{new Date().getFullYear()} Created by PETRONAS CO.,LTD
+      </Footer>
       </Layout>
+      
     </Layout>
   );
 };

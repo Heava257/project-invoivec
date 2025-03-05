@@ -327,7 +327,8 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import MainPage from "../../component/layout/MainPage";
 import { configStore } from "../../store/configStore";
 import * as XLSX from 'xlsx/xlsx.mjs';
-
+import { BsSearch } from "react-icons/bs";
+import { IoIosBook } from "react-icons/io";
 function Total_DuePage() {
   const { config } = configStore();
   const [form] = Form.useForm();
@@ -506,11 +507,11 @@ function Total_DuePage() {
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
           />
-          <Button onClick={onFilter} type="primary">
+          <Button onClick={onFilter} type="primary"  icon={<BsSearch/>}>
             Filter
           </Button>
         </Space>
-        <Button onClick={ExportToExcel} type="primary">Export to Excel</Button>
+        <Button onClick={ExportToExcel} type="primary" icon={<IoIosBook />}>Export to Excel</Button>
       </div>
       <Table
         className="custom-table"

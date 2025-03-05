@@ -3,6 +3,7 @@ import { request } from "../../util/helper";
 import MainPage from "../../component/layout/MainPage";
 import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import dayjs from "dayjs";
+import { MdOutlineCreateNewFolder } from "react-icons/md";
 function SupplierPage() {
   const [form] = Form.useForm();
   const [state, setState] = useState({
@@ -108,102 +109,160 @@ function SupplierPage() {
             placeholder="Search"
           />
         </Space>
-        <Button type="primary" onClick={openModal}>
+        <Button type="primary" onClick={openModal} icon={<MdOutlineCreateNewFolder />}>
           NEW
         </Button>
       </div>
       <Modal
-        open={state.visible}
-        title={form.getFieldValue("id") ? "Edit Supplier" : "New Supplier"}
-        onCancel={closeModal}
-        footer={null}
-      >
-        <Form layout="vertical" form={form} onFinish={onFinish}>
-          <Form.Item
+    open={state.visible}
+    title={
+        <div>
+            <span className="khmer-text">
+                {form.getFieldValue("id") ? "កែសម្រួលអ្នកផ្គត់ផ្គង់" : "អ្នកផ្គត់ផ្គង់ថ្មី"}
+            </span>
+          
+        </div>
+    }
+    onCancel={closeModal}
+    footer={null}
+>
+    <Form layout="vertical" form={form} onFinish={onFinish}>
+        {/* Name */}
+        <Form.Item
             name="name"
-            label="name"
+            label={
+                <div>
+                    <span className="khmer-text">ឈ្មោះ</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "name required!",
-              },
+                {
+                    required: true,
+                    message: "Name is required!",
+                },
             ]}
-          >
-            <Input placeholder="code" />
-          </Form.Item>
-          <Form.Item
+        >
+            <Input placeholder="Name" />
+        </Form.Item>
+
+        {/* Code */}
+        <Form.Item
             name="code"
-            label="code"
+            label={
+                <div>
+                    <span className="khmer-text">កូដ</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "code required!",
-              },
+                {
+                    required: true,
+                    message: "Code is required!",
+                },
             ]}
-          >
-            <Input placeholder="code" />
-          </Form.Item>
-          <Form.Item
+        >
+            <Input placeholder="Code" />
+        </Form.Item>
+
+        {/* Tel */}
+        <Form.Item
             name="tel"
-            label="tel"
+            label={
+                <div>
+                    <span className="khmer-text">ទូរស័ព្ទ</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "tel required!",
-              },
+                {
+                    required: true,
+                    message: "Tel is required!",
+                },
             ]}
-          >
-            <Input placeholder="tel" />
-          </Form.Item>
-          <Form.Item
+        >
+            <Input placeholder="Tel" />
+        </Form.Item>
+
+        {/* Email */}
+        <Form.Item
             name="email"
-            label="email"
+            label={
+                <div>
+                    <span className="khmer-text">អ៊ីមែល</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "email required!",
-              },
+                {
+                    required: true,
+                    message: "Email is required!",
+                },
             ]}
-          >
-            <Input placeholder="email" />
-          </Form.Item>
-          <Form.Item
+        >
+            <Input placeholder="Email" />
+        </Form.Item>
+
+        {/* Address */}
+        <Form.Item
             name="address"
-            label="address"
+            label={
+                <div>
+                    <span className="khmer-text">អាសយដ្ឋាន</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "address required!",
-              },
+                {
+                    required: true,
+                    message: "Address is required!",
+                },
             ]}
-          >
-            <Input placeholder="address" />
-          </Form.Item>
-          <Form.Item
+        >
+            <Input placeholder="Address" />
+        </Form.Item>
+
+        {/* Website */}
+        <Form.Item
             name="website"
-            label="website"
+            label={
+                <div>
+                    <span className="khmer-text">គេហទំព័រ</span>
+                </div>
+            }
             rules={[
-              {
-                required: true,
-                message: "website required!",
-              },
+                {
+                    required: true,
+                    message: "Website is required!",
+                },
             ]}
-          >
-            <Input placeholder="website" />
-          </Form.Item>
-          <Form.Item name="note" label="note">
-            <Input.TextArea placeholder="note" />
-          </Form.Item>
-          <Form.Item style={{ textAlign: "right" }}>
+        >
+            <Input placeholder="Website" />
+        </Form.Item>
+
+        {/* Note */}
+        <Form.Item
+            name="note"
+            label={
+                <div>
+                    <span className="khmer-text">កំណត់សម្គាល់</span>
+                </div>
+            }
+        >
+            <Input.TextArea placeholder="Note" />
+        </Form.Item>
+
+        {/* Buttons */}
+        <Form.Item style={{ textAlign: "right" }}>
             <Space>
-              <Button onClick={closeModal}>Cancel</Button>
-              <Button type="primary" htmlType="submit">
-                {form.getFieldValue("id") ? "Update" : "Save"}
-              </Button>
+                <Button onClick={closeModal}>
+                    <span className="khmer-text">បោះបង់</span>
+                </Button>
+                <Button type="primary" htmlType="submit">
+                    <span className="khmer-text">
+                        {form.getFieldValue("id") ? "កែសម្រួល" : "រក្សាទុក"}
+                    </span>
+                  
+                </Button>
             </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
+        </Form.Item>
+    </Form>
+</Modal>
       <Table
   dataSource={state.list}
   columns={[

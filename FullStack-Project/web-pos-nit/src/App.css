@@ -34,6 +34,12 @@ td {
   font-weight: bold;
   color: #333; 
 }
+.khmer-branch {
+  font-family: 'Khmer OS Muol';
+  font-size: 14px;
+  font-weight: bold;
+  color: #333; 
+}
 .english-text {
   font-family: 'Arial', sans-serif;
   font-size: 12px;
@@ -519,3 +525,102 @@ body {
   object-fit: cover; /* Ensures image covers the area */
 }
 
+
+
+.khmrt-branch {
+  font-family: 'Siemreap';
+  font-size: 15px;
+  font-weight: bold;
+  color: #333; 
+}
+
+
+/* 
+Khmer UI (default for Windows)
+Noto Sans Khmer (Google Fonts)
+Battambang (Google Fonts)
+Bayon (Google Fonts)
+Nokora (Google Fonts) */
+
+/* Traditional & Readable Khmer Fonts:
+Noto Serif Khmer (Google Fonts)
+Siemreap (Google Fonts)
+Kantumruy Pro (Google Fonts)
+Koulen (Google Fonts)
+Moul (Google Fonts)
+Decorative & Artistic Khmer Fonts:
+Bayon (Google Fonts)
+Angkor (Google Fonts)
+Metal Khmer (Cambodian-designed)
+Boeung Ket (Custom Khmer Style) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Apply Khmer font to the body or the entire app */
+body {
+  font-family: 'Noto Sans Khmer', sans-serif;
+}
+
+/* Add specific classes for different sections */
+.home-page {
+  padding: 20px;
+}
+
+.home-page h1,
+.home-page h2 {
+  font-family: 'Noto Sans Khmer', sans-serif;
+  color: #333;
+}
+
+/* Style for the HomeGrid component */
+.home-grid {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Style for charts */
+.home-sale-chart, .home-purchase-chart {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+/* You can define other specific classes to target the components as needed */
+.home-page {
+  padding: 20px;
+  font-family: 'Noto Sans Khmer', sans-serif;
+}
+
+.home-header {
+  background-color: #f0f0f0;
+  padding: 20px;
+  text-align: center;
+}
+
+.sale-chart-section, .purchase-chart-section {
+  margin-top: 30px;
+}
+
+.custom-sale-chart {
+  background-color: #e1f5fe;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.custom-purchase-chart {
+  background-color: #ffebee;
+  padding: 20px;
+  border-radius: 10px;
+}

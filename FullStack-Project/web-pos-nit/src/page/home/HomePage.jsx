@@ -34,11 +34,21 @@ function HomePage() {
     }
   };
   return (
-    <div>
-      <HomeGrid data={dashboard} />
-      <HomeSaleChart data={saleBymonth} />
-      <HomePurchaseChart data={expenseBymonth} />
+    <div className="home-page">
+      <div className="home-header">
+        {/* You can add content here for the header or any other section */}
+        <HomeGrid data={dashboard} />
+      </div>
+  
+      <div className="sale-chart-section">
+        <HomeSaleChart data={saleBymonth} className="custom-sale-chart" />
+      </div>
+  
+      <div className="purchase-chart-section">
+        <HomePurchaseChart data={expenseBymonth} className="custom-purchase-chart" />
+      </div>
     </div>
   );
+  
 }
 export default HomePage;
