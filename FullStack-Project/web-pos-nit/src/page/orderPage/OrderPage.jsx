@@ -44,6 +44,37 @@ function OrderPage() {
   });
   
   // This function fetches the orders list
+  // const getList = async () => {
+  //   setLoading(true);
+  //   try {
+  //     // Prepare query parameters for API call
+  //     const param = {
+  //       txtSearch: state.txtSearch,
+  //       from_date: formatDateServer(filter.from_date),
+  //       to_date: formatDateServer(filter.to_date),
+  //       user_id: filter.user_id || "",  // Send the selected user_id (if any)
+  //     };
+      
+  //     console.log("API Request Params:", param);
+  //     const { id } = getProfile();
+  //           if (!id) return;
+  //     // Make a single API call to the orders endpoint - use a generic endpoint
+  //     // Your backend will handle the authorization logic
+  //     const res = await request(`order/${id}`, "get", param);
+      
+  //     if (res) {
+  //       setList(res.list || []);
+  //       setSummary(res.summary || { total_amount: 0, total_order: 0 });
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching list: ", error);
+  //     message.error("Failed to fetch order data");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const getList = async () => {
     setLoading(true);
     try {
@@ -52,14 +83,12 @@ function OrderPage() {
         txtSearch: state.txtSearch,
         from_date: formatDateServer(filter.from_date),
         to_date: formatDateServer(filter.to_date),
-        user_id: filter.user_id || "",  // Send the selected user_id (if any)
+        user_id: filter.user_id || getProfile().id, // Use selected user_id or default to logged-in user
       };
-      
+  
       console.log("API Request Params:", param);
-      
-      // Make a single API call to the orders endpoint - use a generic endpoint
-      // Your backend will handle the authorization logic
-      const res = await request("order", "get", param);
+  
+      const res = await request(`order/${param.user_id}`, "get", param);
       
       if (res) {
         setList(res.list || []);
@@ -72,6 +101,7 @@ function OrderPage() {
       setLoading(false);
     }
   };
+  
   
   // Fetch data when filter changes
   useEffect(() => {
@@ -154,21 +184,22 @@ function OrderPage() {
             />
           )}
           {isPermission("customer.create") && (
-            <Select
-              style={{ width: 300 }}
-              allowClear
-              placeholder="Select User"
-              value={filter.user_id}
-              options={config?.user || []}
-              onChange={(value) => {
-                console.log("Selected user ID:", value);
-                setFilter((prev) => ({
-                  ...prev,
-                  user_id: value,
-                }));
-              }}
-              suffixIcon={<LuUserRoundSearch />}
-            />
+          <Select
+          style={{ width: 300 }}
+          allowClear
+          placeholder="Select User"
+          value={filter.user_id}
+          options={config?.user || []} // Assuming config.user has list of users
+          onChange={(value) => {
+            console.log("Selected user ID:", value);
+            setFilter((prev) => ({
+              ...prev,
+              user_id: value,
+            }));
+          }}
+          suffixIcon={<LuUserRoundSearch />}
+        />
+        
           )}
           <Button type="primary" onClick={handleSearch} icon={<BsSearch />}>
             Filter
