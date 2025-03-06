@@ -333,7 +333,7 @@ const MainLayout = () => {
             <MdOutlineMarkEmailUnread className="icon-email" />
             <div>
               <div className="txt-username">{profile?.name}</div>
-              <div>{profile?.role_name}</div>
+              <div>{profile?.username}</div>
             </div>
             <Dropdown
               menu={{

@@ -342,6 +342,8 @@ SELECT 1 AS role_id,id FROM permissions;
 
 INSERT INTO permission_roles (role_id, permission_id)
 VALUES 
+(25, 177),
+
 (1, 58),
 (1, 59),
 (1, 60),

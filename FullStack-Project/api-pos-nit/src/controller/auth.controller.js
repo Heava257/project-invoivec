@@ -381,53 +381,89 @@ exports.profile = async (req, res) => {
   }
 };
 
-exports.validate_token = (permission_name) => {
-  // call in midleware in route (role route, user route, teacher route)
-  return (req, res, next) => {
-    var authorization = req.headers.authorization; // token from client
-    var token_from_client = null;
-    if (authorization != null && authorization != "") {
-      token_from_client = authorization.split(" "); // authorization : "Bearer lkjsljrl;kjsiejr;lqjl;ksjdfakljs;ljl;r"
-      token_from_client = token_from_client[1]; // get only access_token
-    }
-    if (token_from_client == null) {
-      res.status(401).send({
-        message: "Unauthorized",
-      });
-    } else {
-      jwt.verify(
-        token_from_client,
-        config.config.token.access_token_key,
-        (error, result) => {
-          if (error) {
-            res.status(401).send({
-              message: "Unauthorized",
-              error: error,
-            });
-          } else {
+// exports.validate_token = (permission_name) => {
+//   // call in midleware in route (role route, user route, teacher route)
+//   return (req, res, next) => {
+//     var authorization = req.headers.authorization; // token from client
+//     var token_from_client = null;
+//     if (authorization != null && authorization != "") {
+//       token_from_client = authorization.split(" "); // authorization : "Bearer lkjsljrl;kjsiejr;lqjl;ksjdfakljs;ljl;r"
+//       token_from_client = token_from_client[1]; // get only access_token
+//     }
+//     if (token_from_client == null) {
+//       res.status(401).send({
+//         message: "Unauthorized",
+//       });
+//     } else {
+//       jwt.verify(
+//         token_from_client,
+//         config.config.token.access_token_key,
+//         (error, result) => {
+//           if (error) {
+//             res.status(401).send({
+//               message: "Unauthorized",
+//               error: error,
+//             });
+//           } else {
 
-            if (permission_name){
-              let findIdex = result.data.permision?.findIdex(
-                (item) => item.name == permission_name
-              );
-              if (findIdex == -1 ){
-                res.status(401).send({
-                  message:"Unauthorized",
-                  error:error 
-                });
-                return;
-              }
-            }
-            req.current_id = result.data.profile.id;
-            req.auth = result.data.profile; // write user property
-            req.permision = result.data.permision; // write user property
-            next(); // continue controller
-          }
-        }
-      );
+//             if (permission_name){
+//               let findIdex = result.data.permision?.findIdex(
+//                 (item) => item.name == permission_name
+//               );
+//               if (findIdex == -1 ){
+//                 res.status(401).send({
+//                   message:"Unauthorized",
+//                   error:error 
+//                 });
+//                 return;
+//               }
+//             }
+//             req.current_id = result.data.profile.id;
+//             req.auth = result.data.profile; // write user property
+//             req.permision = result.data.permision; // write user property
+//             next(); // continue controller
+//           }
+//         }
+//       );
+//     }
+//   };
+// };
+exports.validate_token = (permission_name) => {
+  return (req, res, next) => {
+    var authorization = req.headers.authorization;
+    var token_from_client = null;
+    if (authorization && authorization !== "") {
+      token_from_client = authorization.split(" ")[1];
     }
+    
+    if (!token_from_client) {
+      return res.status(401).send({ message: "Unauthorized" });
+    }
+
+    jwt.verify(token_from_client, config.config.token.access_token_key, (error, result) => {
+      if (error) {
+        return res.status(401).send({ message: "Unauthorized", error: error });
+      }
+
+      if (permission_name) {
+        let findIndex = result.data.permision?.findIndex(item => item.name === permission_name);
+        if (findIndex === -1) {
+          return res.status(401).send({ message: "Unauthorized" });
+        }
+      }
+
+      req.current_id = result.data.profile.id;
+      req.auth = result.data.profile;
+      req.permission = result.data.permision;
+
+      // Determine if the user is an admin
+      req.isAdmin = result.data.profile.role === 'admin';
+
+      next();
+    });
   };
 };
+
 
 const getPermissionByUser = async (user_id) => {
   let sql =

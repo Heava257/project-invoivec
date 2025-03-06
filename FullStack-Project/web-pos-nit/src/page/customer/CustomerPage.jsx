@@ -327,6 +327,7 @@ function CustomerPage() {
             ],
             onFilter: (value, record) => record.status === value,
           },
+          
           {
             key: "action",
             title: (
@@ -339,19 +340,21 @@ function CustomerPage() {
             width: 120,
             render: (_, record) => (
               <Space>
+                {isPermission("customer.update")&&(
                 <Button
                   type="primary"
                   icon={<MdEdit />}
                   onClick={() => onClickEdit(record)}
                   size="small"
-                />
+                />)}
+                {isPermission("customer.update")&&(
                 <Button
                   type="primary"
                   danger
                   icon={<MdDelete />}
                   onClick={() => onClickDelete(record)}
                   size="small"
-                />
+                />)}
               </Space>
             ),
           },
