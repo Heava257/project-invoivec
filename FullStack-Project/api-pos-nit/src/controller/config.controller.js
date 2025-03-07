@@ -111,10 +111,13 @@ exports.getList = async (req, res) => {
     //   { label: "Panasonic", value: "Panasonic", country: "USA" },
     // ];
     const unit = [
-      { label: "L", value: "lite" },
-      { label: "T", value: "ton"},
-     
-     
+      { label: "Liter", value: "liter" },
+      { label: "Ton", value: "ton" },
+    ];
+
+    const product = [
+      { label: "OIL", value: "oil" },
+      // { label: "Ton", value: "ton" },
     ];
 
 
@@ -140,7 +143,8 @@ exports.getList = async (req, res) => {
       unit,
       company_name,
       user,
-      branch_name
+      branch_name,
+      product
       // expanse_id
       // customer_name
     });

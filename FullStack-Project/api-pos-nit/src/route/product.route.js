@@ -10,7 +10,7 @@ const {
 const { uploadFile } = require("../util/helper");
 
 module.exports = (app) => {
-  app.post("/api/product",validate_token("product.create","product"),create);
+  app.post("/api/product",validate_token("product.create"),create);
   app.get('/api/product/:user_id',validate_token("product.getlist"),getList);
   
   app.put("/api/product",validate_token("product.update","product"), update);

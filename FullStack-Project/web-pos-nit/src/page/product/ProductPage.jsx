@@ -230,13 +230,32 @@ function ProductPage() {
         <Form layout="vertical" onFinish={onFinish} form={form} onValuesChange={onValuesChange}>
           <Row gutter={8}>
             <Col span={12}>
-              <Form.Item name={"name"} label={
+              {/* <Form.Item name={"name"} label={
                 <div>
                   <div className="khmer-text">ឈ្មោះផលិតផល</div>
                   <div className="english-text">Product Name</div>
                 </div>
               }>
                 <Input placeholder="Product Name" style={{ width: "100%" }} />
+              </Form.Item> */}
+
+
+              <Form.Item
+                name={"name"}
+                label={
+                  <div>
+                    <div className="khmer-text">ឈ្មោះផលិតផល</div>
+                    <div className="english-text">Product Name</div>
+                  </div>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please fill in product Name",
+                  },
+                ]}
+              >
+                <Select placeholder="Select Product " options={config.product} />
               </Form.Item>
               <Form.Item
                 name={"category_id"}
@@ -524,7 +543,7 @@ function ProductPage() {
             ),
           },
           {
-            key: "price",
+            key: "total_price",
             title: (
               <div className="table-header">
                 <div className="khmer-text">តម្លៃសរុប</div>

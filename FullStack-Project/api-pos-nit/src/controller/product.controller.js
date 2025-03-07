@@ -293,31 +293,107 @@ const {
 //     logError("product.getList", error, res);
 //   }
 // };
+// exports.getList = async (req, res) => {
+//   try {
+//     var { txt_search, category_id, brand, page, is_list_all } = req.query;
+//     var { user_id } = req.params; // Extract user_id from URL params
+
+//     const pageSize = 2; // Fixed page size
+//     page = Number(page) || 1; // Default to page 1 if not provided
+//     const offset = (page - 1) * pageSize; // Calculate offset for pagination
+
+//     var sqlSelect = `
+//     SELECT 
+//       p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
+//       p.description, p.qty, p.unit_price, p.discount, p.status, 
+//       p.create_by, p.create_at, p.unit, 
+//       c.name AS category_name,
+//       (p.qty * p.unit_price) AS original_price,
+//       CASE
+//         WHEN p.discount > 0 THEN (p.qty * p.unit_price) * (1 - p.discount / 100)
+//         ELSE (p.qty * p.unit_price)
+//       END AS total_price
+//     FROM product p
+//     LEFT JOIN category c ON p.category_id = c.id
+//   `;
+
+//     var sqlJoin = ` FROM product p INNER JOIN category c ON p.category_id = c.id `;
+//     var sqlWhere = ` WHERE p.user_id = :user_id `; // Ensure we filter by user_id
+
+//     // Apply additional filters based on query parameters
+//     if (txt_search) {
+//       sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode) `;
+//     }
+//     if (category_id) {
+//       sqlWhere += ` AND p.category_id = :category_id`;
+//     }
+//     if (brand) {
+//       sqlWhere += ` AND p.brand = :brand`;
+//     }
+
+//     var sqlLimit = ` LIMIT ${pageSize} OFFSET ${offset}`;
+//     if (is_list_all) {
+//       sqlLimit = ``; // If is_list_all is true, remove LIMIT and OFFSET
+//     }
+
+//     var sqlList = sqlSelect + sqlJoin + sqlWhere + sqlLimit;
+//     var sqlparam = {
+//       user_id, // Now passing user_id from params
+//       txt_search: `%${txt_search}%`,
+//       barcode: txt_search,
+//       category_id,
+//       brand,
+//     };
+
+//     const [list] = await db.query(sqlList, sqlparam);
+
+//     var dataCount = 0;
+//     if (page === 1) {
+//       let sqlTotal = ` SELECT COUNT(p.id) as total ` + sqlJoin + sqlWhere;
+//       var [dataCount] = await db.query(sqlTotal, sqlparam);
+//       dataCount = dataCount[0].total;
+//     }
+
+//     res.json({
+//       list: list,
+//       total: dataCount,
+//     });
+//   } catch (error) {
+//     logError("product.getList", error, res);
+//   }
+// };
 exports.getList = async (req, res) => {
   try {
-    var { txt_search, category_id, brand, page, is_list_all } = req.query;
-    var { user_id } = req.params; // Extract user_id from URL params
+    const { txt_search, category_id, brand, page, is_list_all } = req.query;
+    const { user_id } = req.params; // Extract user_id from URL params
 
     const pageSize = 2; // Fixed page size
-    page = Number(page) || 1; // Default to page 1 if not provided
-    const offset = (page - 1) * pageSize; // Calculate offset for pagination
+    const currentPage = Number(page) || 1; // Default to page 1 if not provided
+    const offset = (currentPage - 1) * pageSize; // Calculate offset for pagination
 
-    var sqlSelect = `
+    // Base SQL query to select product details
+    const sqlSelect = `
       SELECT 
         p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
         p.description, p.qty, p.unit_price, p.discount, p.status, 
         p.create_by, p.create_at, p.unit, 
         c.name AS category_name,
         (p.qty * p.unit_price) AS original_price,
-        (p.qty * p.unit_price) * (1 - p.discount / 100) AS total_price
+        CASE
+          WHEN p.discount > 0 THEN (p.qty * p.unit_price) * (1 - p.discount / 100)
+          ELSE (p.qty * p.unit_price)
+        END AS total_price
     `;
 
-    var sqlJoin = ` FROM product p INNER JOIN category c ON p.category_id = c.id `;
-    var sqlWhere = ` WHERE p.user_id = :user_id `; // Ensure we filter by user_id
+    // SQL JOIN clause
+    const sqlJoin = `FROM product p INNER JOIN category c ON p.category_id = c.id`;
+
+    // SQL WHERE clause with user_id filter
+    let sqlWhere = `WHERE p.user_id = :user_id`;
 
     // Apply additional filters based on query parameters
     if (txt_search) {
-      sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode) `;
+      sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode)`;
     }
     if (category_id) {
       sqlWhere += ` AND p.category_id = :category_id`;
@@ -326,38 +402,45 @@ exports.getList = async (req, res) => {
       sqlWhere += ` AND p.brand = :brand`;
     }
 
-    var sqlLimit = ` LIMIT ${pageSize} OFFSET ${offset}`;
+    // SQL LIMIT and OFFSET for pagination
+    let sqlLimit = `LIMIT ${pageSize} OFFSET ${offset}`;
     if (is_list_all) {
       sqlLimit = ``; // If is_list_all is true, remove LIMIT and OFFSET
     }
 
-    var sqlList = sqlSelect + sqlJoin + sqlWhere + sqlLimit;
-    var sqlparam = {
-      user_id, // Now passing user_id from params
-      txt_search: `%${txt_search}%`,
-      barcode: txt_search,
+    // Combine SQL clauses with proper spacing
+    const sqlList = `${sqlSelect} ${sqlJoin} ${sqlWhere} ${sqlLimit}`;
+
+    // SQL parameters
+    const sqlParam = {
+      user_id, // Pass user_id from params
+      txt_search: `%${txt_search}%`, // Add wildcards for LIKE search
+      barcode: txt_search, // Use the same value for barcode search
       category_id,
       brand,
     };
 
-    const [list] = await db.query(sqlList, sqlparam);
+    // Execute the query to get the list of products
+    const [list] = await db.query(sqlList, sqlParam);
 
-    var dataCount = 0;
-    if (page === 1) {
-      let sqlTotal = ` SELECT COUNT(p.id) as total ` + sqlJoin + sqlWhere;
-      var [dataCount] = await db.query(sqlTotal, sqlparam);
-      dataCount = dataCount[0].total;
+    // Calculate total count of products (only for the first page)
+    let dataCount = 0;
+    if (currentPage === 1) {
+      const sqlTotal = `SELECT COUNT(p.id) AS total ${sqlJoin} ${sqlWhere}`;
+      const [totalResult] = await db.query(sqlTotal, sqlParam);
+      dataCount = totalResult[0].total;
     }
 
+    // Send the response
     res.json({
       list: list,
       total: dataCount,
     });
   } catch (error) {
+    // Log the error and send a response
     logError("product.getList", error, res);
   }
 };
-
 
 // exports.create = async (req, res) => {
 //   try {

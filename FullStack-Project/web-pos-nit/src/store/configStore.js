@@ -13,7 +13,8 @@ export const configStore = create((set) => ({
     company_name:null,
     user:null,
     branch_name:null,
-    createby:null
+    createby:null,
+    product:null
   },
   setConfig: (params) =>
     set((state) => ({
