@@ -188,18 +188,17 @@ exports.update = async (req, res) => {
       });
     }
 
-    // Convert `unit_price` and `discount` to numbers if they're passed as strings
     const convertedUnitPrice = parseFloat(unit_price);
-    const convertedDiscount = parseFloat(discount);
 
-    if (isNaN(convertedUnitPrice) || isNaN(convertedDiscount)) {
+    const convertedDiscount = discount ? parseFloat(discount) : 0;
+
+    if (isNaN(convertedUnitPrice)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid value for unit_price or discount. Please provide valid numbers.",
+        message: "Invalid value for unit_price. Please provide a valid number.",
       });
     }
 
-    // SQL query for updating product
     const sql = `
       UPDATE product
       SET 
@@ -226,7 +225,7 @@ exports.update = async (req, res) => {
       unit_price: convertedUnitPrice,
       discount: convertedDiscount,
       status,
-      create_by: req.auth?.name, // Assumes that `create_by` should be the authenticated user
+      create_by: req.auth?.name, // Assumes the authenticated user is the one updating the product
     });
 
     // If no rows are affected, it means the product ID doesn't exist
@@ -237,7 +236,6 @@ exports.update = async (req, res) => {
       });
     }
 
-    // Respond with success message and data
     res.json({
       success: true,
       message: "Product updated successfully.",
@@ -254,6 +252,7 @@ exports.update = async (req, res) => {
     });
   }
 };
+
 
 
 
