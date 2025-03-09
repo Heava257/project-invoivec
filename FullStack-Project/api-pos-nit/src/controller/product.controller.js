@@ -96,6 +96,21 @@ exports.create = async (req, res) => {
     
     // Get user_id from authentication or fallback to request body
     const user_id = req.auth?.id || req.body.user_id;
+
+    // Log all the fields for debugging
+    console.log("Fields received for product creation:", {
+      user_id,
+      name,
+      category_id,
+      barcode,
+      company_name,
+      description,
+      qty,
+      unit,
+      unit_price,
+      discount,
+      status
+    });
   
     // Validate required fields
     if (!user_id || !name || !category_id || !qty || !unit || !unit_price) {
@@ -111,6 +126,22 @@ exports.create = async (req, res) => {
       VALUES 
       (:user_id, :name, :category_id, :barcode, :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by)
     `;
+
+    // Log SQL query values
+    console.log("Executing query with values:", {
+      user_id,
+      name,
+      category_id,
+      barcode,
+      company_name,
+      description,
+      qty,
+      unit,
+      unit_price,
+      discount,
+      status,
+      create_by: req.auth?.name,
+    });
 
     const [data] = await db.query(sql, {
       user_id,
@@ -134,12 +165,17 @@ exports.create = async (req, res) => {
     });
   } catch (error) {
     logError("product.create", error, res);
+
+    // Log the full error object for debugging
+    console.error("Error while creating product:", error);
+
     res.status(500).json({
       success: false,
       message: "An error occurred while creating the product. Please try again later.",
     });
   }
 };
+
 
 
 exports.update = async (req, res) => {
