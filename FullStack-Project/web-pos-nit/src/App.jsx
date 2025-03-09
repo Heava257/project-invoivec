@@ -33,8 +33,8 @@ function App() {
   </MainLayoutAuth>
 );
   return (
-    <BrowserRouter>
-      <Routes>
+    <BrowserRouter  basename="petronaskh">
+      <Routes >
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/employee" element={<EmployeePage />} />
