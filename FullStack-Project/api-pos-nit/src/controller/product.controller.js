@@ -177,9 +177,10 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    // Validate that the product ID is provided
-    const { id, name, category_id,  company_name, description, qty, unit, unit_price, discount, status, price } = req.body;
+    // Extracting fields from request body
+    const { id, name, category_id, company_name, description, qty, unit, unit_price, discount, status } = req.body;
 
+    // Check if `id` is provided
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -198,21 +199,7 @@ exports.update = async (req, res) => {
       });
     }
 
-    // Log received data for debugging
-    console.log("Fields received for product update:", {
-      id,
-      name,
-      category_id,
-      company_name,
-      description,
-      qty,
-      unit,
-      unit_price: convertedUnitPrice,
-      discount: convertedDiscount,
-      status,
-      price,
-    });
-
+    // SQL query for updating product
     const sql = `
       UPDATE product
       SET 
@@ -223,7 +210,6 @@ exports.update = async (req, res) => {
         qty = :qty, 
         unit = :unit, 
         unit_price = :unit_price, 
-        price = :price, 
         discount = :discount, 
         status = :status
       WHERE id = :id
@@ -240,8 +226,7 @@ exports.update = async (req, res) => {
       unit_price: convertedUnitPrice,
       discount: convertedDiscount,
       status,
-      price,
-      create_by: req.auth?.name,
+      create_by: req.auth?.name, // Assumes that `create_by` should be the authenticated user
     });
 
     // If no rows are affected, it means the product ID doesn't exist
@@ -252,13 +237,14 @@ exports.update = async (req, res) => {
       });
     }
 
+    // Respond with success message and data
     res.json({
       success: true,
       message: "Product updated successfully.",
       data,
     });
   } catch (error) {
-    // Log the full error object for debugging
+    // Log error for debugging
     console.error("Error while updating product:", error);
     
     logError("product.update", error, res);
@@ -268,6 +254,7 @@ exports.update = async (req, res) => {
     });
   }
 };
+
 
 
 exports.remove = async (req, res) => {
