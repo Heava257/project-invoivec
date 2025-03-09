@@ -10,7 +10,7 @@ const {
 
 exports.getList = async (req, res) => {
   try {
-    const { txt_search, category_id, brand, page, is_list_all } = req.query;
+    const { txt_search, category_id, page, is_list_all } = req.query;
     const { user_id } = req.params; // Extract user_id from URL params
 
     const pageSize = 2; // Fixed page size
@@ -20,7 +20,7 @@ exports.getList = async (req, res) => {
     // Base SQL query to select product details
     const sqlSelect = `
       SELECT 
-        p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
+        p.id, p.name, p.category_id, p.barcode, p.company_name, 
         p.description, p.qty, p.unit_price, p.discount, p.status, 
         p.create_by, p.create_at, p.unit, 
         c.name AS category_name,
@@ -63,7 +63,6 @@ exports.getList = async (req, res) => {
       txt_search: `%${txt_search}%`, // Add wildcards for LIKE search
       barcode: txt_search, // Use the same value for barcode search
       category_id,
-      brand,
     };
 
     const [list] = await db.query(sqlList, sqlParam);
@@ -83,6 +82,7 @@ exports.getList = async (req, res) => {
     logError("product.getList", error, res);
   }
 };
+
 
 
 
