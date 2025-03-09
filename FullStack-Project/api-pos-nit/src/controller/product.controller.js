@@ -178,7 +178,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     // Validate that the product ID is provided
-    const { id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, price } = req.body;
+    const { id, name, category_id,  company_name, description, qty, unit, unit_price, discount, status, price } = req.body;
 
     if (!id) {
       return res.status(400).json({
@@ -203,7 +203,6 @@ exports.update = async (req, res) => {
       id,
       name,
       category_id,
-      barcode,
       company_name,
       description,
       qty,
@@ -219,7 +218,6 @@ exports.update = async (req, res) => {
       SET 
         name = :name, 
         category_id = :category_id, 
-        barcode = :barcode, 
         company_name = :company_name, 
         description = :description, 
         qty = :qty, 
@@ -231,27 +229,10 @@ exports.update = async (req, res) => {
       WHERE id = :id
     `;
 
-    // Log SQL query values for debugging
-    console.log("Executing update query with values:", {
-      id,
-      name,
-      category_id,
-      barcode,
-      company_name,
-      description,
-      qty,
-      unit,
-      unit_price: convertedUnitPrice,
-      discount: convertedDiscount,
-      status,
-      price,
-    });
-
     const [data] = await db.query(sql, {
       id,
       name,
       category_id,
-      barcode,
       company_name,
       description,
       qty,
