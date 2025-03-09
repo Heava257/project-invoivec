@@ -21,7 +21,6 @@
 //       FROM order_detail odl
 //       INNER JOIN product p ON odl.product_id = p.id
 //      WHERE (:category_id IS NULL OR  p.category_id = :category_id)
-//      AND (:brand_id IS NULL OR  p.brand = :brand_id)
 //       GROUP BY odl.order_id
 //   ) od ON o.id = od.order_id
 //   WHERE 
@@ -54,7 +53,7 @@ const { db, logError } = require("../util/helper");
 
 exports.report_Sale_Summary = async (req, res) => {
   try {
-    let { from_date, to_date, category_id, brand_id } = req.query;
+    let { from_date, to_date, category_id } = req.query; // Removed brand_id from query params
 
     // Ensure that to_date includes the entire day
     to_date = new Date(to_date);
@@ -75,7 +74,6 @@ exports.report_Sale_Summary = async (req, res) => {
           FROM order_detail odl
           INNER JOIN product p ON odl.product_id = p.id
           WHERE (:category_id IS NULL OR p.category_id = :category_id)
-          AND (:brand_id IS NULL OR p.brand = :brand_id)
           GROUP BY odl.order_id
       ) od ON o.id = od.order_id
       WHERE o.create_at BETWEEN :from_date AND :to_date
@@ -85,8 +83,7 @@ exports.report_Sale_Summary = async (req, res) => {
     const [list] = await db.query(sql, {
       from_date,
       to_date,
-      category_id,
-      brand_id
+      category_id
     });
 
     res.json({ list });
@@ -94,6 +91,7 @@ exports.report_Sale_Summary = async (req, res) => {
     logError("report.report_Sale_Summary", error, res);
   }
 };
+
 exports.report_Expense_Summary = async (req, res) => {
   try {
     let { from_date, to_date, expense_type_id } = req.query;

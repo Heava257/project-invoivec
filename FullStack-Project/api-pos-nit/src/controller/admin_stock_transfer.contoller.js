@@ -8,27 +8,27 @@ const {
 
 exports.getList = async (req, res) => {
   try {
-    var { txt_search, user_id,  page, is_list_all } = req.query;
+    var { txt_search, user_id, page, is_list_all } = req.query;
     const pageSize = 2; // fix
     page = Number(page);
     const offset = (page - 1) * pageSize;
 
     var sqlSelect = `
-      SELECT at.id,  at.user_id, at.product_id, 
-             p.name, p.brand, p.company_name, p.barcode, p.unit_price, 
+      SELECT at.id, at.user_id, at.product_id, 
+             p.name, p.company_name, p.barcode, p.unit_price, 
              at.qty_transferred, at.date_transferred 
       FROM admin_stock_transfer at
       INNER JOIN product p ON at.product_id = p.id
       WHERE true
     `;
 
+    // Apply filters based on query parameters
     if (txt_search) {
       sqlSelect += " AND (p.name LIKE :txt_search OR p.barcode = :barcode)";
     }
     if (user_id) {
       sqlSelect += " AND at.user_id = :user_id";
     }
-   
 
     var sqlLimit = is_list_all ? "" : ` LIMIT ${pageSize} OFFSET ${offset}`;
     var sqlList = sqlSelect + sqlLimit;
@@ -36,16 +36,15 @@ exports.getList = async (req, res) => {
       txt_search: "%" + txt_search + "%",
       barcode: txt_search,
       user_id,
-      admin_id,
     };
 
     const [list] = await db.query(sqlList, sqlparam);
 
     var dataCount = 0;
     if (page == 1) {
-      let sqlTotal = " SELECT COUNT(at.id) as total FROM admin_stock_transfer at INNER JOIN product p ON at.product_id = p.id";
-      var [dataCount] = await db.query(sqlTotal, sqlparam);
-      dataCount = dataCount[0].total;
+      let sqlTotal = "SELECT COUNT(at.id) as total FROM admin_stock_transfer at INNER JOIN product p ON at.product_id = p.id";
+      var [dataCountResult] = await db.query(sqlTotal, sqlparam);
+      dataCount = dataCountResult[0].total;
     }
 
     res.json({
@@ -56,6 +55,7 @@ exports.getList = async (req, res) => {
     logError("admin_stock_transfer.getList", error, res);
   }
 };
+
 
 
 

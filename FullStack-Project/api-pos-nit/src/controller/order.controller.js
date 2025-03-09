@@ -298,14 +298,11 @@ exports.getList = async (req, res) => {
 // };
 exports.getone = async (req, res) => {
   try {
-
     var sql = `
       SELECT 
         od.*, 
         p.name AS p_name, 
-        p.brand AS p_brand, 
         p.description AS p_des, 
-       
         c.name AS p_category_name 
       FROM order_detail od
       INNER JOIN product p ON od.product_id = p.id  -- Ensure 'product_id' exists in 'order_detail'
@@ -319,6 +316,7 @@ exports.getone = async (req, res) => {
   }
 };
 
+
 // exports.getone = async (req, res) => {
 //   try {
 //     const { id, user_id } = req.params; // Assuming 'id' is order_id and 'user_id' is optional
@@ -327,7 +325,6 @@ exports.getone = async (req, res) => {
 //       SELECT 
 //         od.*, 
 //         p.name AS p_name, 
-//         p.brand AS p_brand, 
 //         p.description AS p_des, 
 //         c.name AS p_category_name 
 //       FROM order_detail od
