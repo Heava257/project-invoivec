@@ -33,7 +33,7 @@ function App() {
   </MainLayoutAuth>
 );
   return (
-    <BrowserRouter  basename="petronaskh">
+    <BrowserRouter>
       <Routes >
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
