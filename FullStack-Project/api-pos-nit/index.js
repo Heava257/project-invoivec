@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+require('dotenv').config();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -75,7 +76,7 @@ require("./src/route/admin_stock_transfer.route")(app);
 require("./src/route/StockUser.route")(app);
 // require("./src/route/expense_type.route")(app);
 
-const PORT = 8081;
+const PORT =  process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log("http://localhost:" + PORT);
 });
