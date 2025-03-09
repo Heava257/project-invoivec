@@ -178,19 +178,48 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     // Validate that the product ID is provided
-    if (!req.body.id) {
+    const { id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, price } = req.body;
+
+    if (!id) {
       return res.status(400).json({
         success: false,
         message: "Product ID is required for the update.",
       });
     }
 
+    // Convert `unit_price` and `discount` to numbers if they're passed as strings
+    const convertedUnitPrice = parseFloat(unit_price);
+    const convertedDiscount = parseFloat(discount);
+
+    if (isNaN(convertedUnitPrice) || isNaN(convertedDiscount)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid value for unit_price or discount. Please provide valid numbers.",
+      });
+    }
+
+    // Log received data for debugging
+    console.log("Fields received for product update:", {
+      id,
+      name,
+      category_id,
+      barcode,
+      company_name,
+      description,
+      qty,
+      unit,
+      unit_price: convertedUnitPrice,
+      discount: convertedDiscount,
+      status,
+      price,
+    });
+
     const sql = `
       UPDATE product
       SET 
         name = :name, 
         category_id = :category_id, 
-        brand = :brand, 
+        barcode = :barcode, 
         company_name = :company_name, 
         description = :description, 
         qty = :qty, 
@@ -202,8 +231,35 @@ exports.update = async (req, res) => {
       WHERE id = :id
     `;
 
+    // Log SQL query values for debugging
+    console.log("Executing update query with values:", {
+      id,
+      name,
+      category_id,
+      barcode,
+      company_name,
+      description,
+      qty,
+      unit,
+      unit_price: convertedUnitPrice,
+      discount: convertedDiscount,
+      status,
+      price,
+    });
+
     const [data] = await db.query(sql, {
-      ...req.body,
+      id,
+      name,
+      category_id,
+      barcode,
+      company_name,
+      description,
+      qty,
+      unit,
+      unit_price: convertedUnitPrice,
+      discount: convertedDiscount,
+      status,
+      price,
       create_by: req.auth?.name,
     });
 
@@ -221,6 +277,9 @@ exports.update = async (req, res) => {
       data,
     });
   } catch (error) {
+    // Log the full error object for debugging
+    console.error("Error while updating product:", error);
+    
     logError("product.update", error, res);
     res.status(500).json({
       success: false,
@@ -228,6 +287,7 @@ exports.update = async (req, res) => {
     });
   }
 };
+
 
 exports.remove = async (req, res) => {
   try {
