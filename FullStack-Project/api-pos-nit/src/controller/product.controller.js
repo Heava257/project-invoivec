@@ -101,15 +101,18 @@ exports.create = async (req, res) => {
     if (!user_id || !name || !category_id || !qty || !unit || !unit_price) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields (user_id, name, category_id, qty, unit, unit_price).",
+        message: "Missing required fields. Please provide user_id, name, category_id, qty, unit, and unit_price.",
       });
     }
 
-    var sql =
-      " INSERT INTO product (user_id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, create_by) " +
-      " VALUES (:user_id, :name, :category_id, :barcode,  :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by) ";
+    const sql = `
+      INSERT INTO product 
+      (user_id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, create_by) 
+      VALUES 
+      (:user_id, :name, :category_id, :barcode, :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by)
+    `;
 
-    var [data] = await db.query(sql, {
+    const [data] = await db.query(sql, {
       user_id,
       name,
       category_id,
@@ -124,47 +127,72 @@ exports.create = async (req, res) => {
       create_by: req.auth?.name,
     });
 
-    res.json({
+    res.status(201).json({
       success: true,
+      message: "Product created successfully.",
       data,
-      message: "Insert success!",
     });
   } catch (error) {
     logError("product.create", error, res);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while creating the product. Please try again later.",
+    });
   }
 };
 
 
 exports.update = async (req, res) => {
   try {
-    var sql =
-      " UPDATE product set " +
-      " name = :name, " +
-      " category_id = :category_id, " +
-      " brand = :brand, " +
-      " company_name = :company_name, " +
-      " description = :description, " +
-      " qty = :qty, " +
-      " unit = :unit, " +
-      " unit_price = :unit_price, " +
-      " price = :price, " +
-      " discount = :discount, " +
-      " status = :status " +
-      " WHERE id = :id";
+    // Validate that the product ID is provided
+    if (!req.body.id) {
+      return res.status(400).json({
+        success: false,
+        message: "Product ID is required for the update.",
+      });
+    }
 
+    const sql = `
+      UPDATE product
+      SET 
+        name = :name, 
+        category_id = :category_id, 
+        brand = :brand, 
+        company_name = :company_name, 
+        description = :description, 
+        qty = :qty, 
+        unit = :unit, 
+        unit_price = :unit_price, 
+        price = :price, 
+        discount = :discount, 
+        status = :status
+      WHERE id = :id
+    `;
 
-
-    var [data] = await db.query(sql, {
+    const [data] = await db.query(sql, {
       ...req.body,
       create_by: req.auth?.name,
     });
 
+    // If no rows are affected, it means the product ID doesn't exist
+    if (data.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
     res.json({
-      data: data,
-      message: "Data update success!",
+      success: true,
+      message: "Product updated successfully.",
+      data,
     });
   } catch (error) {
     logError("product.update", error, res);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the product. Please try again later.",
+    });
   }
 };
 
