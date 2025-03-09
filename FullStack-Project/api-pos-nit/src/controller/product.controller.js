@@ -44,9 +44,6 @@ exports.getList = async (req, res) => {
     if (category_id) {
       sqlWhere += ` AND p.category_id = :category_id`;
     }
-    if (brand) {
-      sqlWhere += ` AND p.brand = :brand`;
-    }
 
     // SQL ORDER BY clause
     const sqlOrderBy = `ORDER BY p.id DESC`;
