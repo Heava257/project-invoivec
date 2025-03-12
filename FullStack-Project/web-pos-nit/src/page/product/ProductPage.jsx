@@ -31,7 +31,7 @@ function ProductPage() {
     total: 0,
     loading: false,
     visibleModal: false,
-    is_list_all: false
+    is_list_all: false,
   });
   const ExportToExcel = () => {
     if (list.length === 0) {
@@ -58,23 +58,56 @@ function ProductPage() {
   useEffect(() => {
     getList();
   }, []);
+  // const getList = async () => {
+  //   var param = {
+  //     ...filter,
+  //     page: refPage.current,
+  //   };
+  //   setState((pre) => ({ ...pre, loading: true }));
+  //   const { id } = getProfile();
+  //   if (!id) {
+  //     return
+  //   }
+  //   const res = await request(`product/${id}`, "get", param);
+  //   if (res && !res.error) {
+  //     setState((pre) => ({
+  //       ...pre,
+  //       list: res.list,
+  //       total: refPage.current == 1 ? res.total : pre.total,
+  //       loading: false,
+  //     }));
+  //   }
+  // };
+
   const getList = async () => {
     var param = {
       ...filter,
-      page: refPage.current,
+      page: 1, // Force first page
+      is_list_all: 1, // Ensure fetching all
     };
+    
     setState((pre) => ({ ...pre, loading: true }));
-     const {id} = getProfile();
-         if(!id) {
-           return 
-           }
-         const res = await request(`product/${id}`, "get", param);
+    const { id } = getProfile();
+    if (!id) {
+      return;
+    }
+    const res = await request(`product/${id}`, "get", param);
     if (res && !res.error) {
+      // Calculate totals for each product category
+      const totals = res.list.reduce((acc, item) => {
+        if (!acc[item.category_name]) {
+          acc[item.category_name] = 0;
+        }
+        acc[item.category_name] += item.qty;
+        return acc;
+      }, {});
+
       setState((pre) => ({
         ...pre,
         list: res.list,
         total: refPage.current == 1 ? res.total : pre.total,
         loading: false,
+        totals, // Store totals in state
       }));
     }
   };
@@ -85,12 +118,46 @@ function ProductPage() {
     }));
     form.resetFields();
   };
+  // const onFinish = async (items) => {
+  //   const { id } = getProfile();
+  //   if (!id) {
+  //     message.error("User ID is missing!");
+  //     return;
+  //   }
+  //   var data = {
+  //     id: form.getFieldValue("id"),
+  //     user_id: id,
+  //     name: items.name,
+  //     category_id: items.category_id,
+  //     barcode: items.barcode,
+  //     brand: items.brand,
+  //     company_name: items.company_name,
+  //     qty: items.qty,
+  //     actual_price: items.actual_price,
+
+  //     unit: items.unit,
+  //     unit_price: items.unit_price,
+  //     discount: items.discount,
+  //     description: items.description,
+  //     status: items.status,
+  //   };
+  //   var method = form.getFieldValue("id") ? "put" : "post";
+  //   const res = await request("product", method, data);
+  //   if (res && !res.error) {
+  //     message.success(res.message);
+  //     getList();
+  //     onCloseModal();
+  //   }
+  // };
+
   const onFinish = async (items) => {
     const { id } = getProfile();
     if (!id) {
       message.error("User ID is missing!");
       return;
     }
+  
+    // បង្កើតទិន្នន័យសម្រាប់ការកម្មង
     var data = {
       id: form.getFieldValue("id"),
       user_id: id,
@@ -99,28 +166,45 @@ function ProductPage() {
       barcode: items.barcode,
       brand: items.brand,
       company_name: items.company_name,
-      qty: items.qty,
+      qty: items.qty, // ចំនួនដែលត្រូវដក
+      actual_price: items.actual_price,
       unit: items.unit,
       unit_price: items.unit_price,
       discount: items.discount,
       description: items.description,
       status: items.status,
     };
+  
+    // បញ្ជូនទិន្នន័យទៅ API
     var method = form.getFieldValue("id") ? "put" : "post";
     const res = await request("product", method, data);
+  
     if (res && !res.error) {
       message.success(res.message);
+  
+      // ដកតម្លៃ qty ពីសរុបរួម (totals)
+      const updatedTotals = { ...state.totals };
+      if (updatedTotals[items.category_name]) {
+        updatedTotals[items.category_name] -= items.qty;
+  
+        // ប្រសិនបើតម្លៃសរុបរួមធ្លាក់ខ្លួនតិចជាង 0 កំណត់វាជា 0
+        if (updatedTotals[items.category_name] < 0) {
+          updatedTotals[items.category_name] = 0;
+        }
+      }
+  
+      // ធ្វើបច្ចុប្បន្នភាព state ជាមួយនឹងតម្លៃសរុបរួមថ្មី
+      setState((pre) => ({
+        ...pre,
+        totals: updatedTotals,
+      }));
+  
+      // ទាញយកបញ្ជីថ្មី និងបិទ modal
       getList();
       onCloseModal();
     }
   };
-  const onValuesChange = (changedValues, allValues) => {
-    if (changedValues.qty || changedValues.unit_price || changedValues.discount) {
-      const originalPrice = allValues.qty * allValues.unit_price;
-      const totalPrice = originalPrice * (1 - (allValues.discount || 0) / 100);
-      form.setFieldsValue({ price: totalPrice });
-    }
-  };
+
   const onBtnNew = async () => {
     const res = await request("new_barcode", "post");
     if (res && !res.error) {
@@ -172,7 +256,6 @@ function ProductPage() {
             message.error(res.message || "Failed to delete product!");
           }
         } catch (error) {
-          console.error("Delete Error:", error);
           message.error("An error occurred while deleting the product.");
         }
       },
@@ -181,6 +264,24 @@ function ProductPage() {
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
   };
+
+  const onValuesChange = (changedValues, allValues) => {
+    if (changedValues.qty || changedValues.unit_price || changedValues.discount || changedValues.actual_price) {
+      const { qty, unit_price, discount = 0, actual_price } = allValues;
+
+      if (qty && unit_price && actual_price) {
+        // Calculate total price
+        const totalPrice = (qty * unit_price) * (1 - discount / 100) / actual_price;
+
+        // Round the total price to the nearest whole number
+        const roundedTotalPrice = Math.round(totalPrice);
+
+        // Update the form field with the rounded total price
+        form.setFieldsValue({ price: roundedTotalPrice });
+      }
+    }
+  };
+
   return (
     <MainPage loading={state.loading}>
       <div className="pageHeader">
@@ -211,8 +312,8 @@ function ProductPage() {
               setFilter((pre) => ({ ...pre, brand: id }));
             }}
           />
-          
-          <Button onClick={onFilter} type="primary" icon={<BsSearch/>}>
+
+          <Button onClick={onFilter} type="primary" icon={<BsSearch />}>
             Filter
           </Button>
         </Space>
@@ -227,19 +328,29 @@ function ProductPage() {
         onCancel={onCloseModal}
         width={700}
       >
-        <Form layout="vertical" onFinish={onFinish} form={form} onValuesChange={onValuesChange}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          form={form}
+          onValuesChange={(changedValues, allValues) => {
+            // Call the existing onValuesChange function if it exists
+            if (onValuesChange) onValuesChange(changedValues, allValues);
+
+            // Calculate total price based on quantity, unit price, and actual price
+            const { qty, unit_price, actual_price } = allValues;
+            if (qty && unit_price && actual_price) {
+              const totalPrice = (qty * unit_price) / actual_price;
+
+              // Round the total price to the nearest whole number
+              const roundedTotalPrice = Math.round(totalPrice);
+
+              // Update the form field with the rounded total price
+              form.setFieldsValue({ price: roundedTotalPrice });
+            }
+          }}
+        >
           <Row gutter={8}>
             <Col span={12}>
-              {/* <Form.Item name={"name"} label={
-                <div>
-                  <div className="khmer-text">ឈ្មោះផលិតផល</div>
-                  <div className="english-text">Product Name</div>
-                </div>
-              }>
-                <Input placeholder="Product Name" style={{ width: "100%" }} />
-              </Form.Item> */}
-
-
               <Form.Item
                 name={"name"}
                 label={
@@ -255,7 +366,7 @@ function ProductPage() {
                   },
                 ]}
               >
-                <Select placeholder="Select Product " options={config.product} />
+                <Select placeholder="Select Product" options={config.product} />
               </Form.Item>
               <Form.Item
                 name={"category_id"}
@@ -274,59 +385,66 @@ function ProductPage() {
               >
                 <Select placeholder="Select category" options={config.category} />
               </Form.Item>
-              
-
-              {/* <Form.Item
-                name={"brand"}
+              <Form.Item
+                name={"barcode"}
                 label={
                   <div>
-                    <div className="khmer-text">ម៉ាក</div>
-                    <div className="english-text">Brand</div>
+                    <div className="khmer-text">លេខបាកូដ</div>
+                    <div className="english-text">Barcode</div>
                   </div>
                 }
-                rules={[
-                  {
-                    required: true,
-                    message: "Please fill in product brand",
-                  },
-                ]}
-              > */}
-                {/* <Select
-                  placeholder="Select brand"
-                  options={config.brand?.map((item) => ({
-                    label: item.label + " (" + item.country + ")",
-                    value: item.value,
-                  }))}
-                />
-              </Form.Item> */}
-              <Form.Item name={"barcode"} label={
-                <div>
-                  <div className="khmer-text">លេខបាកូដ</div>
-                  <div className="english-text">Barcode</div>
-                </div>
-              }>
+              >
                 <Input disabled placeholder="Barcode" style={{ width: "100%" }} />
               </Form.Item>
-              <Form.Item name={"qty"} label={
-                <div>
-                  <div className="khmer-text">បរិមាណ</div>
-                  <div className="english-text">Quantity</div>
-                </div>
-              }>
-                <InputNumber placeholder="Quantity" style={{ width: "100%" }} />
+              <Form.Item
+                name={"qty"}
+                label={
+                  <div>
+                    <div className="khmer-text">បរិមាណ</div>
+                    <div className="english-text">Quantity</div>
+                  </div>
+                }
+              >
+                <InputNumber
+                  placeholder="Quantity"
+                  style={{ width: "100%" }}
+                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} // Add commas for thousands
+                  parser={(value) => value.replace(/(,*)/g, "")} // Remove commas when parsing
+                />
               </Form.Item>
-              <Form.Item name={"discount"} label={
-                <div>
-                  <div className="khmer-text">បញ្ចុះតម្លៃ (%)</div>
-                  <div className="english-text">Discount (%)</div>
-                </div>
-              }>
-                <InputNumber placeholder="Discount" style={{ width: "100%" }} />
+              {/* <Form.Item
+                name={"discount"}
+                label={
+                  <div>
+                    <div className="khmer-text">បញ្ចុះតម្លៃ (%)</div>
+                    <div className="english-text">Discount (%)</div>
+                  </div>
+                }
+              >
+                <InputNumber
+                  placeholder="Discount"
+                  style={{ width: "100%" }}
+                  onChange={(value) => {
+                    // Trigger the onValuesChange function when discount changes
+                    form.setFieldsValue({ discount: value });
+                    onValuesChange({ discount: value }, form.getFieldsValue());
+                  }}
+                />
+              </Form.Item> */}
+              <Form.Item
+                name={"description"}
+                label={
+                  <div>
+                    <div className="khmer-text">ការពិពណ៌នា</div>
+                    <div className="english-text">Description</div>
+                  </div>
+                }
+              >
+                <Input.TextArea placeholder="Description" />
               </Form.Item>
-             
             </Col>
             <Col span={12}>
-            <Form.Item
+              <Form.Item
                 name={"company_name"}
                 label={
                   <div>
@@ -343,36 +461,58 @@ function ProductPage() {
               >
                 <Select placeholder="Select Company" options={config?.company_name} />
               </Form.Item>
-             
-
-              <Form.Item name={"unit"} label={
-                <div>
-                  <div className="khmer-text">ឯកតា</div>
-                  <div className="english-text">Unit</div>
-                </div>
-              }>
+              <Form.Item
+                name={"unit"}
+                label={
+                  <div>
+                    <div className="khmer-text">ឯកតា</div>
+                    <div className="english-text">Unit</div>
+                  </div>
+                }
+              >
                 <Select placeholder="Select Unit" options={config?.unit} style={{ width: "100%" }} />
               </Form.Item>
-
-              <Form.Item name={"unit_price"} label={
-                <div>
-                  <div className="khmer-text">តម្លៃឯកតា</div>
-                  <div className="english-text">Unit Price</div>
-                </div>
-              }>
+              <Form.Item
+                name={"unit_price"}
+                label={
+                  <div>
+                    <div className="khmer-text">តម្លៃឯកតា</div>
+                    <div className="english-text">Unit Price</div>
+                  </div>
+                }
+              >
                 <InputNumber
                   placeholder="Unit Price"
                   style={{ width: "100%" }}
-                  formatter={(value) => `$ ${value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
-                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                  formatter={(value) => `$ ${Math.round(value).toLocaleString()}`} // Round and format as currency
+                  parser={(value) => Math.round(value.replace(/[^\d]/g, ""))} // Round the value when parsing
                 />
               </Form.Item>
-              <Form.Item name={"status"} label={
-                <div>
-                  <div className="khmer-text">ស្ថានភាព</div>
-                  <div className="english-text">Status</div>
-                </div>
-              }>
+              <Form.Item
+                name={"actual_price"}
+                label={
+                  <div>
+                    <div className="khmer-text">មេចែក</div>
+                    <div className="english-text">Actual Price</div>
+                  </div>
+                }
+              >
+                <InputNumber
+                  placeholder="Actual Price"
+                  style={{ width: "100%" }}
+                  formatter={(value) => `${Math.round(value).toLocaleString()}`} // Round and format as currency
+                  parser={(value) => Math.round(value.replace(/[^\d]/g, ""))} // Round the value when parsing
+                />
+              </Form.Item>
+              <Form.Item
+                name={"status"}
+                label={
+                  <div>
+                    <div className="khmer-text">ស្ថានភាព</div>
+                    <div className="english-text">Status</div>
+                  </div>
+                }
+              >
                 <Select
                   placeholder="Select status"
                   options={[
@@ -387,26 +527,21 @@ function ProductPage() {
                   ]}
                 />
               </Form.Item>
-              <Form.Item name={"price"} label={
-                <div>
-                  <div className="khmer-text">តម្លៃសរុប</div>
-                  <div className="english-text">Total Price</div>
-                </div>
-              }>
+              <Form.Item
+                name={"price"}
+                label={
+                  <div>
+                    <div className="khmer-text">តម្លៃសរុប</div>
+                    <div className="english-text">Total Price</div>
+                  </div>
+                }
+              >
                 <InputNumber
                   disabled
                   style={{ width: "100%" }}
-                  formatter={(value) => `$ ${value.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
-                  parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+                  formatter={(value) => `$ ${Math.round(value).toLocaleString()}`} // Round and format as currency
+                  parser={(value) => Math.round(value.replace(/[^\d]/g, ""))} // Round the value when parsing
                 />
-              </Form.Item>
-              <Form.Item name={"description"} label={
-                <div>
-                  <div className="khmer-text">ការពិពណ៌នា</div>
-                  <div className="english-text">Description</div>
-                </div>
-              }>
-                <Input.TextArea placeholder="Description" />
               </Form.Item>
             </Col>
           </Row>
@@ -420,16 +555,29 @@ function ProductPage() {
           </div>
         </Form>
       </Modal>
+      <Row style={{ marginBottom: 16 }}>
+        <Col span={24}>
+          <Space>
+            {Object.entries(state.totals || {}).map(([category, total]) => (
+              <Tag key={category} color="blue">
+                {category} = {total.toLocaleString()} L
+              </Tag>
+            ))}
+          </Space>
+        </Col>
+      </Row>
+
       <Table
         className="custom-table"
         dataSource={state.list}
         pagination={{
-          pageSize: 2,
-          total: state.total,
+          pageSize: 2, // ចំនួនធាតុក្នុងមួយទំព័រ
+          total: state.total, // ចំនួនសរុបនៃធាតុទាំងអស់
           onChange: (page) => {
-            refPage.current = page;
-            getList();
+            refPage.current = page; // កំណត់ទំព័របច្ចុប្បន្ន
+            getList(); // ទាញយកទិន្នន័យសម្រាប់ទំព័រថ្មី
           },
+          hideOnSinglePage: false, // បង្ហាញ pagination ទោះបីមានតែ 1 ទំព័រក៏ដោយ
         }}
         columns={[
           {
@@ -513,9 +661,12 @@ function ProductPage() {
             ),
             dataIndex: "qty",
             render: (value) => (
-              <Tag color={value > 5000 ? "green" : "red"}>{value}</Tag>
+              <Tag color={value > 5000 ? "green" : "red"}>
+                {value.toLocaleString()}  {/* Formats number with commas */}
+              </Tag>
             ),
           },
+
           {
             key: "unit",
             title: (
@@ -551,18 +702,19 @@ function ProductPage() {
               </div>
             ),
             dataIndex: "total_price",
-            render: (text) => formatCurrency(text),
+            render: (text) => formatCurrency(Math.round(text)), // Round to nearest whole number
           },
-          {
-            key: "discount",
-            title: (
-              <div className="table-header">
-                <div className="khmer-text">បញ្ចុះតម្លៃ</div>
-                <div className="english-text">Discount</div>
-              </div>
-            ),
-            dataIndex: "discount",
-          },
+
+          // {
+          //   key: "discount",
+          //   title: (
+          //     <div className="table-header">
+          //       <div className="khmer-text">បញ្ចុះតម្លៃ</div>
+          //       <div className="english-text">Discount</div>
+          //     </div>
+          //   ),
+          //   dataIndex: "discount",
+          // },
           {
             key: "status",
             title: (

@@ -40,6 +40,36 @@ td {
   font-weight: bold;
   color: #333; 
 }
+.pos-row {
+  font-family: 'Khmer OS Battambang';
+  font-size: 10px;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 0.5px; /* Adding space between characters for the Killing Mark effect */
+  text-transform: uppercase; /* Optional: to make the letters appear in uppercase */
+}
+
+.khmer-oil {
+  font-family: 'Khmer OS Muol';
+  font-size: 14px;
+  font-weight: bold;
+  color: #070707; 
+}
+.khmer-category
+{
+  font-family: 'Khmer OS Muol';
+  font-size: 14px;
+  font-weight: bold;
+  color: #1eafdb; 
+}
+.khmer-total
+{
+  font-family: 'Khmer OS Muol';
+  font-size: 14px;
+  font-weight: bold;
+  color: #00c257; 
+}
+
 .english-text {
   font-family: 'Arial', sans-serif;
   font-size: 12px;
@@ -624,3 +654,26 @@ body {
   padding: 20px;
   border-radius: 10px;
 }
+
+
+
+@font-face {
+  font-family: 'Kh Ang Mura';
+  src: url('/fonts/Kh-Ang-Mura.ttf') format('truetype'); /* Ensure correct path */
+  font-weight: normal;
+  font-style: normal;
+}
+
+.khmer-text-category {
+  font-family: 'Kh Ang Mura', sans-serif !important;
+}
+
+
+.khmer-title {
+  font-family: 'Khmer OS Battambang', 'Khmer', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333; 
+}
+
+

@@ -1,82 +1,98 @@
 import React from "react";
 import styles from "./BillItem.module.css";
-import { Button, Col, Row, Space } from "antd";
-import { MdAdd, MdDelete, MdHorizontalRule } from "react-icons/md";
+import { Button, Col, Row, Space, InputNumber } from "antd";
+import { MdDelete } from "react-icons/md";
+
 function BillItem({
   name,
-  brand,
   category_name,
   unit_price,
-  discount,
+  actual_price,
   barcode,
   cart_qty,
-  handleIncrease,
-  handleDescrease,
-  handleRemove,
+  handleQuantityChange,
+  handlePriceChange,
+  handleActualPriceChange,
+  index,
 }) {
-  var final_price = unit_price;
-  if (discount != 0 && discount != null) {
-    final_price = unit_price - (unit_price * discount) / 100;
-    final_price = final_price.toFixed(2);
-  }
+  const safe_actual_price = actual_price > 0 ? actual_price : unit_price; // Prevent division by zero
+
+  const calculated_total = (
+    ((cart_qty * unit_price) / safe_actual_price) 
+  ).toFixed(0);  // Remove decimals first
+
+  const formattedTotal = Number(calculated_total).toLocaleString();  // Format with commas
+
+  // Format handler for InputNumber
+  const formatter = (value) => {
+    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
+  // Parser to convert formatted string back to number
+  const parser = (value) => {
+    return value.replace(/\$\s?|(,*)/g, '');
+  };
+
   return (
     <div className={styles.container}>
       <Row>
         <Col span={18}>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <div className={styles.p_name}>{name}</div>
-            <div>
-              <Button
-                onClick={handleRemove}
-                danger
-                shape="circle"
-                icon={<MdDelete />}
-              />
-            </div>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div className="khmer-oil">{name}</div>
           </div>
           <div>
-            {barcode} | {category_name} | {brand}
+            {barcode}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            {discount != 0 && discount != null ? (
-              <div className={styles.p_price_container}>
-                <div className={styles.p_price}>{unit_price}$</div>
-                <div className={styles.p_dis}> {discount}%</div>
-                <div className={styles.p_final_price}>{final_price}$</div>
-              </div>
-            ) : (
-              <div className={styles.p_price_container}>
-                <div className={styles.p_final_price}>{final_price}$</div>
-              </div>
-            )}
-            <div style={{ fontWeight: "bold" }}>
-              {(cart_qty * final_price).toFixed(2) + "$"}
-            </div>
+          <div className="khmer-category">
+            {category_name}
           </div>
+
           <Space>
-            <Button
-              onClick={handleDescrease}
-              shape="circle"
-              type="primary"
-              icon={<MdHorizontalRule />}
+            <div className="khmer-text">បរិមាណ:</div> {/* Quantity */}
+            <InputNumber
+              value={cart_qty}
+              onChange={(value) => handleQuantityChange(value, index)}
+              min={1}
+              formatter={formatter}
+              parser={parser}
             />
-            <div style={{ fontWeight: "bold" }}>{cart_qty}</div>
-            <Button
-              type="primary"
-              onClick={handleIncrease}
-              shape="circle"
-              icon={<MdAdd />}
+
+            <div className="khmer-text">តម្លៃឯកតា($):</div> {/* Unit Price */}
+            <InputNumber
+              value={unit_price}
+              onChange={(value) => handlePriceChange(value, index)}
+              min={0}
+              formatter={formatter}
+              parser={parser}
+            />
+
+            <div className="khmer-text">មេចែក:</div> {/* Actual Price */}
+            <InputNumber
+              value={actual_price}
+              onChange={(value) => handleActualPriceChange(value, index)}
+              min={0}
+              formatter={formatter}
+              parser={parser}
             />
           </Space>
+
+          {/* <div className="khmer-text">បញ្ចុះតម្លៃ (%):</div> {/* Discount (%) */}
+          {/* <InputNumber
+            value={discount}
+            onChange={(value) => handleDiscountChange(value, index)}
+            min={0}
+            max={100}
+            formatter={(value) => `${value}`}
+            parser={(value) => value}
+          />  */}
+
+          <div className="khmer-total">
+            តម្លៃសរុប: {formattedTotal}$ {/* Total */}
+          </div>
         </Col>
       </Row>
     </div>
   );
 }
+
 export default BillItem;

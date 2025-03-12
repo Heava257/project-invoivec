@@ -42,7 +42,7 @@ function OrderPage() {
     to_date: dayjs(),
     user_id: "", // Default empty
   });
-  
+
   // This function fetches the orders list
   // const getList = async () => {
   //   setLoading(true);
@@ -54,14 +54,14 @@ function OrderPage() {
   //       to_date: formatDateServer(filter.to_date),
   //       user_id: filter.user_id || "",  // Send the selected user_id (if any)
   //     };
-      
+
   //     console.log("API Request Params:", param);
   //     const { id } = getProfile();
   //           if (!id) return;
   //     // Make a single API call to the orders endpoint - use a generic endpoint
   //     // Your backend will handle the authorization logic
   //     const res = await request(`order/${id}`, "get", param);
-      
+
   //     if (res) {
   //       setList(res.list || []);
   //       setSummary(res.summary || { total_amount: 0, total_order: 0 });
@@ -85,11 +85,11 @@ function OrderPage() {
         to_date: formatDateServer(filter.to_date),
         user_id: filter.user_id || getProfile().id, // Use selected user_id or default to logged-in user
       };
-  
+
       console.log("API Request Params:", param);
-  
+
       const res = await request(`order/${param.user_id}`, "get", param);
-      
+
       if (res) {
         setList(res.list || []);
         setSummary(res.summary || { total_amount: 0, total_order: 0 });
@@ -101,18 +101,18 @@ function OrderPage() {
       setLoading(false);
     }
   };
-  
-  
+
+
   // Fetch data when filter changes
   useEffect(() => {
     getList();
   }, [filter.user_id, filter.from_date, filter.to_date]);
-  
+
   // Fetch data when search text changes and search button is clicked
   const handleSearch = () => {
     getList();
   };
-  
+
   const getOderdetail = async (data) => {
     setLoading(true);
     try {
@@ -131,7 +131,7 @@ function OrderPage() {
       setLoading(false);
     }
   };
-  
+
   const onCloseModal = () => {
     formRef.resetFields();
     setState({
@@ -140,7 +140,7 @@ function OrderPage() {
       id: null,
     });
   };
-  
+
   return (
     <MainPage loading={loading}>
       <div className="pageHeader">
@@ -184,22 +184,22 @@ function OrderPage() {
             />
           )}
           {isPermission("customer.create") && (
-          <Select
-          style={{ width: 300 }}
-          allowClear
-          placeholder="Select User"
-          value={filter.user_id}
-          options={config?.user || []} // Assuming config.user has list of users
-          onChange={(value) => {
-            console.log("Selected user ID:", value);
-            setFilter((prev) => ({
-              ...prev,
-              user_id: value,
-            }));
-          }}
-          suffixIcon={<LuUserRoundSearch />}
-        />
-        
+            <Select
+              style={{ width: 300 }}
+              allowClear
+              placeholder="Select User"
+              value={filter.user_id}
+              options={config?.user || []} // Assuming config.user has list of users
+              onChange={(value) => {
+                console.log("Selected user ID:", value);
+                setFilter((prev) => ({
+                  ...prev,
+                  user_id: value,
+                }));
+              }}
+              suffixIcon={<LuUserRoundSearch />}
+            />
+
           )}
           <Button type="primary" onClick={handleSearch} icon={<BsSearch />}>
             Filter
@@ -208,74 +208,121 @@ function OrderPage() {
       </div>
       <Modal
         open={state.visibleModal}
-        title={"Invoices Detail"}
+        title="Invoice Details"
         footer={null}
         onCancel={onCloseModal}
         width={800}
         centered={true}
+        destroyOnClose={true}
       >
         <Table
           dataSource={orderDetail}
           columns={[
             {
-              key: "p_name",
+              key: "product_name",
               title: "Product",
-              dataIndex: "p_name",
+              dataIndex: "product_name",
               render: (text, data) => (
                 <div style={{ padding: "10px", backgroundColor: "#fff", borderRadius: "8px", boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)" }}>
-                  <div style={{ fontWeight: "bold", fontSize: "16px", color: "#333" }}>
-                    {data.p_name}
+                  <div style={{ fontWeight: "bold", fontSize: "16px", color: "#333" }} className="khmer-text">
+                    {data.product_name}
                   </div>
-                  <div style={{ color: "#777" }}>
-                    {data.p_category_name} | {data.p_brand}
+                  <div style={{ color: "#777", fontSize: 12 }} className="khmer-text">
+                    {data.category_name}
                   </div>
-                  <div
-                    className="truncate-text"
-                    title={text}
-                    style={{ whiteSpace: "pre-line", color: "#666" }}
-                  >
-                    {data.p_des}
-                    | {text}
+                  <div style={{ color: "#777", fontSize: 12, marginTop: 4 }} className="khmer-text">
+                    Unit: {data.unit}
                   </div>
                 </div>
               )
             },
             {
-              key: "qty",
+              key: "total_quantity",
               title: "Qty",
-              dataIndex: "qty",
-              render: (text) => <div style={{ textAlign: "center", fontWeight: "bold" }}>
-                <Tag color="green">{text}</Tag>
-              </div>,
+              dataIndex: "total_quantity",
+              width: 80,
+              render: (text) => (
+                <div style={{ textAlign: "center", fontWeight: "bold" }}>
+                  <Tag color="green">{text}</Tag>
+                </div>
+              ),
             },
             {
-              key: "price",
+              key: "unit_price",
               title: "Unit Price",
-              dataIndex: "price",
-              render: (text) => <div style={{ textAlign: "right", fontWeight: "bold" }}><Tag color="pink">${text}</Tag></div>,
+              dataIndex: "unit_price",
+              width: 120,
+              render: (text) => {
+                const formattedValue = parseFloat(text).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                return (
+                  <div style={{ textAlign: "right", fontWeight: "bold" }}>
+                    <Tag color="pink">${formattedValue}</Tag>
+                  </div>
+                );
+              },
             },
+            // {
+            //   key: "discount",
+            //   title: "Discount",
+            //   dataIndex: "discount",
+            //   width: 100,
+            //   render: (text) => (
+            //     <div style={{ textAlign: "right" }}>
+            //       <Tag color="red">{text > 0 ? `${text}%` : '-'}</Tag>
+            //     </div>
+            //   ),
+            // },
             {
-              key: "discount",
-              title: "Discount",
-              dataIndex: "discount",
-              render: (text) => <div style={{ textAlign: "right" }}><Tag color="red">{text}%</Tag></div>,
-            },
-            {
-              key: "total",
+              key: "grand_total",
               title: "Total",
-              dataIndex: "total",
-              render: (text) => <div style={{ textAlign: "right", fontWeight: "bold", color: "#333" }}><Tag color="blue">${text}</Tag></div>,
-            },
+              dataIndex: "grand_total",
+              width: 120,
+              render: (text) => {
+                const roundedValue = Math.round(parseFloat(text) || 0);
+                const formattedValue = roundedValue.toLocaleString();
+                return (
+                  <div style={{ textAlign: "right", fontWeight: "bold", color: "#333" }}>
+                    <Tag color="blue">${formattedValue}</Tag>
+                  </div>
+                );
+              },
+            }
           ]}
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20'],
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`
+          }}
           rowKey="id"
           style={{ marginTop: "20px" }}
           rowClassName="table-row-hover"
-          onRow={(record, rowIndex) => ({
-            onMouseEnter: () => { },
-          })}
+          summary={(pageData) => {
+            let totalAmount = 0;
+            pageData.forEach(({ grand_total }) => {
+              totalAmount += parseFloat(grand_total || 0);
+            });
+
+            const roundedTotal = Math.round(totalAmount);
+
+            return (
+              <>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={4} style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                    Grand Total:
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1} style={{ textAlign: 'right' }}>
+                    <Tag color="blue" style={{ fontSize: '16px', padding: '4px 8px' }}>
+                      ${roundedTotal.toLocaleString()}
+                    </Tag>
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              </>
+            );
+          }}
           bordered
           scroll={{ x: 'max-content' }}
+          loading={!orderDetail || orderDetail.length === 0}
         />
       </Modal>
       <div>

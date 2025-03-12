@@ -7,7 +7,7 @@ import {
   Input,
   InputNumber,
   message,
-  notification, 
+  notification,
   Row,
   Select,
   Space,
@@ -85,6 +85,7 @@ function PosPage() {
     order_date: null,
   });
   const refPage = React.useRef(1);
+
   const [filter, setFilter] = useState({
     txt_search: "",
     category_id: "",
@@ -134,14 +135,14 @@ function PosPage() {
   };
   const onFilter = () => {
     getList();
-  };
-  const handleAdd = (item) => {
-    var cart_tmp = state.cart_list;
-    var findIndex = cart_tmp.findIndex((row) => row.barcode == item.barcode);
+  }; const handleAdd = (item) => {
+    var cart_tmp = [...state.cart_list]; // Ensure a copy of the state list
+    var findIndex = cart_tmp.findIndex((row) => row.barcode === item.barcode);
     var isNoStock = false;
-    if (findIndex == -1) {
+
+    if (findIndex === -1) {
       if (item.qty > 0) {
-        cart_tmp.push({ ...item, cart_qty: 1 });
+        cart_tmp.push({ ...item, cart_qty: 0 }); // ✅ Default cart_qty = 0
       } else {
         isNoStock = true;
       }
@@ -151,10 +152,11 @@ function PosPage() {
         isNoStock = true;
       }
     }
+
     if (isNoStock) {
       notification.error({
         message: "Warning",
-        description: "No stock!. Currently quantity in stock available " + item.qty,
+        description: `No stock! Currently, quantity in stock available: ${item.qty}`,
         placement: "bottomRight",
         style: {
           backgroundColor: "hsl(359,100%,98%)",
@@ -163,6 +165,7 @@ function PosPage() {
       });
       return;
     }
+
     setState((pre) => ({
       ...pre,
       cart_list: cart_tmp,
@@ -171,35 +174,9 @@ function PosPage() {
   };
 
 
-  const handleIncrease = (item, index) => {
-    // Check if increasing the quantity exceeds the available stock
-    if (item.cart_qty + 100 > item.qty) {
-      notification.error({
-        message: "Warning",
-        description: `Cannot increase quantity: Only ${item.qty} items available in stock.`,
-        placement: "bottomRight",
-        style: {
-          backgroundColor: "hsl(359,100%,98%)",
-          outline: "1px solid #ff4d4f",
-        },
-      });
-      return; // Exit the function if stock is insufficient
-    }
-  
-    // Increase the quantity by 100
-    state.cart_list[index].cart_qty += 100;
-    setState((p) => ({ ...p, cart_list: state.cart_list }));
-    handleCalSummary();
-  };
-  const handleDescrease = (item, index) => {
-    if (item.cart_qty > 1) {
-      state.cart_list[index].cart_qty -= 1;
-      setState((p) => ({ ...p, cart_list: state.cart_list }));
-      handleCalSummary();
-    }
-  };
 
-  
+
+
   const handleClearCart = () => {
     setState((p) => ({ ...p, cart_list: [] }));
     setObjSummary((p) => ({
@@ -215,41 +192,43 @@ function PosPage() {
 
 
 
-  const handleRemove = (item, index) => {
-    const new_list = state.cart_list.filter((item1) => item1.barcode != item.barcode);
-    setState((p) => ({
-      ...p,
-      cart_list: new_list,
-    }));
-    handleCalSummary();
-  };
+
 
   const handleCalSummary = useCallback(() => {
-    let total_qty = 0,
-      sub_total = 0,
-      save_discount = 0,
-      total = 0,
-      original_total = 0;
-    state.cart_list.map((item) => {
-      total_qty += item.cart_qty;
-      var final_price = item.unit_price;
-      if (item.discount != 0 && item.discount != null) {
-        final_price = item.unit_price - (item.unit_price * item.discount) / 100;
-        final_price = final_price.toFixed(2);
-      }
-      original_total += item.cart_qty * item.unit_price;
-      sub_total += item.cart_qty * final_price;
+    let total_qty = 0;
+    let sub_total = 0;
+    let save_discount = 0;
+    let total = 0;
+
+    state.cart_list.forEach((item) => {
+      const qty = item.cart_qty || 0;
+      const unit_price = item.unit_price || 0;
+      const actual_price = item.actual_price || unit_price; // Use actual price if provided, otherwise fallback to unit price
+
+      // Calculate the subtotal per item based on actual price
+      const calculated_total = (qty * unit_price) / actual_price; // Adjust for actual price
+      sub_total += calculated_total; // Update subtotal
+
+      // Handle the discount logic
+    
+
+      // Final total after applying discount (if any)
+    
+
+      total_qty += qty; // Update total quantity
     });
-    total = sub_total;
-    save_discount = original_total - sub_total;
-    setObjSummary((p) => ({
-      ...p,
-      total_qty: total_qty,
-      sub_total: sub_total.toFixed(2),
-      save_discount: save_discount.toFixed(2),
-      total: total.toFixed(2),
-    }));
-  }, [state.cart_list]);
+
+    setObjSummary({
+      total_qty: total_qty.toFixed(2),
+      sub_total: sub_total.toFixed(2), // Subtotal before discount
+      save_discount: save_discount.toFixed(2), // Total discount applied
+      total: total.toFixed(2), // Final total after discount
+    });
+  });
+
+
+
+
 
 
 
@@ -282,7 +261,7 @@ function PosPage() {
       order_details: order_details,
     };
 
-  
+
 
     const res = await request("order", "post", param);
     if (res && !res.error) {
@@ -324,7 +303,7 @@ function PosPage() {
   });
   const handleModalOk = () => {
     form.validateFields().then((values) => {
-   
+
       setState((p) => ({ ...p, visibleModal: false }));
     });
   };
@@ -334,23 +313,23 @@ function PosPage() {
   };
 
   // Replace the current uniqueProducts function with this:
-const uniqueProducts = state.list || []; // Simply use the original list
+  const uniqueProducts = state.list || []; // Simply use the original list
 
-// If you want to actually summarize by category (which might not be what you want), use this instead:
-/*
-const uniqueProducts = state.list.reduce((acc, product) => {
-  const existingCategoryIndex = acc.findIndex((p) => p.category_name === product.category_name);
-
-  if (existingCategoryIndex >= 0) {
-    // Update existing category's quantity
-    acc[existingCategoryIndex].qty += product.qty;
-  } else {
-    // Add new product to accumulator
-    acc.push({ ...product });
-  }
-  return acc;
-}, []);
-*/
+  // If you want to actually summarize by category (which might not be what you want), use this instead:
+  /*
+  const uniqueProducts = state.list.reduce((acc, product) => {
+    const existingCategoryIndex = acc.findIndex((p) => p.category_name === product.category_name);
+  
+    if (existingCategoryIndex >= 0) {
+      // Update existing category's quantity
+      acc[existingCategoryIndex].qty += product.qty;
+    } else {
+      // Add new product to accumulator
+      acc.push({ ...product });
+    }
+    return acc;
+  }, []);
+  */
   const columns = [
     {
       title: (
@@ -372,7 +351,7 @@ const uniqueProducts = state.list.reduce((acc, product) => {
       ),
       dataIndex: "name",
       key: "name",
-      render: (text) => <span className="product-name">{text}</span>,
+      render: (text) => <span className="pos-row">{text}</span>,
     },
     {
       title: (
@@ -383,7 +362,7 @@ const uniqueProducts = state.list.reduce((acc, product) => {
       ),
       dataIndex: "category_name",
       key: "category_name",
-      render: (text) => <span className="category-name">{text}</span>,
+      render: (text) => <span className="pos-row">{text}</span>,
     },
     {
       title: (
@@ -394,19 +373,9 @@ const uniqueProducts = state.list.reduce((acc, product) => {
       ),
       dataIndex: "unit",
       key: "unit",
-      render: (text) => <span className="unit-text">{text}</span>,
+      render: (text) => <span className="pos-row">{text}</span>,
     },
-    {
-      title: (
-        <div className="table-header">
-          <div className="khmer-text">តម្លៃរាយ</div>
-          <div className="english-text">Unit Price</div>
-        </div>
-      ),
-      dataIndex: "unit_price",
-      key: "unit_price",
-      render: (text) => <span className="unit-price">{text}</span>,
-    },
+
     {
       title: (
         <div className="table-header">
@@ -416,19 +385,9 @@ const uniqueProducts = state.list.reduce((acc, product) => {
       ),
       dataIndex: "qty",
       key: "qty",
-      render: (text) => <span className="qty-text">{text}</span>,
+      render: (text) => <span className="pos-row">{text}</span>,
     },
-    {
-      title: (
-        <div className="table-header">
-          <div className="khmer-text">បញ្ចុះតម្លៃ</div>
-          <div className="english-text">Discount</div>
-        </div>
-      ),
-      dataIndex: "discount",
-      key: "discount",
-      render: (text) => <span className="discount-text">{text}</span>,
-    },
+
     {
       title: (
         <div className="table-header">
@@ -438,13 +397,46 @@ const uniqueProducts = state.list.reduce((acc, product) => {
       ),
       key: "action",
       render: (text, record) => (
-        <Button className="add-to-cart-btn" onClick={() => handleAdd(record)} type="primary"  icon={<MdAddToPhotos />}>
+        <Button className="add-to-cart-btn" onClick={() => handleAdd(record)} type="primary" icon={<MdAddToPhotos />}>
           Add to Cart
         </Button>
       ),
     },
   ];
+  const handleQuantityChange = (value, index) => {
+    if (!value || isNaN(value) || value <= 0) return; // Prevent invalid values
 
+    const newCartList = [...state.cart_list];
+    newCartList[index].cart_qty = Number(value); // Convert to number
+
+    setState((prev) => ({ ...prev, cart_list: newCartList }));
+    handleCalSummary();
+  };
+
+
+
+  const handlePriceChange = (value, index) => {
+    if (value < 0) return; // Prevent negative prices
+
+    const newCartList = [...state.cart_list];
+    newCartList[index] = { ...newCartList[index], unit_price: value };
+
+    setState((prev) => ({ ...prev, cart_list: newCartList }));
+    handleCalSummary();
+  };
+  const handleActualPriceChange = (value, index) => {
+    if (value < 0) return; // Prevent negative prices
+
+    const newCartList = [...state.cart_list];
+    newCartList[index] = { ...newCartList[index], actual_price: value };
+
+    setState((prev) => ({ ...prev, cart_list: newCartList }));
+    handleCalSummary();
+  };
+
+
+
+  // In the BillItem component or similar
 
   return (
     <MainPage loading={state.loading}>
@@ -456,7 +448,7 @@ const uniqueProducts = state.list.reduce((acc, product) => {
         />
       </div>
       <Row gutter={24}>
-        <Col span={16} className={styles.grid1}>
+        <Col span={14} className={styles.grid1}>
           <div className="pageHeader">
             <Space>
               <div className="khmer-text">ផលិតផល/ {state.total}</div>
@@ -486,10 +478,10 @@ const uniqueProducts = state.list.reduce((acc, product) => {
                   setFilter((pre) => ({ ...pre, brand: id }));
                 }}
               />
-              <Button onClick={onFilter} type="primary" icon={<FiSearch/>}>
+              <Button onClick={onFilter} type="primary" icon={<FiSearch />}>
                 Search
               </Button>
-              <Button type="primary" onClick={handlePrintInvoice} icon={<BsPrinter/>}>
+              <Button type="primary" onClick={handlePrintInvoice} icon={<BsPrinter />}>
                 Print Invoice{" "}
               </Button>
             </Space>
@@ -513,7 +505,7 @@ const uniqueProducts = state.list.reduce((acc, product) => {
 
 
 
-        <Col span={8}>
+        <Col span={10}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>Items {state.cart_list.length}</div>
             <Button onClick={handleClearCart} icon={<FcDeleteRow />}>Clear</Button>
@@ -522,32 +514,44 @@ const uniqueProducts = state.list.reduce((acc, product) => {
             <BillItem
               key={index}
               {...item}
-              handleDescrease={() => handleDescrease(item, index)}
-              handleIncrease={() => handleIncrease(item, index)}
-
-
-
+              handleQuantityChange={(value) => handleQuantityChange(value, index)}
+              handlePriceChange={(value) => handlePriceChange(value, index)}
+              handleActualPriceChange={(value) => handleActualPriceChange(value, index)}
             />
           ))}
+
+
+
+
+
+
+
           {!state.cart_list.length && <Empty />}
           <div>
             <div className={styles.rowSummary}>
-              <div>Total Qty </div>
-              <div>{objSummary.total_qty}Liter</div>
+              <div className="khmer-title">បរិមាណសរុប</div> {/* Total Qty */}
+              <div>{Number(objSummary.total_qty).toLocaleString()} Liter</div>
             </div>
+
             <div className={styles.rowSummary}>
-              <div>Sub total </div>
-              <div>{objSummary.sub_total}$</div>
+              <div className="khmer-title">តម្លៃសរុប</div> {/* Sub Total */}
+              <div>{Math.round(Number(objSummary.sub_total)).toLocaleString()}$</div>
             </div>
-            <div className={styles.rowSummary}>
-              <div>Save($) </div>
-              <div>{objSummary.save_discount}$</div>
-            </div>
-            <div className={styles.rowSummary}>
-              <div style={{ fontWeight: "bold" }}>Total </div>
-              <div style={{ fontWeight: "bold" }}>{objSummary.total}$</div>
-            </div>
+
+            {/* <div className={styles.rowSummary}>
+              <div className="khmer-title">ចំនួនប្រាក់បញ្ចុះតម្លៃ (%)</div> {/* Save ($) */}
+            {/* <div>{Math.round(Number(objSummary.save_discount)).toLocaleString()}$</div>
+            </div> */}
+
+            {/* <div className={styles.rowSummary}>
+              <div className="khmer-title">តម្លៃចុងក្រោយ:</div>
+              <div style={{ fontWeight: "bold" }}>
+                {Math.round(Number(objSummary.total)).toLocaleString()}$
+              </div>
+            </div> */}
           </div>
+
+
           <div>
             <Row gutter={[6, 6]} style={{ marginTop: 15 }}>
               <Col span={12}>

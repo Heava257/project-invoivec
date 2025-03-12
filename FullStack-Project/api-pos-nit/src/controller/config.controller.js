@@ -116,7 +116,7 @@ exports.getList = async (req, res) => {
     ];
 
     const product = [
-      { label: "OIL", value: "oil" },
+      { label: "ប្រេងឥន្ធនះ", value: "oil" },
       // { label: "Ton", value: "ton" },
     ];
 

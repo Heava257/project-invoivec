@@ -73,8 +73,8 @@ function SupplierPage() {
   };
   const onClickBtnDelete = (items) => {
     Modal.confirm({
-      title: "Delete Suppler",
-      content: "Are you sure to delete?",
+      title: "លុបអ្នកផ្គត់ផ្គង់",
+      content: "តើអ្នកប្រាកដថាចង់លុបទិន្នន័យនេះឬ?",
       onOk: async () => {
         setState((p) => ({
           ...p,
@@ -83,18 +83,37 @@ function SupplierPage() {
         const res = await request("supplier", "delete", {
           id: items.id,
         });
+  
         if (res && !res.error) {
-          const newList = state.list.filter((item) => item.id != items.id);
+          const newList = state.list.filter((item) => item.id !== items.id);
           setState((p) => ({
             ...p,
             list: newList,
             loading: false,
           }));
-          message.success(res.message);
+          message.success("លុបទិន្នន័យដោយជោគជ័យ!");
+        } else {
+          const errorMessage = res?.message || "";
+          if (
+            errorMessage.includes("Cannot delete or update a parent row") &&
+            errorMessage.includes("foreign key constraint fails")
+          ) {
+            message.error("មានបញ្ហាក្នុងការលុបទិន្នន័យ!");
+           
+          } else {
+            message.error("មិនអាចលុបបានទេ! ទិន្នន័យនេះកំពុងត្រូវបានប្រើនៅក្នុងការទិញ។");
+          }
+  
+          // ✅ Ensure loading state is updated after error
+          setState((p) => ({
+            ...p,
+            loading: false,
+          }));
         }
       },
     });
   };
+  
   return (
     <MainPage loading={state.loading}>
       <div className="pageHeader">

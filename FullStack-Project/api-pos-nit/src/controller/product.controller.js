@@ -8,26 +8,105 @@ const {
 
 
 
+// exports.getList = async (req, res) => {
+//   try {
+//     const { txt_search, category_id, brand, page, is_list_all } = req.query;
+//     const { user_id } = req.params; // Extract user_id from URL params
+
+//     const pageSize = 2; // Fixed page size
+//     const currentPage = Number(page) || 1; // Default to page 1 if not provided
+//     const offset = (currentPage - 1) * pageSize; // Calculate offset for pagination
+
+//     // Base SQL query to select product details
+//     const sqlSelect = `
+//       SELECT 
+//         p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
+//         p.description, p.qty, p.unit_price, p.discount, p.status, 
+//         p.create_by, p.create_at, p.unit, 
+//         c.name AS category_name,
+//         (p.qty * p.unit_price) AS original_price,
+//         CASE
+//           WHEN p.discount > 0 THEN (p.qty * p.unit_price) * (1 - p.discount / 100)
+//           ELSE (p.qty * p.unit_price)
+//         END AS total_price
+//     `;
+
+//     // SQL JOIN clause
+//     const sqlJoin = `FROM product p INNER JOIN category c ON p.category_id = c.id`;
+
+//     // SQL WHERE clause with user_id filter
+//     let sqlWhere = `WHERE p.user_id = :user_id`;
+
+//     // Apply additional filters based on query parameters
+//     if (txt_search) {
+//       sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode)`;
+//     }
+//     if (category_id) {
+//       sqlWhere += ` AND p.category_id = :category_id`;
+//     }
+//     if (brand) {
+//       sqlWhere += ` AND p.brand = :brand`;
+//     }
+
+//     // SQL ORDER BY clause
+//     const sqlOrderBy = `ORDER BY p.id DESC`;
+
+//     // SQL LIMIT and OFFSET for pagination
+//     let sqlLimit = `LIMIT ${pageSize} OFFSET ${offset}`;
+//     if (is_list_all) {
+//       sqlLimit = ``; // If is_list_all is true, remove LIMIT and OFFSET
+//     }
+
+//     // Combine SQL clauses with proper spacing
+//     const sqlList = `${sqlSelect} ${sqlJoin} ${sqlWhere} ${sqlOrderBy} ${sqlLimit}`;
+
+//     // SQL parameters
+//     const sqlParam = {
+//       user_id, // Pass user_id from params
+//       txt_search: `%${txt_search}%`, // Add wildcards for LIKE search
+//       barcode: txt_search, // Use the same value for barcode search
+//       category_id,
+//       brand,
+//     };
+
+//     const [list] = await db.query(sqlList, sqlParam);
+
+//     let dataCount = 0;
+//     if (currentPage === 1) {
+//       const sqlTotal = `SELECT COUNT(p.id) AS total ${sqlJoin} ${sqlWhere}`;
+//       const [totalResult] = await db.query(sqlTotal, sqlParam);
+//       dataCount = totalResult[0].total;
+//     }
+
+//     res.json({
+//       list: list,
+//       total: dataCount,
+//     });
+//   } catch (error) {
+//     logError("product.getList", error, res);
+//   }
+// };
+
 exports.getList = async (req, res) => {
   try {
     const { txt_search, category_id, page, is_list_all } = req.query;
     const { user_id } = req.params; // Extract user_id from URL params
 
-    const pageSize = 2; // Fixed page size
-    const currentPage = Number(page) || 1; // Default to page 1 if not provided
-    const offset = (currentPage - 1) * pageSize; // Calculate offset for pagination
+    const pageSize = 10; // Increased page size for better UX
+    const currentPage = Number(page) || 1;
+    const offset = (currentPage - 1) * pageSize;
 
-    // Base SQL query to select product details
+    // SQL query to select product details
     const sqlSelect = `
       SELECT 
-        p.id, p.name, p.category_id, p.barcode, p.company_name, 
-        p.description, p.qty, p.unit_price, p.discount, p.status, 
+        p.id, p.name, p.category_id, p.barcode, p.brand, p.company_name, 
+        p.description, p.qty, p.unit_price, p.discount, p.actual_price, p.status, 
         p.create_by, p.create_at, p.unit, 
         c.name AS category_name,
         (p.qty * p.unit_price) AS original_price,
         CASE
-          WHEN p.discount > 0 THEN (p.qty * p.unit_price) * (1 - p.discount / 100)
-          ELSE (p.qty * p.unit_price)
+          WHEN p.discount > 0 THEN ((p.qty * p.unit_price) * (1 - p.discount / 100)) / p.actual_price
+          ELSE (p.qty * p.unit_price) / p.actual_price
         END AS total_price
     `;
 
@@ -37,7 +116,7 @@ exports.getList = async (req, res) => {
     // SQL WHERE clause with user_id filter
     let sqlWhere = `WHERE p.user_id = :user_id`;
 
-    // Apply additional filters based on query parameters
+    // Apply additional filters
     if (txt_search) {
       sqlWhere += ` AND (p.name LIKE :txt_search OR p.barcode = :barcode)`;
     }
@@ -51,17 +130,17 @@ exports.getList = async (req, res) => {
     // SQL LIMIT and OFFSET for pagination
     let sqlLimit = `LIMIT ${pageSize} OFFSET ${offset}`;
     if (is_list_all) {
-      sqlLimit = ``; // If is_list_all is true, remove LIMIT and OFFSET
+      sqlLimit = ``; // If is_list_all is true, remove pagination
     }
 
-    // Combine SQL clauses with proper spacing
+    // Combine SQL clauses
     const sqlList = `${sqlSelect} ${sqlJoin} ${sqlWhere} ${sqlOrderBy} ${sqlLimit}`;
 
     // SQL parameters
     const sqlParam = {
-      user_id, // Pass user_id from params
-      txt_search: `%${txt_search}%`, // Add wildcards for LIKE search
-      barcode: txt_search, // Use the same value for barcode search
+      user_id,
+      txt_search: `%${txt_search || ''}%`,
+      barcode: txt_search || '',
       category_id,
     };
 
@@ -75,7 +154,7 @@ exports.getList = async (req, res) => {
     }
 
     res.json({
-      list: list,
+      list,
       total: dataCount,
     });
   } catch (error) {
@@ -84,12 +163,56 @@ exports.getList = async (req, res) => {
 };
 
 
+// exports.create = async (req, res) => {
+//   try {
+//     // Extract values from request body
+//     const { name, category_id, barcode, company_name, description, qty, actual_price,unit, unit_price, discount, status } = req.body;
+    
+//     // Get user_id from authentication or fallback to request body
+//     const user_id = req.auth?.id || req.body.user_id;
+  
+//     // Validate required fields
+//     if (!user_id || !name || !category_id || !qty || !unit || !unit_price) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields (user_id, name, category_id, qty, unit, unit_price).",
+//       });
+//     }
 
+//     var sql =
+//       " INSERT INTO product (user_id, name, category_id, barcode, company_name, description, qty, actual_price,unit, unit_price, discount, status, create_by) " +
+//       " VALUES (:user_id, :name, :category_id, :barcode,  :company_name, :description, :qty, :actual_price,:unit, :unit_price, :discount, :status, :create_by) ";
+
+//     var [data] = await db.query(sql, {
+//       user_id,
+//       name,
+//       category_id,
+//       barcode,
+//       company_name,
+//       description,
+//       qty,
+//       actual_price,
+//       unit,
+//       unit_price,
+//       discount,
+//       status,
+//       create_by: req.auth?.name,
+//     });
+
+//     res.json({
+//       success: true,
+//       data,
+//       message: "Insert success!",
+//     });
+//   } catch (error) {
+//     logError("product.create", error, res);
+//   }
+// };
 
 exports.create = async (req, res) => {
   try {
     // Extract values from request body
-    const { name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status } = req.body;
+    const { name, category_id, barcode, company_name, description, qty, actual_price, unit, unit_price, discount, status } = req.body;
     
     // Get user_id from authentication or fallback to request body
     const user_id = req.auth?.id || req.body.user_id;
@@ -110,22 +233,18 @@ exports.create = async (req, res) => {
     });
   
     // Validate required fields
-    if (!user_id || !name || !category_id || !qty || !unit || !unit_price) {
+    if (!user_id || !name || !category_id || !qty || !unit || !unit_price || !actual_price) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields. Please provide user_id, name, category_id, qty, unit, and unit_price.",
+        message: "Missing required fields (user_id, name, category_id, qty, unit, unit_price, actual_price).",
       });
     }
 
-    const sql = `
-      INSERT INTO product 
-      (user_id, name, category_id, barcode, company_name, description, qty, unit, unit_price, discount, status, create_by) 
-      VALUES 
-      (:user_id, :name, :category_id, :barcode, :company_name, :description, :qty, :unit, :unit_price, :discount, :status, :create_by)
-    `;
+    var sql =
+      " INSERT INTO product (user_id, name, category_id, barcode, company_name, description, qty, actual_price, unit, unit_price, discount, status, create_by) " +
+      " VALUES (:user_id, :name, :category_id, :barcode, :company_name, :description, :qty, :actual_price, :unit, :unit_price, :discount, :status, :create_by) ";
 
-    // Log SQL query values
-    console.log("Executing query with values:", {
+    var [data] = await db.query(sql, {
       user_id,
       name,
       category_id,
@@ -133,6 +252,7 @@ exports.create = async (req, res) => {
       company_name,
       description,
       qty,
+      actual_price, // ធានាថាតម្លៃនេះមិនទទេ
       unit,
       unit_price,
       discount,
@@ -140,22 +260,7 @@ exports.create = async (req, res) => {
       create_by: req.auth?.name,
     });
 
-    const [data] = await db.query(sql, {
-      user_id,
-      name,
-      category_id,
-      barcode,
-      company_name,
-      description,
-      qty,
-      unit,
-      unit_price,
-      discount,
-      status,
-      create_by: req.auth?.name,
-    });
-
-    res.status(201).json({
+    res.json({
       success: true,
       message: "Product created successfully.",
       data,
@@ -172,9 +277,6 @@ exports.create = async (req, res) => {
     });
   }
 };
-
-
-
 exports.update = async (req, res) => {
   try {
     // Extracting fields from request body

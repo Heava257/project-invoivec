@@ -56,7 +56,7 @@ const { db, isArray, isEmpty, logError } = require("../util/helper");
 //     var from_date = req.query.from_date;
 //     var to_date = req.query.to_date;
 //     var txtSearch = req.query.txtSearch;
-    
+
 //     var sqlSelect = "SELECT o.*, c.name AS customer_name, c.tel AS customer_tel, c.address AS customer_address ";
 //     var sqlJoin = " FROM `order` o LEFT JOIN customer c ON o.customer_id = c.id ";
 //     var sqlWhere = " WHERE true "; // Ensure spacing
@@ -299,15 +299,20 @@ exports.getList = async (req, res) => {
 exports.getone = async (req, res) => {
   try {
     var sql = `
-      SELECT 
-        od.*, 
-        p.name AS p_name, 
-        p.description AS p_des, 
-        c.name AS p_category_name 
-      FROM order_detail od
-      INNER JOIN product p ON od.product_id = p.id  -- Ensure 'product_id' exists in 'order_detail'
-      INNER JOIN category c ON p.category_id = c.id 
-      WHERE od.order_id = ?`;
+   SELECT 
+    od.order_id,
+    p.name AS product_name,
+    c.name AS category_name,
+    p.unit_price,
+    p.discount,
+    p.unit,
+    SUM(od.qty) AS total_quantity,
+    SUM(od.qty * p.unit_price * (1 - COALESCE(p.discount, 0)/100) / NULLIF(p.actual_price, 0)) AS grand_total
+FROM order_detail od
+INNER JOIN product p ON od.product_id = p.id
+INNER JOIN category c ON p.category_id = c.id
+WHERE od.order_id = ?
+GROUP BY od.order_id, p.name, c.name, p.unit_price, p.discount, p.unit`;
 
     const [list] = await db.query(sql, [req.params.id]); // Fixed parameter handling
     res.json({ list });
@@ -349,6 +354,91 @@ exports.getone = async (req, res) => {
 // };
 
 
+// exports.create = async (req, res) => {
+//   try {
+//     const { order, order_details = [] } = req.body;
+
+//     if (!order.customer_id || !order.total_amount || !order.paid_amount || !order.payment_method) {
+//       return res.status(400).json({ error: "Missing required fields in order" });
+//     }
+
+//     if (!order_details.length) {
+//       return res.status(400).json({ error: "Order details cannot be empty" });
+//     }
+
+//     const order_no = await newOrderNo();
+
+//     const sqlOrder = `
+//       INSERT INTO \`order\` 
+//         (order_no, customer_id, total_amount, paid_amount, payment_method, remark, user_id, create_by) 
+//       VALUES 
+//         (:order_no, :customer_id, :total_amount, :paid_amount, :payment_method, :remark, :user_id, :create_by)
+//     `;
+//     const [orderResult] = await db.query(sqlOrder, {
+//       ...order,
+//       order_no: order_no,
+//       user_id: req.auth?.id || null,
+//       create_by: req.auth?.name || "System",
+//     });
+
+//     const sqlOrderDetails = `
+//       INSERT INTO order_detail 
+//         (order_id, product_id, qty, price, discount, total) 
+//       VALUES 
+//         (:order_id, :product_id, :qty, :price, :discount, :total)
+//     `;
+
+//     await Promise.all(
+//       order_details.map(async (item) => {
+//         // Insert order detail
+//         await db.query(sqlOrderDetails, {
+//           ...item,
+//           order_id: orderResult.insertId,
+//         });
+
+//         const [productData] = await db.query(
+//           "SELECT * FROM product WHERE id = :product_id",
+//           { product_id: item.product_id }
+//         );
+
+//         if (productData.length === 0) {
+//           throw new Error(`Product with id ${item.product_id} not found`);
+//         }
+
+//         const product = productData[0];
+
+//         const sqlUpdateStock = `
+//           UPDATE product 
+//           SET qty = qty - :qty 
+//           WHERE id = :product_id
+//         `;
+//         await db.query(sqlUpdateStock, {
+//           qty: item.qty,
+//           product_id: item.product_id
+//         });
+
+
+//       })
+//     );
+
+//     // Fetch the newly created order
+//     const [currentOrder] = await db.query(
+//       "SELECT * FROM `order` WHERE id = :id",
+//       { id: orderResult.insertId }
+//     );
+
+//     // Return success response
+//     res.json({
+//       order: currentOrder.length > 0 ? currentOrder[0] : null,
+//       order_details: order_details,
+//       message: "Order created successfully",
+//     });
+//   } catch (error) {
+//     logError("order.create", error, res);
+//   }
+// };
+
+
 exports.create = async (req, res) => {
   try {
     const { order, order_details = [] } = req.body;
@@ -372,8 +462,8 @@ exports.create = async (req, res) => {
     const [orderResult] = await db.query(sqlOrder, {
       ...order,
       order_no: order_no,
-      user_id: req.auth?.id || null, 
-      create_by: req.auth?.name || "System", 
+      user_id: req.auth?.id || null,
+      create_by: req.auth?.name || "System",
     });
 
     const sqlOrderDetails = `
@@ -382,37 +472,38 @@ exports.create = async (req, res) => {
       VALUES 
         (:order_id, :product_id, :qty, :price, :discount, :total)
     `;
-    
+
     await Promise.all(
       order_details.map(async (item) => {
         // Insert order detail
         await db.query(sqlOrderDetails, {
           ...item,
-          order_id: orderResult.insertId, 
+          order_id: orderResult.insertId,
         });
 
-        const [productData] = await db.query(
-          "SELECT * FROM product WHERE id = :product_id",
-          { product_id: item.product_id }
-        );
-        
-        if (productData.length === 0) {
-          throw new Error(`Product with id ${item.product_id} not found`);
+        // Check if product_id is not zero
+        if (item.product_id !== 0) {
+          const [productData] = await db.query(
+            "SELECT * FROM product WHERE id = :product_id",
+            { product_id: item.product_id }
+          );
+
+          if (productData.length === 0) {
+            throw new Error(`Product with id ${item.product_id} not found`);
+          }
+
+          const product = productData[0];
+
+          const sqlUpdateStock = `
+            UPDATE product 
+            SET qty = qty - :qty 
+            WHERE id = :product_id
+          `;
+          await db.query(sqlUpdateStock, {
+            qty: item.qty,
+            product_id: item.product_id
+          });
         }
-        
-        const product = productData[0];
-
-        const sqlUpdateStock = `
-          UPDATE product 
-          SET qty = qty - :qty 
-          WHERE id = :product_id
-        `;
-        await db.query(sqlUpdateStock, {
-          qty: item.qty,
-          product_id: item.product_id
-        });
-
-      
       })
     );
 
@@ -432,9 +523,6 @@ exports.create = async (req, res) => {
     logError("order.create", error, res);
   }
 };
-
-
-
 
 const newOrderNo = async (req, res) => {
   try {

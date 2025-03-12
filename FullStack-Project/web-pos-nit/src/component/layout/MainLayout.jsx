@@ -31,7 +31,7 @@ import {
 } from "@ant-design/icons";
 const { Header, Content, Footer, Sider } = Layout;
 <div>
-<Tag>V 1.0.1</Tag>
+  <Tag>V 1.0.1</Tag>
 </div>
 const items_menu = [
   {
@@ -43,10 +43,10 @@ const items_menu = [
   {
     key: "",
     label: "ផ្ទាំងគ្រប់គ្រង",
-    icon: <PieChartOutlined/>,
+    icon: <PieChartOutlined />,
     className: "dashboard-item khmrt-branch",
   },
-  { 
+  {
     key: "invoices",
     label: "វិក្កយបត្រ",
     icon: <DesktopOutlined />,
@@ -56,7 +56,7 @@ const items_menu = [
     key: "order",
     label: "សេចក្ដីលម្អិតវិក្កយបត្រ",
     icon: <FileOutlined />,
-    className: "invoices-detail-item khmrt-branch", 
+    className: "invoices-detail-item khmrt-branch",
   },
   {
     key: "total_due",
@@ -71,7 +71,7 @@ const items_menu = [
     children: [
       {
         key: "product",
-        label: "ឃ្លាំងសន្សំ",
+        label: "បញ្ចូលស្តុកប្រេងរាវ",
         icon: <FileProtectOutlined />,
         className: "list-product-item khmrt-branch",
       },
@@ -100,12 +100,12 @@ const items_menu = [
     key: "customer",
     label: "អតិថិជន",
     icon: <UserOutlined />,
-    className: "list-Customer-item khmrt-branch", 
+    className: "list-Customer-item khmrt-branch",
   },
   {
     label: "ចំណាយ",
     icon: <DollarOutlined />,
-    className: "expense-menu khmrt-branch", 
+    className: "expense-menu khmrt-branch",
     children: [
       {
         key: "expanse",
@@ -189,7 +189,7 @@ const items_menu = [
 const MainLayout = () => {
   const permision = getPermission();
   const { setConfig } = configStore();
-  const [items,setItems] = useState(items_menu);
+  const [items, setItems] = useState(items_menu);
   const profile = getProfile();
   const [collapsed, setCollapsed] = useState(false);
   const {
@@ -205,36 +205,36 @@ const MainLayout = () => {
       navigate("/login");
     }
   }, []);
-  const checkISnotPermissionViewPage =()=>{
+  const checkISnotPermissionViewPage = () => {
     let findIndex = permision?.findIndex(
-      (item) =>item.web_route_key == location.pathname
+      (item) => item.web_route_key == location.pathname
     );
     if (findIndex == -1) {
       for (let i = 0; i < permision.length; i++) {
-       navigate(permision[i].web_route_key);
-       break;
+        navigate(permision[i].web_route_key);
+        break;
       }
     }
   }
-  const getMenuByUser =() =>{
+  const getMenuByUser = () => {
     let new_items_menu = [];
-    items_menu?.map((item1)=>{
+    items_menu?.map((item1) => {
       const p1 = permision?.findIndex(
-        (data1) => data1.web_route_key == "/"+item1.key
+        (data1) => data1.web_route_key == "/" + item1.key
       );
-      if (p1 != -1){
+      if (p1 != -1) {
         new_items_menu.push(item1);
       }
       if (item1?.children && item1?.children.length > 0) {
         let childTmp = [];
-        item1?.children.map((data1)=>{
-          permision?.map((data2) =>{
+        item1?.children.map((data1) => {
+          permision?.map((data2) => {
             if (data2.web_route_key == "/" + data1.key) {
               childTmp.push(data1);
             }
           });
         });
-        if(childTmp.length > 0){
+        if (childTmp.length > 0) {
           item1.children = childTmp;
           new_items_menu.push(item1);
         }
@@ -263,8 +263,8 @@ const MainLayout = () => {
     {
       key: "1",
       label: (
-        <a  disabled target="_blank" rel="noopener noreferrer">
-           {/* href="/" */}
+        <a disabled target="_blank" rel="noopener noreferrer">
+          {/* href="/" */}
           Profile
         </a>
       ),
@@ -276,7 +276,7 @@ const MainLayout = () => {
           Changs Your Password
         </a>
       ),
-      icon: <SmileOutlined/>,
+      icon: <SmileOutlined />,
       disabled: true,
     },
     {
@@ -298,36 +298,36 @@ const MainLayout = () => {
       >
         <div className="demo-logo-vertical" />
         <Menu
-  theme="dark"
-  defaultSelectedKeys={["1"]}
-  mode="inline"
-  items={items}
-  onClick={onClickMenu}
-/>
-     </Sider>
+          theme="dark"
+          defaultSelectedKeys={["1"]}
+          mode="inline"
+          items={items}
+          onClick={onClickMenu}
+        />
+      </Sider>
       <Layout>
         <div className="admin-header">
           <div className="admin-header-g1">
-          <div className="flex flex-col items-start space-y-1">
-  <div className="flex items-center gap-2">
-    <img
-      src={logo}
-      alt="Company Logo"
-      className="w-50 h-12 object-contain filter brightness-0 invert"
-    />
-   <h1 className="text-2xl font-bold text-white font-sans text-left">
-  PETRONAS CAMBODIA CO., LTD
-</h1>
-  </div>
-  <div className="text-white text-sm">
-    <div className="khmer-branch text-white">
-      សាខា: {profile?.branch_name}
-    </div>
-    <div className="khmer-branch text-white">
-      អាសយដ្ឋាន: {profile?.address}
-    </div>
-  </div>
-</div>
+            <div className="flex flex-col items-start space-y-1">
+              <div className="flex items-center gap-2">
+                <img
+                  src={logo}
+                  alt="Company Logo"
+                  className="w-50 h-12 object-contain filter brightness-0 invert"
+                />
+                <h1 className="text-2xl font-bold text-white font-sans text-left">
+                  PETRONAS CAMBODIA CO., LTD
+                </h1>
+              </div>
+              <div className="text-white text-sm">
+                <div className="khmer-branch text-white">
+                  សាខា: {profile?.branch_name}
+                </div>
+                <div className="khmer-branch text-white">
+                  អាសយដ្ឋាន: {profile?.address}
+                </div>
+              </div>
+            </div>
           </div>
           <div className="admin-header-g2">
             <MdOutlineMarkEmailUnread className="icon-email" />
@@ -365,14 +365,14 @@ const MainLayout = () => {
           </div>
         </Content>
         <Footer
-        style={{
-          textAlign: 'center',
-        }}
-      >
-        ©{new Date().getFullYear()} Created by PETRONAS CO.,LTD
-      </Footer>
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          ©{new Date().getFullYear()} Created by PETRONAS CO.,LTD
+        </Footer>
       </Layout>
-      
+
     </Layout>
   );
 };
