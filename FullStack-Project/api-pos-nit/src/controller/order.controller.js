@@ -442,17 +442,25 @@ GROUP BY od.order_id, p.name, c.name, p.unit_price, p.discount, p.unit`;
 exports.create = async (req, res) => {
   try {
     const { order, order_details = [] } = req.body;
+    console.log("Order SQL:", sqlOrder);
+    console.log("Order Result:", orderResult);
 
+    console.log("Order Details SQL:", sqlOrderDetails);
+
+    // Validate required fields in the order
     if (!order.customer_id || !order.total_amount || !order.paid_amount || !order.payment_method) {
       return res.status(400).json({ error: "Missing required fields in order" });
     }
 
+    // Validate order details
     if (!order_details.length) {
       return res.status(400).json({ error: "Order details cannot be empty" });
     }
 
+    // Generate a new order number
     const order_no = await newOrderNo();
 
+    // Insert the order into the database
     const sqlOrder = `
       INSERT INTO \`order\` 
         (order_no, customer_id, total_amount, paid_amount, payment_method, remark, user_id, create_by) 
@@ -466,6 +474,7 @@ exports.create = async (req, res) => {
       create_by: req.auth?.name || "System",
     });
 
+    // Insert order details into the database
     const sqlOrderDetails = `
       INSERT INTO order_detail 
         (order_id, product_id, qty, price, discount, total) 
@@ -475,25 +484,13 @@ exports.create = async (req, res) => {
 
     await Promise.all(
       order_details.map(async (item) => {
-        // Insert order detail
         await db.query(sqlOrderDetails, {
           ...item,
           order_id: orderResult.insertId,
         });
 
-        // Check if product_id is not zero
+        // Update product stock if product_id is not zero
         if (item.product_id !== 0) {
-          const [productData] = await db.query(
-            "SELECT * FROM product WHERE id = :product_id",
-            { product_id: item.product_id }
-          );
-
-          if (productData.length === 0) {
-            throw new Error(`Product with id ${item.product_id} not found`);
-          }
-
-          const product = productData[0];
-
           const sqlUpdateStock = `
             UPDATE product 
             SET qty = qty - :qty 
@@ -520,7 +517,8 @@ exports.create = async (req, res) => {
       message: "Order created successfully",
     });
   } catch (error) {
-    logError("order.create", error, res);
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Failed to create order", details: error.message });
   }
 };
 

@@ -1,7 +1,6 @@
 import React from "react";
 import styles from "./BillItem.module.css";
-import { Button, Col, Row, Space, InputNumber } from "antd";
-import { MdDelete } from "react-icons/md";
+import { Col, Row, Space, InputNumber } from "antd";
 
 function BillItem({
   name,
@@ -17,11 +16,9 @@ function BillItem({
 }) {
   const safe_actual_price = actual_price > 0 ? actual_price : unit_price; // Prevent division by zero
 
-  const calculated_total = (
-    ((cart_qty * unit_price) / safe_actual_price) 
-  ).toFixed(0);  // Remove decimals first
-
-  const formattedTotal = Number(calculated_total).toLocaleString();  // Format with commas
+  // Calculate the total for this item using the formula (qty * unit_price) / actual_price
+  const calculated_total = ((cart_qty * unit_price) / safe_actual_price).toFixed(0); // Remove decimals first
+  const formattedTotal = Number(calculated_total).toLocaleString(); // Format with commas
 
   // Format handler for InputNumber
   const formatter = (value) => {
@@ -40,12 +37,8 @@ function BillItem({
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div className="khmer-oil">{name}</div>
           </div>
-          <div>
-            {barcode}
-          </div>
-          <div className="khmer-category">
-            {category_name}
-          </div>
+          <div>{barcode}</div>
+          <div className="khmer-category">{category_name}</div>
 
           <Space>
             <div className="khmer-text">បរិមាណ:</div> {/* Quantity */}
@@ -75,16 +68,6 @@ function BillItem({
               parser={parser}
             />
           </Space>
-
-          {/* <div className="khmer-text">បញ្ចុះតម្លៃ (%):</div> {/* Discount (%) */}
-          {/* <InputNumber
-            value={discount}
-            onChange={(value) => handleDiscountChange(value, index)}
-            min={0}
-            max={100}
-            formatter={(value) => `${value}`}
-            parser={(value) => value}
-          />  */}
 
           <div className="khmer-total">
             តម្លៃសរុប: {formattedTotal}$ {/* Total */}

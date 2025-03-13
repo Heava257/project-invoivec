@@ -117,9 +117,7 @@ exports.getList = async (req, res) => {
 
     const product = [
       { label: "ប្រេងឥន្ធនះ", value: "oil" },
-      // { label: "Ton", value: "ton" },
     ];
-
 
     // const expanse_id = ("SELECT expense_type_id AS FROM expense");
     // const [customer_name] = await db.query(

@@ -40,6 +40,14 @@ function PosPage() {
     visibleModal: false,
     cart_list: [],
   });
+  const { id } = getProfile(); // Get the logged-in user's ID
+
+  useEffect(() => {
+    setObjSummary((prev) => ({
+      ...prev,
+      user_id: id, // Set default user_id
+    }));
+  }, [id]);
   const fetchCustomers = async () => {
     try {
       const { id } = getProfile();
@@ -93,6 +101,9 @@ function PosPage() {
   });
   const [form] = Form.useForm();
   useEffect(() => {
+    handleCalSummary(); // Recalculate totals whenever cart_list changes
+  }, [state.cart_list]);
+  useEffect(() => {
     fetchCustomers();
     getList();
   }, []);
@@ -135,7 +146,9 @@ function PosPage() {
   };
   const onFilter = () => {
     getList();
-  }; const handleAdd = (item) => {
+  };
+
+  const handleAdd = (item) => {
     var cart_tmp = [...state.cart_list]; // Ensure a copy of the state list
     var findIndex = cart_tmp.findIndex((row) => row.barcode === item.barcode);
     var isNoStock = false;
@@ -193,91 +206,106 @@ function PosPage() {
 
 
 
-
   const handleCalSummary = useCallback(() => {
     let total_qty = 0;
     let sub_total = 0;
-    let save_discount = 0;
     let total = 0;
 
     state.cart_list.forEach((item) => {
       const qty = item.cart_qty || 0;
       const unit_price = item.unit_price || 0;
-      const actual_price = item.actual_price || unit_price; // Use actual price if provided, otherwise fallback to unit price
+      const actual_price = item.actual_price || unit_price;
 
-      // Calculate the subtotal per item based on actual price
-      const calculated_total = (qty * unit_price) / actual_price; // Adjust for actual price
-      sub_total += calculated_total; // Update subtotal
-
-      // Handle the discount logic
-    
-
-      // Final total after applying discount (if any)
-    
-
-      total_qty += qty; // Update total quantity
+      const calculated_total = (qty * unit_price) / actual_price;
+      sub_total += calculated_total;
+      total_qty += qty;
     });
+
+    total = sub_total;
 
     setObjSummary({
       total_qty: total_qty.toFixed(2),
-      sub_total: sub_total.toFixed(2), // Subtotal before discount
-      save_discount: save_discount.toFixed(2), // Total discount applied
-      total: total.toFixed(2), // Final total after discount
+      sub_total: sub_total.toFixed(2),
+      total: total.toFixed(2),
     });
-  });
-
-
-
-
-
+  }, [state.cart_list]);
 
 
   const handleClickOut = async () => {
+    // First, validate that we have the necessary data
+    if (!state.cart_list.length) {
+      message.error("Cart is empty!");
+      return;
+    }
+
+    if (!objSummary.payment_method) {
+      message.error("Please select a payment method!");
+      return;
+    }
+
+    if (!objSummary.user_id) {
+      message.error("Please select a location/branch!");
+      return;
+    }
+
     var order_details = [];
     state.cart_list.forEach((item) => {
-      var total = Number(item.cart_qty) * Number(item.unit_price);
-      if (item.discount != null && item.discount != 0) {
-        total = total - (total * Number(item.discount)) / 100;
+      // Make sure all values are properly converted to numbers
+      const qty = Number(item.cart_qty) || 0;
+      const price = Number(item.unit_price) || 0;
+      const discount = Number(item.discount) || 0;
+
+      // Calculate the total properly
+      var total = qty * price;
+      if (discount > 0) {
+        total = total - (total * discount / 100);
       }
+
       var objItem = {
         product_id: item.id,
-        qty: Number(item.cart_qty),
-        price: Number(item.unit_price),
-        discount: Number(item.discount),
+        qty: qty,
+        price: price,
+        discount: discount,
         total: total,
       };
       order_details.push(objItem);
     });
-    var param = {
 
+    var param = {
       order: {
-        customer_id: objSummary.customer_id,
-        user_id: objSummary.user_id,
-        total_amount: objSummary.total,
-        paid_amount: objSummary.total_paid,
-        payment_method: objSummary.payment_method,
-        remark: objSummary.remark,
+        customer_id: objSummary.customer_id || null,
+        user_id: Number(objSummary.user_id) || null,
+        total_amount: Number(objSummary.total || 0),
+        paid_amount: Number(objSummary.total_paid || 0),
+        payment_method: objSummary.payment_method || "Cash",
+        remark: objSummary.remark || "No remark",
       },
       order_details: order_details,
     };
 
+    console.log("Sending order with params:", param);
 
-
-    const res = await request("order", "post", param);
-    if (res && !res.error) {
-      if (res.order) {
-        message.success("Order created success!");
-        setObjSummary((p) => ({
-          ...p,
-          order_no: res.order?.order_no,
-          order_date: res.order?.create_at,
-        }));
-        setTimeout(() => {
-          handlePrintInvoice();
-        }, 1000);
+    try {
+      const res = await request("order", "post", param);
+      if (res && !res.error) {
+        if (res.order) {
+          message.success("Order created successfully!");
+          setObjSummary((p) => ({
+            ...p,
+            order_no: res.order?.order_no,
+            order_date: res.order?.create_at,
+          }));
+          setTimeout(() => {
+            handlePrintInvoice();
+          }, 1000);
+        }
+      } else {
+        console.error("Error response:", res);
+        message.error(`Order not complete! ${res?.message || ''}`);
       }
-    } else {
-      message.error("Order not complete!");
+    } catch (error) {
+      console.error("Error creating order:", error);
+      message.error("Failed to create order. Please try again.");
     }
   };
 
@@ -376,6 +404,7 @@ function PosPage() {
       render: (text) => <span className="pos-row">{text}</span>,
     },
 
+
     {
       title: (
         <div className="table-header">
@@ -404,38 +433,31 @@ function PosPage() {
     },
   ];
   const handleQuantityChange = (value, index) => {
-    if (!value || isNaN(value) || value <= 0) return; // Prevent invalid values
+    if (!value || isNaN(value) || value <= 0) return;
 
     const newCartList = [...state.cart_list];
-    newCartList[index].cart_qty = Number(value); // Convert to number
+    newCartList[index].cart_qty = Number(value);
 
     setState((prev) => ({ ...prev, cart_list: newCartList }));
-    handleCalSummary();
   };
 
-
-
   const handlePriceChange = (value, index) => {
-    if (value < 0) return; // Prevent negative prices
+    if (value < 0) return;
 
     const newCartList = [...state.cart_list];
     newCartList[index] = { ...newCartList[index], unit_price: value };
 
     setState((prev) => ({ ...prev, cart_list: newCartList }));
-    handleCalSummary();
   };
+
   const handleActualPriceChange = (value, index) => {
-    if (value < 0) return; // Prevent negative prices
+    if (value < 0) return;
 
     const newCartList = [...state.cart_list];
     newCartList[index] = { ...newCartList[index], actual_price: value };
 
     setState((prev) => ({ ...prev, cart_list: newCartList }));
-    handleCalSummary();
   };
-
-
-
   // In the BillItem component or similar
 
   return (
@@ -520,35 +542,16 @@ function PosPage() {
             />
           ))}
 
-
-
-
-
-
-
           {!state.cart_list.length && <Empty />}
-          <div>
-            <div className={styles.rowSummary}>
-              <div className="khmer-title">បរិមាណសរុប</div> {/* Total Qty */}
-              <div>{Number(objSummary.total_qty).toLocaleString()} Liter</div>
-            </div>
 
-            <div className={styles.rowSummary}>
-              <div className="khmer-title">តម្លៃសរុប</div> {/* Sub Total */}
-              <div>{Math.round(Number(objSummary.sub_total)).toLocaleString()}$</div>
-            </div>
+          <div className={styles.rowSummary}>
+            <div className="khmer-title">បរិមាណសរុប</div> {/* Total Qty */}
+            <div>{Number(objSummary.total_qty).toLocaleString()} Liter</div>
+          </div>
 
-            {/* <div className={styles.rowSummary}>
-              <div className="khmer-title">ចំនួនប្រាក់បញ្ចុះតម្លៃ (%)</div> {/* Save ($) */}
-            {/* <div>{Math.round(Number(objSummary.save_discount)).toLocaleString()}$</div>
-            </div> */}
-
-            {/* <div className={styles.rowSummary}>
-              <div className="khmer-title">តម្លៃចុងក្រោយ:</div>
-              <div style={{ fontWeight: "bold" }}>
-                {Math.round(Number(objSummary.total)).toLocaleString()}$
-              </div>
-            </div> */}
+          <div className={styles.rowSummary}>
+            <div className="khmer-title">តម្លៃសរុបចុងក្រោយ</div> {/* Grand Total */}
+            <div>{Math.round(Number(objSummary.total)).toLocaleString()}$</div>
           </div>
 
 
@@ -560,7 +563,7 @@ function PosPage() {
                   allowClear
                   style={{ width: "100%" }}
                   placeholder="Select Customer"
-                  options={state.customers} // Use state.customers instead
+                  options={state.customers}
                   loading={state.loading}
                   onSelect={(value, option) => {
                     setObjSummary((prev) => ({
@@ -611,7 +614,6 @@ function PosPage() {
                   placeholder="Select location"
                   options={config?.branch_name} // Make sure `config?.user` contains `branch_name`
                   onSelect={(value, option) => {
-                    console.log(option); // 🔥 Debugging: ពិនិត្យ `option`
                     setObjSummary((prev) => ({
                       ...prev,
                       user_id: value,
@@ -622,7 +624,6 @@ function PosPage() {
                     }));
                   }}
                 />
-
 
               </Col>
 

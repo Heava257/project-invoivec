@@ -85,7 +85,7 @@ function ProductPage() {
       page: 1, // Force first page
       is_list_all: 1, // Ensure fetching all
     };
-    
+
     setState((pre) => ({ ...pre, loading: true }));
     const { id } = getProfile();
     if (!id) {
@@ -156,7 +156,7 @@ function ProductPage() {
       message.error("User ID is missing!");
       return;
     }
-  
+
     // បង្កើតទិន្នន័យសម្រាប់ការកម្មង
     var data = {
       id: form.getFieldValue("id"),
@@ -174,31 +174,31 @@ function ProductPage() {
       description: items.description,
       status: items.status,
     };
-  
+
     // បញ្ជូនទិន្នន័យទៅ API
     var method = form.getFieldValue("id") ? "put" : "post";
     const res = await request("product", method, data);
-  
+
     if (res && !res.error) {
       message.success(res.message);
-  
+
       // ដកតម្លៃ qty ពីសរុបរួម (totals)
       const updatedTotals = { ...state.totals };
       if (updatedTotals[items.category_name]) {
         updatedTotals[items.category_name] -= items.qty;
-  
+
         // ប្រសិនបើតម្លៃសរុបរួមធ្លាក់ខ្លួនតិចជាង 0 កំណត់វាជា 0
         if (updatedTotals[items.category_name] < 0) {
           updatedTotals[items.category_name] = 0;
         }
       }
-  
+
       // ធ្វើបច្ចុប្បន្នភាព state ជាមួយនឹងតម្លៃសរុបរួមថ្មី
       setState((pre) => ({
         ...pre,
         totals: updatedTotals,
       }));
-  
+
       // ទាញយកបញ្ជីថ្មី និងបិទ modal
       getList();
       onCloseModal();
@@ -281,7 +281,13 @@ function ProductPage() {
       }
     }
   };
+  const product = [
+    { label: "ប្រេងឥន្ធនះ", value: "oil" },
+  ];
 
+  const handleChange = (value) => {
+    console.log("Selected:", value);
+  };
   return (
     <MainPage loading={state.loading}>
       <div className="pageHeader">
@@ -366,7 +372,12 @@ function ProductPage() {
                   },
                 ]}
               >
-                <Select placeholder="Select Product" options={config.product} />
+                <Select
+                  options={product}
+                  onChange={handleChange}
+                  placeholder="Select a product"
+                  style={{ width: 200 }}
+                />
               </Form.Item>
               <Form.Item
                 name={"category_id"}
@@ -383,7 +394,7 @@ function ProductPage() {
                   },
                 ]}
               >
-                <Select placeholder="Select category" options={config.category} />
+                <Select placeholder="Select category" options={config?.category} />
               </Form.Item>
               <Form.Item
                 name={"barcode"}
@@ -705,16 +716,16 @@ function ProductPage() {
             render: (text) => formatCurrency(Math.round(text)), // Round to nearest whole number
           },
 
-          // {
-          //   key: "discount",
-          //   title: (
-          //     <div className="table-header">
-          //       <div className="khmer-text">បញ្ចុះតម្លៃ</div>
-          //       <div className="english-text">Discount</div>
-          //     </div>
-          //   ),
-          //   dataIndex: "discount",
-          // },
+          {
+            key: "discount",
+            title: (
+              <div className="table-header">
+                <div className="khmer-text">បញ្ចុះតម្លៃ</div>
+                <div className="english-text">Discount</div>
+              </div>
+            ),
+            dataIndex: "discount",
+          },
           {
             key: "status",
             title: (
